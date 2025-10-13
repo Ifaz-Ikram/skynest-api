@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
 const { spawnSync } = require('node:child_process');
 
 function run(cmd, args, opts = {}) {
@@ -25,4 +24,3 @@ try {
   // Never fail installs due to hooks setup
   console.warn('⚠ hooks-install skipped:', e && e.message ? e.message : e);
 }
-
