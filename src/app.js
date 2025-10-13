@@ -2,6 +2,7 @@
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
+const path = require("path");
 const createError = require("http-errors");
 
 require("dotenv").config();
@@ -20,6 +21,10 @@ app.use("/bookings", require("./routes/booking.routes"));
 app.use("/services", require("./routes/service.routes"));
 app.use("/payments", require("./routes/payment.routes"));
 app.use("/reports", require("./routes/report.routes"));
+
+// serve frontend (static SPA)
+const publicDir = path.join(__dirname, "public");
+app.use(express.static(publicDir));
 
 // 404
 app.use((_req, _res, next) => next(createError(404, "Route not found")));

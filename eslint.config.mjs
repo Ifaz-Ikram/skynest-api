@@ -38,4 +38,20 @@ export default [
       "prefer-const": "warn",
     },
   },
+
+  // Browser ESM override for frontend files
+  {
+    files: ["src/public/**/*.js"],
+    languageOptions: {
+      sourceType: "module",
+      ecmaVersion: "latest",
+      globals: {
+        ...globals.browser,
+      },
+    },
+    rules: {
+      // keep defaults; allow console in the UI
+      "no-console": "off",
+    },
+  },
 ];
