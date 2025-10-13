@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  // Use base '/app/' for production so assets resolve under Express mount
+  base: process.env.VITE_BASE || '/app/',
   server: {
     port: 5173,
     proxy: {
@@ -13,4 +15,3 @@ export default defineConfig({
     },
   },
 })
-

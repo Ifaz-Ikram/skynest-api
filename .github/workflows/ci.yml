@@ -83,3 +83,29 @@ jobs:
 
       - name: Run tests
         run: npm test --silent
+
+  frontend:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package.json
+      - name: Install deps
+        working-directory: frontend
+        run: npm ci
+      - name: Build
+        working-directory: frontend
+        env:
+          VITE_BASE: /app/
+        run: npm run build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist

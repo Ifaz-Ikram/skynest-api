@@ -3,6 +3,7 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 const createError = require("http-errors");
 
 require("dotenv").config();
@@ -25,11 +26,21 @@ app.use("/reports", require("./routes/report.routes"));
 // serve frontend (static SPA)
 const publicDir = path.join(__dirname, "public");
 app.use(express.static(publicDir));
-// HTML5 history fallback for client routes under /app
-app.use("/app", (req, res, next) => {
-  if (req.method !== "GET" && req.method !== "HEAD") return next();
-  res.sendFile(path.join(publicDir, "index.html"));
-});
+
+// Prefer React build if available, otherwise serve the in-repo SPA
+const reactBuildDir = path.join(__dirname, "..", "frontend", "dist");
+if (fs.existsSync(reactBuildDir)) {
+  app.use("/app", express.static(reactBuildDir));
+  app.get(["/app", "/app/*"], (_req, res) => {
+    res.sendFile(path.join(reactBuildDir, "index.html"));
+  });
+} else {
+  // HTML5 history fallback for client routes under /app (static SPA)
+  app.use("/app", (req, res, next) => {
+    if (req.method !== "GET" && req.method !== "HEAD") return next();
+    res.sendFile(path.join(publicDir, "index.html"));
+  });
+}
 
 // 404
 app.use((_req, _res, next) => next(createError(404, "Route not found")));
