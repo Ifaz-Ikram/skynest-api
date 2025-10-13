@@ -12,6 +12,11 @@ export default defineConfig({
         target: 'http://localhost:4000',
         changeOrigin: true,
       },
+      // Serve backend SPA stylesheet during React dev
+      '/styles.css': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+      },
     },
   },
 })

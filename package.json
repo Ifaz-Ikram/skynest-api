@@ -6,12 +6,16 @@
   "scripts": {
     "db:seed:sample": "node seeds/sample-data.js",
     "dev": "nodemon server.js",
+    "dev:react": "cross-env USE_REACT_BUILD=true nodemon server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "start": "node server.js",
+    "start:react": "cross-env USE_REACT_BUILD=true node server.js",
     "db:seed": "node seeds/index.js",
     "test": "cross-env NODE_ENV=test jest --runInBand",
     "format": "prettier --write .",
+    "build:frontend": "npm --prefix frontend run build",
+    "build-and-start": "npm run build:frontend && cross-env USE_REACT_BUILD=true node server.js",
     "postinstall": "node scripts/hooks-install.js"
   },
   "keywords": [],
