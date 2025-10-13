@@ -16,23 +16,6 @@ function useAuth() {
   return { token, user, login, logout }
 }
 
-function useAuth() {
-  const [token, setToken] = React.useState(() => localStorage.getItem('token'))
-  const [user, setUser] = React.useState(() => {
-    try { return JSON.parse(localStorage.getItem('user') || 'null') } catch { return null }
-  })
-  const login = async (username, password) => {
-    const res = await fetch('/auth/login', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ username, password }) })
-    const data = await res.json()
-    if (!res.ok) throw new Error(data?.error || 'Login failed')
-    localStorage.setItem('token', data.token)
-    localStorage.setItem('user', JSON.stringify(data.user))
-    setToken(data.token); setUser(data.user)
-  }
-  const logout = () => { localStorage.removeItem('token'); localStorage.removeItem('user'); setToken(null); setUser(null) }
-  return { token, user, login, logout }
-}
-
 function App() {
   const auth = useAuth()
   const authed = !!auth.token
@@ -137,7 +120,7 @@ function Bookings(){
             <button onClick={()=>run(page+1)}>Next</button>
           </div>
         </div>
-        <div style={{overflow:auto: 'auto'}}/>
+        <div style={{ overflow: 'auto' }} />
         <table style={{width:'100%',borderCollapse:'collapse',marginTop:8}}>
           <thead><tr><th>ID</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Status</th><th></th></tr></thead>
           <tbody>
