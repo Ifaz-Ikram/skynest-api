@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: skynest
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d skynest" 
+          --health-interval=10s 
+          --health-timeout=5s 
+          --health-retries=10
+
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGDATABASE: skynest
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      JWT_SECRET: testsecret
+      NODE_ENV: test
+      PORT: 0
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Create .env
+        run: |
+          cat > .env << 'EOF'
+          PGHOST=localhost
+          PGPORT=5432
+          PGDATABASE=skynest
+          PGUSER=postgres
+          PGPASSWORD=postgres
+          JWT_SECRET=testsecret
+          NODE_ENV=test
+          PORT=0
+          EOF
+
+      - name: Install psql client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Wait for Postgres
+        run: |
+          until pg_isready -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE"; do
+            echo "Waiting for Postgres..."
+            sleep 2
+          done
+
+      - name: Apply schema
+        run: psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" -f skynest_schema_nodb.sql
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Seed database
+        run: |
+          npm run db:seed
+          npm run db:seed:sample
+
+      - name: Run tests
+        run: npm test --silent
+
