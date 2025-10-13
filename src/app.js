@@ -27,17 +27,27 @@ app.use("/reports", require("./routes/report.routes"));
 const publicDir = path.join(__dirname, "public");
 app.use(express.static(publicDir));
 
-// Prefer React build if available, otherwise serve the in-repo SPA
+// Prefer React build if requested, otherwise serve the in-repo SPA
 const reactBuildDir = path.join(__dirname, "..", "frontend", "dist");
-if (fs.existsSync(reactBuildDir)) {
+const preferReact = String(process.env.USE_REACT_BUILD || "").toLowerCase() === "true";
+if (preferReact && fs.existsSync(reactBuildDir)) {
   app.use("/app", express.static(reactBuildDir));
-  app.get(["/app", "/app/*"], (_req, res) => {
+  // Serve index.html only for non-asset routes under /app
+  app.use("/app", (req, res, next) => {
+    if (req.method !== "GET" && req.method !== "HEAD") return next();
+    // Let real files (e.g., /app/assets/*.js, *.css) pass through
+    if (req.path.startsWith("/assets/") || req.path.includes(".")) return next();
+    // Only answer HTML navigation requests
+    const accept = String(req.headers.accept || "");
+    if (!accept.includes("text/html")) return next();
     res.sendFile(path.join(reactBuildDir, "index.html"));
   });
 } else {
   // HTML5 history fallback for client routes under /app (static SPA)
   app.use("/app", (req, res, next) => {
     if (req.method !== "GET" && req.method !== "HEAD") return next();
+    const accept = String(req.headers.accept || "");
+    if (!accept.includes("text/html")) return next();
     res.sendFile(path.join(publicDir, "index.html"));
   });
 }
