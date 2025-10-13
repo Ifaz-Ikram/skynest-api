@@ -55,12 +55,16 @@ if (preferReact && fs.existsSync(reactBuildDir)) {
 // 404
 app.use((_req, _res, next) => next(createError(404, "Route not found")));
 
-// error handler
+// error handler (quiet 404s and static-miss noise in dev)
 app.use((err, _req, res, _next) => {
-  if (process.env.NODE_ENV !== "production") console.error(err);
-  res
-    .status(err.status || 500)
-    .json({ error: err.message || "Internal Server Error" });
+  const status = err.status || err.statusCode || 500;
+  const is404 = status === 404;
+  const isStaticMiss = err && (err.code === "ENOENT" || err.code === "EISDIR");
+  if (process.env.NODE_ENV !== "production" && !is404 && !isStaticMiss) {
+    // Only log non-404 errors in development
+    console.error(err);
+  }
+  res.status(status).json({ error: err.message || "Internal Server Error" });
 });
 
 module.exports = { app };
