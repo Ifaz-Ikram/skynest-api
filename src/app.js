@@ -25,6 +25,10 @@ app.use("/reports", require("./routes/report.routes"));
 // serve frontend (static SPA)
 const publicDir = path.join(__dirname, "public");
 app.use(express.static(publicDir));
+// HTML5 history fallback for client routes under /app
+app.get(["/app", "/app/*"], (_req, res) => {
+  res.sendFile(path.join(publicDir, "index.html"));
+});
 
 // 404
 app.use((_req, _res, next) => next(createError(404, "Route not found")));

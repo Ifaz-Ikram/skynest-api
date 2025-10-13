@@ -13,15 +13,16 @@ const Router = (() => {
     const user = API.getUser();
     const authed = API.isAuthed();
     const items = [];
+    const base = '/app';
     if (authed) {
-      items.push(['#/dashboard','Dashboard']);
-      items.push(['#/bookings','Bookings']);
-      items.push(['#/services','Services']);
-      items.push(['#/payments','Payments']);
-      items.push(['#/reports','Reports']);
+      items.push([`${base}/dashboard`,'Dashboard']);
+      items.push([`${base}/bookings`,'Bookings']);
+      items.push([`${base}/services`,'Services']);
+      items.push([`${base}/payments`,'Payments']);
+      items.push([`${base}/reports`,'Reports']);
       items.push(['#logout', user ? (user.username || 'Logout') : 'Logout']);
     } else {
-      items.push(['#/login','Login']);
+      items.push([`${base}/login`,'Login']);
     }
     nav.innerHTML = items.map(([href,label]) => `<a href="${href}" data-link>${label}</a>`).join('');
     for (const a of nav.querySelectorAll('a[data-link]')) {
@@ -31,18 +32,24 @@ const Router = (() => {
         }
       });
     }
-    const hash = location.hash || '#/login';
-    for (const a of nav.querySelectorAll('a')) a.classList.toggle('active', a.getAttribute('href') === hash);
+    const cur = currentPath();
+    for (const a of nav.querySelectorAll('a')) a.classList.toggle('active', a.getAttribute('href') === cur);
+  }
+
+  function currentPath(){
+    const h = location.hash;
+    if (h && h.startsWith('#/')) return h.replace('#','/app');
+    if (location.pathname.startsWith('/app')) return location.pathname;
+    return '/app/login';
   }
 
   async function route() {
     renderNav();
-    const hash = location.hash || '#/login';
-    const [path] = hash.split('?');
+    const [path] = currentPath().split('?');
     const view = routes.get(path);
     if (!view) return (outlet.innerHTML = `<div class="card"><h3>Not found</h3></div>`);
-    const guardLogin = ['#/dashboard','#/bookings','#/services','#/payments','#/reports'];
-    if (guardLogin.includes(path) && !API.isAuthed()) { location.hash = '#/login'; renderNav(); return; }
+    const guardLogin = ['/app/dashboard','/app/bookings','/app/services','/app/payments','/app/reports'];
+    if (guardLogin.includes(path) && !API.isAuthed()) { history.replaceState(null,'','/app/login'); renderNav(); return; }
     outlet.innerHTML = await view.render();
     await view.afterRender?.();
     renderNav();
@@ -50,6 +57,7 @@ const Router = (() => {
 
   function start() {
     window.addEventListener('hashchange', route);
+    window.addEventListener('popstate', route);
     route();
   }
 
@@ -57,4 +65,3 @@ const Router = (() => {
 })();
 
 export default Router;
-

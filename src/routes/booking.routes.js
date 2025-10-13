@@ -11,6 +11,36 @@ const {
 
 const router = express.Router();
 
+// Listing and lookups
+router.get(
+  "/",
+  requireAuth,
+  requireRole("Admin", "Manager", "Receptionist"),
+  validateRequest,
+  (req, res, next) => require("../controllers/booking.controller").listBookings(req, res, next),
+);
+
+router.get(
+  "/:id(\\d+)",
+  requireAuth,
+  requireRole("Admin", "Manager", "Receptionist"),
+  (req, res, next) => require("../controllers/booking.controller").getBookingById(req, res, next),
+);
+
+router.get(
+  "/rooms/free",
+  requireAuth,
+  requireRole("Admin", "Manager", "Receptionist"),
+  (req, res, next) => require("../controllers/booking.controller").listFreeRooms(req, res, next),
+);
+
+router.get(
+  "/rooms/:roomId/availability",
+  requireAuth,
+  requireRole("Admin", "Manager", "Receptionist"),
+  (req, res, next) => require("../controllers/booking.controller").roomAvailability(req, res, next),
+);
+
 router.post(
   "/",
   requireAuth,

@@ -1,4 +1,5 @@
 import API from '../api.js';
+import { fmt } from '../ui.js';
 
 const DashboardView = {
   async render() {
@@ -37,4 +38,3 @@ const DashboardView = {
 };
 
 export default DashboardView;
-

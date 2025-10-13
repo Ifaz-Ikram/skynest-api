@@ -1,4 +1,5 @@
 import API from '../api.js';
+import { toast } from '../ui.js';
 
 const BookingsView = {
   async render() {
@@ -44,6 +45,23 @@ const BookingsView = {
         </form>
         <div id="statusResult" style="margin-top:12px"></div>
       </section>
+
+      <section class="card" style="margin-top:16px">
+        <h3>Find Bookings</h3>
+        <form id="searchForm" class="grid cols-4">
+          <div><label>From</label><input name="from" type="date" /></div>
+          <div><label>To</label><input name="to" type="date" /></div>
+          <div><label>Room ID</label><input name="room_id" type="number" min="1" /></div>
+          <div><label>Guest ID</label><input name="guest_id" type="number" min="1" /></div>
+          <div><label>Status</label>
+            <select name="status"><option value="">Any</option><option>Booked</option><option>Checked-In</option><option>Checked-Out</option><option>Cancelled</option></select>
+          </div>
+          <div><label>Page</label><input name="page" type="number" min="1" value="1" /></div>
+          <div><label>Limit</label><input name="limit" type="number" min="1" max="100" value="20" /></div>
+          <div style="align-self:end"><button type="submit">Search</button></div>
+        </form>
+        <div id="searchResult" style="margin-top:12px"></div>
+      </section>
     `;
   },
   async afterRender() {
@@ -56,8 +74,10 @@ const BookingsView = {
         for (const k of ['guest_id','room_id','booked_rate','advance_payment','tax_rate_percent']) if (payload[k] === '') delete payload[k];
         const res = await API.Bookings.create(payload);
         result.innerHTML = `<div class="alert success">Created booking #${res.booking?.booking_id || res.booking_id}</div>`;
+        toast('Booking created','success');
       } catch (err) {
         result.innerHTML = `<div class="alert error">${err.message}</div>`;
+        toast(err.message || 'Create booking failed','error');
       }
     });
 
@@ -68,12 +88,43 @@ const BookingsView = {
       try {
         await API.Bookings.updateStatus(fd.get('id'), fd.get('status'));
         statusRes.innerHTML = `<div class="alert success">Status updated</div>`;
+        toast('Booking status updated','success');
       } catch (err) {
         statusRes.innerHTML = `<div class="alert error">${err.message}</div>`;
+        toast(err.message || 'Update failed','error');
+      }
+    });
+
+    // search/list
+    const out = document.getElementById('searchResult');
+    document.getElementById('searchForm').addEventListener('submit', async (e) => {
+      e.preventDefault(); out.textContent = 'Loading…';
+      const fd = new FormData(e.currentTarget);
+      const q = Object.fromEntries(Array.from(fd.entries()).filter(([,v]) => v !== ''));
+      try {
+        const r = await API.Bookings.search(q);
+        const rows = (r.bookings||[]).map(b => `<tr>
+          <td>${b.booking_id}</td>
+          <td>${b.guest_id}</td>
+          <td>${b.room_id}</td>
+          <td>${b.check_in_pretty || b.check_in_date}</td>
+          <td>${b.check_out_pretty || b.check_out_date}</td>
+          <td>${b.status}</td>
+        </tr>`).join('');
+        out.innerHTML = `
+          <div class="row" style="justify-content:space-between">
+            <div class="pill">Total: ${r.total}</div>
+            <div class="pill">Page ${r.page} • Limit ${r.limit}</div>
+          </div>
+          <div style="overflow:auto">
+          <table class="table"><thead><tr><th>ID</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
+          </div>
+        `;
+      } catch (err) {
+        out.innerHTML = `<div class="alert error">${err.message}</div>`;
       }
     });
   }
 };
 
 export default BookingsView;
-

@@ -1,4 +1,5 @@
 import API from '../api.js';
+import { toast, fmt } from '../ui.js';
 
 const ServicesView = {
   async render() {
@@ -42,10 +43,10 @@ const ServicesView = {
         const rows = (data.usages || []).map(u => `<tr>
           <td>${u.usage_id}</td>
           <td>${u.service_name || u.service_id}</td>
-          <td>${u.used_on_pretty || u.used_on || ''}</td>
+          <td>${u.used_on_pretty || fmt.date(u.used_on) || ''}</td>
           <td>${u.quantity}</td>
-          <td>${u.unit_price}</td>
-          <td>${u.line_total || ''}</td>
+          <td>${fmt.money(u.unit_price)}</td>
+          <td>${u.line_total ? fmt.money(u.line_total) : ''}</td>
           <td><button data-del="${u.usage_id}" class="danger">Delete</button></td>
         </tr>`).join('');
         panel.innerHTML = `
@@ -62,8 +63,8 @@ const ServicesView = {
         `;
         for (const btn of panel.querySelectorAll('button[data-del]')) {
           btn.addEventListener('click', async () => {
-            try { await API.Services.deleteUsage(btn.dataset.del); await refresh(id); }
-            catch(e){ alert(e.message); }
+            try { await API.Services.deleteUsage(btn.dataset.del); toast('Service usage deleted','success'); await refresh(id); }
+            catch(e){ toast(e.message || 'Delete failed','error'); }
           });
         }
       } catch (e) {
@@ -82,13 +83,14 @@ const ServicesView = {
       try {
         const r = await API.Services.addUsage(payload);
         out.innerHTML = `<div class="alert success">Added usage #${r.usage.usage_id}</div>`;
+        toast('Service usage added','success');
         await refresh(Number(payload.booking_id));
       } catch (err) {
         out.innerHTML = `<div class="alert error">${err.message}</div>`;
+        toast(err.message || 'Failed to add usage','error');
       }
     });
   }
 };
 
 export default ServicesView;
-

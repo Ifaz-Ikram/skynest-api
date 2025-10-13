@@ -41,6 +41,13 @@ const API = (() => {
   const Bookings = {
     create: (payload) => request('/bookings', { method: 'POST', body: JSON.stringify(payload) }),
     updateStatus: (id, status) => request(`/bookings/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+    search: (q={}) => {
+      const qs = new URLSearchParams(Object.fromEntries(Object.entries(q).filter(([,v]) => v!==undefined && v!==''))).toString();
+      return request('/bookings' + (qs?`?${qs}`:''));
+    },
+    byId: (id) => request(`/bookings/${id}`),
+    freeRooms: (q) => request(`/bookings/rooms/free?${new URLSearchParams(q).toString()}`),
+    roomAvailability: (roomId,q) => request(`/bookings/rooms/${roomId}/availability?${new URLSearchParams(q).toString()}`),
   };
 
   // Services
@@ -73,4 +80,3 @@ const API = (() => {
 })();
 
 export default API;
-

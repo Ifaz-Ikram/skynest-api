@@ -42,7 +42,8 @@ const LoginView = {
       const fd = new FormData(form);
       try {
         await API.login(fd.get('username'), fd.get('password'));
-        location.hash = '#/dashboard';
+        history.pushState(null,'','/app/dashboard');
+        window.dispatchEvent(new Event('popstate'));
       } catch (err) {
         errEl.textContent = err.message || 'Login failed';
         errEl.style.display = '';
@@ -52,4 +53,3 @@ const LoginView = {
 };
 
 export default LoginView;
-

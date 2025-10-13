@@ -1,4 +1,5 @@
 import API from '../api.js';
+import { toast, fmt } from '../ui.js';
 
 const PaymentsView = {
   async render() {
@@ -45,8 +46,10 @@ const PaymentsView = {
       try {
         const r = await API.Payments.create(payload);
         out.innerHTML = `<div class="alert success">Payment #${r.payment_id || r.payment?.payment_id || ''} recorded</div>`;
+        toast('Payment recorded','success');
       } catch (err) {
         out.innerHTML = `<div class="alert error">${err.message}</div>`;
+        toast(err.message || 'Payment failed','error');
       }
     });
 
@@ -57,13 +60,14 @@ const PaymentsView = {
       const out = document.getElementById('adjResult');
       try {
         const r = await API.Payments.adjust(payload);
-        out.innerHTML = `<div class="alert success">Adjustment #${r.adjustment?.adjustment_id || ''} saved (net=${r.totals?.net_total ?? ''})</div>`;
+        out.innerHTML = `<div class="alert success">Adjustment #${r.adjustment?.adjustment_id || ''} saved (net=${fmt.money(r.totals?.net_total) ?? ''})</div>`;
+        toast('Adjustment saved','success');
       } catch (err) {
         out.innerHTML = `<div class="alert error">${err.message}</div>`;
+        toast(err.message || 'Adjustment failed','error');
       }
     });
   }
 };
 
 export default PaymentsView;
-
