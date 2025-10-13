@@ -101,6 +101,33 @@ function Bookings(){
   return (
     <div>
       <h2>Bookings</h2>
+      <section style={{border:"1px solid #ddd",padding:12,borderRadius:8,marginBottom:12}}>
+        <h3 style={{marginTop:0}}>Create Booking</h3>
+        <form onSubmit={async e=>{ e.preventDefault(); const fd=new FormData(e.currentTarget); const p=Object.fromEntries(fd.entries()); try{ await API.Bookings.create(p); alert('Booking created'); e.currentTarget.reset(); run(1) }catch(err){ alert(err.message) } }} style={{display:'grid',gridTemplateColumns:'repeat(4, minmax(0,1fr))',gap:8,maxWidth:1100}}>
+          <input name="guest_id" type="number" placeholder="Guest ID" required />
+          <input name="room_id" type="number" placeholder="Room ID" required />
+          <input name="check_in_date" type="date" required />
+          <input name="check_out_date" type="date" required />
+          <input name="booked_rate" type="number" step="0.01" placeholder="Booked rate" required />
+          <input name="advance_payment" type="number" step="0.01" placeholder="Advance (optional)" />
+          <input name="tax_rate_percent" type="number" step="0.01" placeholder="Tax % (optional)" />
+          <select name="status" defaultValue="Booked"><option>Booked</option><option>Checked-In</option><option>Checked-Out</option><option>Cancelled</option></select>
+          <div style={{gridColumn:"1 / -1"}}>
+            <button>Create</button>
+          </div>
+        </form>
+      </section>
+
+      <section style={{border:"1px solid #ddd",padding:12,borderRadius:8,marginBottom:12}}>
+        <h3 style={{marginTop:0}}>Update Status</h3>
+        <form onSubmit={async e=>{ e.preventDefault(); const fd=new FormData(e.currentTarget); try{ await API.Bookings.updateStatus(fd.get('id'), fd.get('status')); alert('Status updated'); run(page) }catch(err){ alert(err.message) } }} style={{display:'grid',gridTemplateColumns:'repeat(4, minmax(0,1fr))',gap:8,maxWidth:900}}>
+          <input name="id" type="number" placeholder="Booking ID" required />
+          <select name="status" defaultValue="Booked"><option>Booked</option><option>Checked-In</option><option>Checked-Out</option><option>Cancelled</option></select>
+          <div style={{gridColumn:"1 / -1"}}>
+            <button>Update</button>
+          </div>
+        </form>
+      </section>
       <form onSubmit={e=>{e.preventDefault(); const fd=new FormData(e.currentTarget); const q=Object.fromEntries(Array.from(fd.entries()).filter(([,v])=>v)); setFilter(q); run(1)}} style={{display:'grid',gridTemplateColumns:'repeat(4, minmax(0,1fr))',gap:8,maxWidth:900}}>
         <input name="from" type="date" />
         <input name="to" type="date" />
@@ -164,14 +191,67 @@ function Bookings(){
           </div>
         </div>
       )}
+      <section style={{border:"1px solid #ddd",padding:12,borderRadius:8,marginTop:12}}>
+        <h3 style={{marginTop:0}}>Find Free Rooms</h3>
+        <form onSubmit={async e=>{ e.preventDefault(); const fd=new FormData(e.currentTarget); try{ const r=await API.Bookings.freeRooms(Object.fromEntries(fd.entries())); alert(`${(r.free_rooms||[]).length} rooms free for the range`) }catch(err){ alert(err.message) } }} style={{display:'grid',gridTemplateColumns:'repeat(3, minmax(0,1fr))',gap:8,maxWidth:700}}>
+          <input name="from" type="date" required />
+          <input name="to" type="date" required />
+          <button>Search</button>
+        </form>
+      </section>
     </div>
   )
 }
 
 function Services(){
-  const [list,setList]=React.useState([])
-  React.useEffect(()=>{ API.Services.catalog().then(d=>setList(d.services||[])) },[])
-  return <div><h2>Services</h2><ul>{list.map(s=> <li key={s.service_id}>{s.name} — {s.unit_price}</li>)}</ul></div>
+  const [catalog,setCatalog]=React.useState([])
+  const [bookingId,setBookingId]=React.useState('')
+  const [usage,setUsage]=React.useState({booking_id:null,services_total:0,usages:[]})
+  const loadUsage=async(id)=>{ if(!id) return; const d=await API.Services.listUsage(id); setUsage(d) }
+  React.useEffect(()=>{ API.Services.catalog().then(d=>setCatalog(d.services||[])) },[])
+  return (
+    <div>
+      <h2>Services</h2>
+      <section style={{border:"1px solid #ddd",padding:12,borderRadius:8,marginBottom:12}}>
+        <h3 style={{marginTop:0}}>Add Usage</h3>
+        <form onSubmit={async e=>{ e.preventDefault(); const fd=new FormData(e.currentTarget); const p=Object.fromEntries(fd.entries()); if(!p.unit_price) delete p.unit_price; if(!p.used_on) delete p.used_on; try{ const r=await API.Services.addUsage(p); alert(`Added usage #${r.usage?.usage_id}`); e.currentTarget.reset(); if(p.booking_id) loadUsage(p.booking_id) }catch(err){ alert(err.message) } }} style={{display:'grid',gridTemplateColumns:'repeat(4, minmax(0,1fr))',gap:8,maxWidth:1100}}>
+          <input name="booking_id" type="number" placeholder="Booking ID" required onChange={e=>setBookingId(e.target.value)} />
+          <select name="service_id">{catalog.map(s=> <option key={s.service_id} value={s.service_id}>{s.name} — {s.unit_price}</option>)}</select>
+          <input name="quantity" type="number" min="1" defaultValue="1" />
+          <input name="unit_price" type="number" step="0.01" placeholder="Unit price (optional)" />
+          <input name="used_on" type="date" />
+          <div style={{gridColumn:"1 / -1"}}>
+            <button>Add</button> <button type="button" onClick={()=>loadUsage(bookingId)}>Load Usage</button>
+          </div>
+        </form>
+      </section>
+
+      {usage.booking_id && (
+        <section style={{border:"1px solid #ddd",padding:12,borderRadius:8}}>
+          <h3 style={{marginTop:0}}>Usage for Booking #{usage.booking_id}</h3>
+          <div style={{marginBottom:8}}>Services total: {usage.services_total}</div>
+          <div style={{overflow:'auto'}}>
+            <table style={{width:'100%',borderCollapse:'collapse'}}>
+              <thead><tr><th>ID</th><th>Service</th><th>Used On</th><th>Qty</th><th>Unit</th><th>Total</th><th></th></tr></thead>
+              <tbody>
+                {(usage.usages||[]).map(u=> (
+                  <tr key={u.usage_id}>
+                    <td>{u.usage_id}</td>
+                    <td>{u.service_name||u.service_id}</td>
+                    <td>{u.used_on_pretty||u.used_on}</td>
+                    <td>{u.quantity}</td>
+                    <td>{u.unit_price}</td>
+                    <td>{u.line_total||''}</td>
+                    <td><button onClick={async()=>{ try{ await API.Services.deleteUsage(u.usage_id); loadUsage(usage.booking_id) }catch(err){ alert(err.message) } }}>Delete</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+    </div>
+  )
 }
 
 function Payments(){
@@ -204,12 +284,91 @@ function Payments(){
 function Reports(){
   const [occ,setOcc]=React.useState([])
   const [bill,setBill]=React.useState([])
-  React.useEffect(()=>{ API.Reports.occupancyByDay().then(setOcc).catch(()=>{}); API.Reports.billingSummary().then(setBill).catch(()=>{}) },[])
+  const [sud,setSud]=React.useState([])
+  const [rev,setRev]=React.useState([])
+  const [trend,setTrend]=React.useState([])
+  React.useEffect(()=>{ API.Reports.occupancyByDay().then(setOcc).catch(()=>{}); API.Reports.billingSummary().then(setBill).catch(()=>{}); API.Reports.branchRevenueMonthly().then(setRev).catch(()=>{}); API.Reports.serviceMonthlyTrend().then(setTrend).catch(()=>{}) },[])
+  const cols = (arr, n=8) => Array.from(new Set(arr.flatMap(x=>Object.keys(x||{})))).slice(0,n)
   return (
     <div>
       <h2>Reports</h2>
-      <div>Occupancy rows: {occ.length}</div>
-      <div>Billing rows: {bill.length}</div>
+      <section style={{border:"1px solid #ddd",padding:12,borderRadius:8,marginBottom:12}}>
+        <h3 style={{marginTop:0}}>Service Usage Detail</h3>
+        <form onSubmit={async e=>{ e.preventDefault(); const fd=new FormData(e.currentTarget); const q=Object.fromEntries(Array.from(fd.entries()).filter(([,v])=>v)); try{ const r=await API.Reports.serviceUsageDetail(q); setSud(r) }catch(err){ alert(err.message) } }} style={{display:'grid',gridTemplateColumns:'repeat(4, minmax(0,1fr))',gap:8,maxWidth:900}}>
+          <input name="booking_id" type="number" placeholder="Booking ID" />
+          <input name="from" type="date" />
+          <input name="to" type="date" />
+          <button>Filter</button>
+        </form>
+        <div style={{overflow:'auto',marginTop:8}}>
+          <table style={{width:'100%',borderCollapse:'collapse'}}>
+            <thead><tr>{cols(sud).map(c=> <th key={c}>{c}</th>)}</tr></thead>
+            <tbody>
+              {sud.slice(0,50).map((r,i)=> (
+                <tr key={i}>{cols(sud).map(c=> <td key={c}>{String(r[c]??'')}</td>)}</tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section style={{display:'grid',gridTemplateColumns:'repeat(2, minmax(0,1fr))',gap:12}}>
+        <div style={{border:"1px solid #ddd",padding:12,borderRadius:8}}>
+          <h3 style={{marginTop:0}}>Occupancy (Daily)</h3>
+          <div style={{overflow:'auto'}}>
+            <table style={{width:'100%',borderCollapse:'collapse'}}>
+              <thead><tr>{cols(occ,6).map(c=> <th key={c}>{c}</th>)}</tr></thead>
+              <tbody>
+                {occ.slice(0,50).map((r,i)=> (
+                  <tr key={i}>{cols(occ,6).map(c=> <td key={c}>{String(r[c]??'')}</td>)}</tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div style={{border:"1px solid #ddd",padding:12,borderRadius:8}}>
+          <h3 style={{marginTop:0}}>Billing Summary</h3>
+          <div style={{overflow:'auto'}}>
+            <table style={{width:'100%',borderCollapse:'collapse'}}>
+              <thead><tr>{cols(bill,6).map(c=> <th key={c}>{c}</th>)}</tr></thead>
+              <tbody>
+                {bill.slice(0,50).map((r,i)=> (
+                  <tr key={i}>{cols(bill,6).map(c=> <td key={c}>{String(r[c]??'')}</td>)}</tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section style={{display:'grid',gridTemplateColumns:'repeat(2, minmax(0,1fr))',gap:12,marginTop:12}}>
+        <div style={{border:"1px solid #ddd",padding:12,borderRadius:8}}>
+          <h3 style={{marginTop:0}}>Branch Revenue (Monthly)</h3>
+          <div style={{overflow:'auto'}}>
+            <table style={{width:'100%',borderCollapse:'collapse'}}>
+              <thead><tr>{cols(rev,6).map(c=> <th key={c}>{c}</th>)}</tr></thead>
+              <tbody>
+                {rev.slice(0,50).map((r,i)=> (
+                  <tr key={i}>{cols(rev,6).map(c=> <td key={c}>{String(r[c]??'')}</td>)}</tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div style={{border:"1px solid #ddd",padding:12,borderRadius:8}}>
+          <h3 style={{marginTop:0}}>Service Monthly Trend</h3>
+          <div style={{overflow:'auto'}}>
+            <table style={{width:'100%',borderCollapse:'collapse'}}>
+              <thead><tr>{cols(trend,6).map(c=> <th key={c}>{c}</th>)}</tr></thead>
+              <tbody>
+                {trend.slice(0,50).map((r,i)=> (
+                  <tr key={i}>{cols(trend,6).map(c=> <td key={c}>{String(r[c]??'')}</td>)}</tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
