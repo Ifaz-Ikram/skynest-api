@@ -11,7 +11,8 @@
     "start": "node server.js",
     "db:seed": "node seeds/index.js",
     "test": "cross-env NODE_ENV=test jest --runInBand",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "postinstall": "node scripts/hooks-install.js"
   },
   "keywords": [],
   "author": "",

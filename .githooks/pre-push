@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Optional: allow skipping with env var
+if [ "${SKIP_TESTS:-}" = "1" ]; then
+  echo "pre-push: SKIP_TESTS=1 set; skipping tests"
+  exit 0
+fi
+
+echo "pre-push: running test suite"
+npm test --silent
+
