@@ -62,6 +62,18 @@ const BookingsView = {
         </form>
         <div id="searchResult" style="margin-top:12px"></div>
       </section>
+
+      <section class="card" style="margin-top:16px">
+        <h3>Free Rooms</h3>
+        <form id="freeForm" class="row">
+          <div><label>From</label><input name="from" type="date" required /></div>
+          <div><label>To</label><input name="to" type="date" required /></div>
+          <div style="align-self:end"><button type="submit">Find</button></div>
+        </form>
+        <div id="freeResult" style="margin-top:12px"></div>
+      </section>
+
+      <div id="drawer" class="backdrop"><div class="drawer"><div class="hd"><h3>Booking</h3><button id="drawerClose">Close</button></div><div id="drawerBody"></div></div></div>
     `;
   },
   async afterRender() {
@@ -97,32 +109,77 @@ const BookingsView = {
 
     // search/list
     const out = document.getElementById('searchResult');
-    document.getElementById('searchForm').addEventListener('submit', async (e) => {
-      e.preventDefault(); out.textContent = 'Loading…';
-      const fd = new FormData(e.currentTarget);
+    async function runSearch(formEl){
+      out.textContent = 'Loading…';
+      const fd = new FormData(formEl);
       const q = Object.fromEntries(Array.from(fd.entries()).filter(([,v]) => v !== ''));
-      try {
-        const r = await API.Bookings.search(q);
-        const rows = (r.bookings||[]).map(b => `<tr>
-          <td>${b.booking_id}</td>
-          <td>${b.guest_id}</td>
-          <td>${b.room_id}</td>
-          <td>${b.check_in_pretty || b.check_in_date}</td>
-          <td>${b.check_out_pretty || b.check_out_date}</td>
-          <td>${b.status}</td>
-        </tr>`).join('');
-        out.innerHTML = `
-          <div class="row" style="justify-content:space-between">
-            <div class="pill">Total: ${r.total}</div>
-            <div class="pill">Page ${r.page} • Limit ${r.limit}</div>
+      const r = await API.Bookings.search(q);
+      const rows = (r.bookings||[]).map(b => `<tr>
+        <td>${b.booking_id}</td>
+        <td>${b.guest_id}</td>
+        <td>${b.room_id}</td>
+        <td>${b.check_in_pretty || b.check_in_date}</td>
+        <td>${b.check_out_pretty || b.check_out_date}</td>
+        <td>${b.status}</td>
+        <td><button class="pill" data-view="${b.booking_id}">View</button></td>
+      </tr>`).join('');
+      out.innerHTML = `
+        <div class="row" style="justify-content:space-between;align-items:center">
+          <div class="pill">Total: ${r.total}</div>
+          <div class="row" style="gap:6px;align-items:center">
+            <button id="prevPage">Prev</button>
+            <div class="pill">Page ${r.page} / ${Math.max(1, Math.ceil((r.total||0)/(r.limit||1)) )}</div>
+            <button id="nextPage">Next</button>
           </div>
-          <div style="overflow:auto">
-          <table class="table"><thead><tr><th>ID</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
+        </div>
+        <div style="overflow:auto">
+        <table class="table"><thead><tr><th>ID</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+        </div>
+      `;
+      // wire page buttons
+      const sf = document.getElementById('searchForm');
+      document.getElementById('prevPage').onclick = () => { const p = Number(sf.page.value||1); if (p>1){ sf.page.value = String(p-1); runSearch(sf); } };
+      document.getElementById('nextPage').onclick = () => { const p = Number(sf.page.value||1); sf.page.value = String(p+1); runSearch(sf); };
+      for (const btn of out.querySelectorAll('button[data-view]')) btn.onclick = () => openDrawer(btn.dataset.view);
+    }
+    document.getElementById('searchForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try { await runSearch(e.currentTarget); } catch (err) { out.innerHTML = `<div class="alert error">${err.message}</div>`; }
+    });
+
+    async function openDrawer(id){
+      const bd = document.getElementById('drawerBody');
+      const el = document.getElementById('drawer');
+      el.classList.add('open');
+      bd.innerHTML = '<div class="muted">Loading…</div>';
+      try {
+        const r = await API.Bookings.byId(id);
+        const b = r.booking;
+        bd.innerHTML = `
+          <div class="grid">
+            <div><span class="muted">Booking</span><div class="value">#${b.booking_id}</div></div>
+            <div><span class="muted">Guest</span><div class="value">${b.guest_id}</div></div>
+            <div><span class="muted">Room</span><div class="value">${b.room_id}</div></div>
+            <div><span class="muted">Check-in</span><div>${b.check_in_pretty || b.check_in_date}</div></div>
+            <div><span class="muted">Check-out</span><div>${b.check_out_pretty || b.check_out_date}</div></div>
+            <div><span class="muted">Status</span><div class="pill">${b.status}</div></div>
           </div>
         `;
-      } catch (err) {
-        out.innerHTML = `<div class="alert error">${err.message}</div>`;
-      }
+      } catch(e){ bd.innerHTML = `<div class="alert error">${e.message}</div>`; }
+      document.getElementById('drawerClose').onclick = () => el.classList.remove('open');
+      el.onclick = (ev) => { if (ev.target === el) el.classList.remove('open'); };
+    }
+
+    // free rooms
+    const freeOut = document.getElementById('freeResult');
+    document.getElementById('freeForm').addEventListener('submit', async (e) => {
+      e.preventDefault(); freeOut.textContent = 'Loading…';
+      const fd = new FormData(e.currentTarget);
+      try {
+        const r = await API.Bookings.freeRooms(Object.fromEntries(fd.entries()));
+        const rows = (r.free_rooms||[]).map(x => `<tr><td>${x.room_id}</td><td>${x.room_number}</td><td>${x.type_name || x.room_type_id}</td><td>${x.capacity || ''}</td><td>${x.daily_rate || ''}</td></tr>`).join('');
+        freeOut.innerHTML = `<div class="pill">${(r.free_rooms||[]).length} rooms free</div><div style="overflow:auto"><table class="table"><thead><tr><th>ID</th><th>Number</th><th>Type</th><th>Cap</th><th>Rate</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+      } catch(err){ freeOut.innerHTML = `<div class="alert error">${err.message}</div>`; }
     });
   }
 };

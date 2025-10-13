@@ -42,3 +42,9 @@ button.warn{background:#3a2a11;border-color:#854d0e}
 .toast.warn{border-left-color:var(--warn)}
 .toast .title{font-weight:700;margin-bottom:4px}
 .toast .msg{color:var(--muted)}
+
+/* modal/drawer */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:stretch;justify-content:flex-end;z-index:40}
+.backdrop.open{display:flex}
+.drawer{width:min(460px,100%);background:var(--card);border-left:1px solid var(--line);padding:16px;overflow:auto}
+.drawer .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}

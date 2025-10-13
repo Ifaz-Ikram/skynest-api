@@ -11,6 +11,7 @@ export default [
       "dist/**",
       "build/**",
       "seeds/**", // <— ignore seed scripts
+      "frontend/**", // <— ignore separate React app (scaffolded)
     ],
   },
 

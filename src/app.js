@@ -26,7 +26,8 @@ app.use("/reports", require("./routes/report.routes"));
 const publicDir = path.join(__dirname, "public");
 app.use(express.static(publicDir));
 // HTML5 history fallback for client routes under /app
-app.get(["/app", "/app/*"], (_req, res) => {
+app.use("/app", (req, res, next) => {
+  if (req.method !== "GET" && req.method !== "HEAD") return next();
   res.sendFile(path.join(publicDir, "index.html"));
 });
 
