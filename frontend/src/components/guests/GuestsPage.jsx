@@ -14,10 +14,11 @@ const GuestsPage = () => {
   const loadGuests = async () => {
     try {
       const data = await api.getGuests();
-      setGuests(data);
+      console.log('Guests data received:', data);
+      setGuests(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to load guests:', error);
-      alert('Failed to load guests');
+      alert(`Failed to load guests: ${error.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
