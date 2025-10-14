@@ -1,21 +1,64 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../../utils/api';
 
 export const CreateBookingModal = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
-    customer_id: '',
+    guest_id: '',
     room_id: '',
     check_in_date: '',
     check_out_date: '',
     number_of_guests: 1,
+    booked_rate: '',
   });
+  const [guests, setGuests] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
+
+  // Fetch guests and rooms on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [guestsData, roomsData] = await Promise.all([
+          api.getGuests(),
+          api.getRooms()
+        ]);
+        setGuests(guestsData || []);
+        setRooms(roomsData || []);
+      } catch (error) {
+        console.error('Failed to load data:', error);
+        alert('Failed to load guests/rooms: ' + error.message);
+      } finally {
+        setLoadingData(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Auto-fill booked_rate when room is selected
+  const handleRoomChange = (roomId) => {
+    const selectedRoom = rooms.find(r => r.room_id === Number(roomId));
+    setFormData({
+      ...formData,
+      room_id: roomId,
+      booked_rate: selectedRoom ? selectedRoom.daily_rate : '',
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.createBooking(formData);
+      // Convert to numbers before sending
+      const bookingData = {
+        guest_id: Number(formData.guest_id),
+        room_id: Number(formData.room_id),
+        check_in_date: formData.check_in_date,
+        check_out_date: formData.check_out_date,
+        booked_rate: Number(formData.booked_rate),
+        number_of_guests: Number(formData.number_of_guests),
+      };
+      await api.createBooking(bookingData);
       onSuccess();
     } catch (error) {
       alert('Failed to create booking: ' + error.message);
@@ -31,26 +74,46 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
           <h2 className="text-2xl font-bold text-gray-900">New Booking</h2>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Customer ID</label>
-            <input
-              type="number"
-              value={formData.customer_id}
-              onChange={(e) => setFormData({...formData, customer_id: e.target.value})}
-              className="input-field"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Room ID</label>
-            <input
-              type="number"
-              value={formData.room_id}
-              onChange={(e) => setFormData({...formData, room_id: e.target.value})}
-              className="input-field"
-              required
-            />
-          </div>
+          {loadingData ? (
+            <div className="text-center py-8 text-gray-500">Loading guests and rooms...</div>
+          ) : (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Guest</label>
+                <select
+                  value={formData.guest_id}
+                  onChange={(e) => setFormData({...formData, guest_id: e.target.value})}
+                  className="input-field"
+                  required
+                >
+                  <option value="">Select a guest</option>
+                  {guests.map(guest => (
+                    <option key={guest.guest_id} value={guest.guest_id}>
+                      {guest.full_name} - {guest.email || guest.phone || `ID: ${guest.guest_id}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Room</label>
+                <select
+                  value={formData.room_id}
+                  onChange={(e) => handleRoomChange(e.target.value)}
+                  className="input-field"
+                  required
+                >
+                  <option value="">Select a room</option>
+                  {rooms.map(room => (
+                    <option key={room.room_id} value={room.room_id}>
+                      Room {room.room_number} - {room.room_type_desc || room.room_type_code} 
+                      {room.branch_name ? ` (${room.branch_name})` : ''} 
+                      - Rs. {room.daily_rate}/night
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Check In Date</label>
             <input
@@ -74,6 +137,19 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
             />
           </div>
           <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Daily Rate (Rs.)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={formData.booked_rate}
+              onChange={(e) => setFormData({...formData, booked_rate: e.target.value})}
+              className="input-field"
+              placeholder="Auto-filled from room"
+              required
+            />
+            <p className="text-xs text-gray-500 mt-1">Rate per night for this booking</p>
+          </div>
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Number of Guests</label>
             <input
               type="number"
@@ -88,7 +164,7 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
             <button type="button" onClick={onClose} className="btn-secondary flex-1">
               Cancel
             </button>
-            <button type="submit" disabled={loading} className="btn-primary flex-1">
+            <button type="submit" disabled={loading || loadingData} className="btn-primary flex-1">
               {loading ? 'Creating...' : 'Create Booking'}
             </button>
           </div>

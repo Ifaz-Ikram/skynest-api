@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const pool = require("../db");
+const { pool } = require("../db");
 const { formatMoney } = require("../utils/money");
 const { formatDate, calculateNights } = require("../utils/dates");
 
