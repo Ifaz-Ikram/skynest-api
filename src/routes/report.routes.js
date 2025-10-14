@@ -8,6 +8,8 @@ const {
   serviceUsageDetail,
   branchRevenueMonthly,
   serviceMonthlyTrend,
+  paymentsLedger,
+  adjustmentsLast,
 } = require("../controllers/report.controller");
 
 router.get(
@@ -43,6 +45,20 @@ router.get(
   requireAuth,
   requireRole("Admin", "Manager", "Accountant"),
   serviceMonthlyTrend,
+);
+
+router.get(
+  "/payments-ledger",
+  requireAuth,
+  requireRole("Admin", "Manager", "Accountant"),
+  paymentsLedger,
+);
+
+router.get(
+  "/adjustments",
+  requireAuth,
+  requireRole("Admin", "Manager", "Accountant"),
+  adjustmentsLast,
 );
 
 module.exports = router;

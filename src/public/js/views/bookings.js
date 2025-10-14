@@ -8,8 +8,8 @@ const BookingsView = {
         <h2>Create Booking</h2>
         <div class="muted">Provide guest/room and date range. Ensure no conflicts.</div>
         <form id="bkForm" class="grid cols-3" style="margin-top:8px">
-          <div><label>Guest ID</label><input name="guest_id" type="number" min="1" required /></div>
-          <div><label>Room ID</label><input name="room_id" type="number" min="1" required /></div>
+          <div><label>Guest ID</label><input name="guest_id" type="number" min="1" required /><span class="hint error">Required, must be ≥ 1</span></div>
+          <div><label>Room ID</label><input name="room_id" type="number" min="1" required /><span class="hint error">Required, must be ≥ 1</span></div>
           <div><label>Status</label>
             <select name="status">
               <option>Booked</option>
@@ -18,10 +18,10 @@ const BookingsView = {
               <option>Cancelled</option>
             </select>
           </div>
-          <div><label>Check-in Date</label><input name="check_in_date" type="date" required /></div>
-          <div><label>Check-out Date</label><input name="check_out_date" type="date" required /></div>
-          <div><label>Booked Rate (per night)</label><input name="booked_rate" type="number" min="0" step="0.01" required /></div>
-          <div><label>Advance Payment</label><input name="advance_payment" type="number" min="0" step="0.01" /></div>
+          <div><label>Check-in Date</label><input name="check_in_date" type="date" required /><span class="hint error">Required</span></div>
+          <div><label>Check-out Date</label><input name="check_out_date" type="date" required /><span class="hint error">Must be after check-in</span></div>
+          <div><label>Booked Rate (per night)</label><input name="booked_rate" type="number" min="0.01" step="0.01" required /><span class="hint error">Required, must be > 0</span></div>
+          <div><label>Advance Payment</label><input name="advance_payment" type="number" min="0" step="0.01" /><span class="hint">Optional</span></div>
           <div><label>Tax %</label><input name="tax_rate_percent" type="number" min="0" step="0.01" value="0" /></div>
           <div style="align-self:end"><button class="primary" type="submit">Create</button></div>
         </form>
@@ -58,6 +58,8 @@ const BookingsView = {
           </div>
           <div><label>Page</label><input name="page" type="number" min="1" value="1" /></div>
           <div><label>Limit</label><input name="limit" type="number" min="1" max="100" value="20" /></div>
+          <input type="hidden" name="sort" value="check_in_date" />
+          <input type="hidden" name="dir" value="DESC" />
           <div style="align-self:end"><button type="submit">Search</button></div>
         </form>
         <div id="searchResult" style="margin-top:12px"></div>
@@ -114,6 +116,10 @@ const BookingsView = {
       const fd = new FormData(formEl);
       const q = Object.fromEntries(Array.from(fd.entries()).filter(([,v]) => v !== ''));
       const r = await API.Bookings.search(q);
+      const totalPages = Math.max(1, Math.ceil((r.total||0)/(r.limit||1)) );
+      const sort = String(q.sort||'');
+      const dir = String(q.dir||'DESC').toUpperCase();
+      const icon = (key)=> sort===key ? (dir==='ASC'?'▲':'▼') : '';
       const rows = (r.bookings||[]).map(b => `<tr>
         <td>${b.booking_id}</td>
         <td>${b.guest_id}</td>
@@ -127,24 +133,55 @@ const BookingsView = {
         <div class="row" style="justify-content:space-between;align-items:center">
           <div class="pill">Total: ${r.total}</div>
           <div class="row" style="gap:6px;align-items:center">
+            <button id="firstPage">First</button>
             <button id="prevPage">Prev</button>
-            <div class="pill">Page ${r.page} / ${Math.max(1, Math.ceil((r.total||0)/(r.limit||1)) )}</div>
+            <div class="row" style="align-items:center;gap:6px">
+              <label class="muted">Go to</label>
+              <input id="gotoPage" type="number" min="1" max="${totalPages}" value="${r.page}" style="width:80px" />
+              <span class="pill">/ ${totalPages}</span>
+            </div>
             <button id="nextPage">Next</button>
+            <button id="lastPage">Last</button>
           </div>
         </div>
         <div style="overflow:auto">
-        <table class="table"><thead><tr><th>ID</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+        <table class="table"><thead><tr>
+          <th class="sortable" data-sort="booking_id">ID <span class="indicator">${icon('booking_id')}</span></th>
+          <th class="sortable" data-sort="guest_id">Guest <span class="indicator">${icon('guest_id')}</span></th>
+          <th class="sortable" data-sort="room_id">Room <span class="indicator">${icon('room_id')}</span></th>
+          <th class="sortable" data-sort="check_in_date">Check-in <span class="indicator">${icon('check_in_date')}</span></th>
+          <th class="sortable" data-sort="check_out_date">Check-out <span class="indicator">${icon('check_out_date')}</span></th>
+          <th class="sortable" data-sort="status">Status <span class="indicator">${icon('status')}</span></th>
+          <th></th></tr></thead><tbody>${rows}</tbody></table>
         </div>
       `;
-      // wire page buttons
+      // wire page + sort
       const sf = document.getElementById('searchForm');
-      document.getElementById('prevPage').onclick = () => { const p = Number(sf.page.value||1); if (p>1){ sf.page.value = String(p-1); runSearch(sf); } };
-      document.getElementById('nextPage').onclick = () => { const p = Number(sf.page.value||1); sf.page.value = String(p+1); runSearch(sf); };
+      const setPage = (p)=>{ p=Math.max(1, Math.min(totalPages, Number(p)||1)); sf.page.value = String(p); runSearch(sf); };
+      document.getElementById('firstPage').onclick = () => setPage(1);
+      document.getElementById('prevPage').onclick = () => setPage(Number(sf.page.value||1)-1);
+      document.getElementById('nextPage').onclick = () => setPage(Number(sf.page.value||1)+1);
+      document.getElementById('lastPage').onclick = () => setPage(totalPages);
+      const gp = document.getElementById('gotoPage'); gp.addEventListener('change', ()=> setPage(gp.value)); gp.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); setPage(gp.value) } });
+      for (const th of out.querySelectorAll('th.sortable')){
+        th.addEventListener('click', ()=>{
+          const key = th.dataset.sort;
+          const curSort = sf.sort?.value || '';
+          const curDir = (sf.dir?.value || 'DESC').toUpperCase();
+          const nextDir = (curSort===key && curDir==='ASC') ? 'DESC' : 'ASC';
+          if (!sf.sort){ const i=document.createElement('input'); i.type='hidden'; i.name='sort'; i.value='check_in_date'; sf.appendChild(i); }
+          if (!sf.dir){ const i=document.createElement('input'); i.type='hidden'; i.name='dir'; i.value='DESC'; sf.appendChild(i); }
+          sf.sort.value = key; sf.dir.value = nextDir; setPage(1);
+        });
+      }
       for (const btn of out.querySelectorAll('button[data-view]')) btn.onclick = () => openDrawer(btn.dataset.view);
     }
     document.getElementById('searchForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      try { await runSearch(e.currentTarget); } catch (err) { out.innerHTML = `<div class="alert error">${err.message}</div>`; }
+      const f = e.currentTarget;
+      if (!f.sort){ const i=document.createElement('input'); i.type='hidden'; i.name='sort'; i.value='check_in_date'; f.appendChild(i); }
+      if (!f.dir){ const i=document.createElement('input'); i.type='hidden'; i.name='dir'; i.value='DESC'; f.appendChild(i); }
+      try { await runSearch(f); } catch (err) { out.innerHTML = `<div class="alert error">${err.message}</div>`; }
     });
 
     async function openDrawer(id){

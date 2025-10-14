@@ -1,5 +1,7 @@
 // src/controllers/booking.controller.js
 const { pool } = require("../db");
+const { calculateBookingTotals } = require("../utils/totals");
+const { formatDate } = require("../utils/dates");
 
 // -------- helpers --------
 function pickBookingBody(body = {}) {
@@ -70,6 +72,92 @@ function normalizePaymentMethod(input) {
   return null;
 }
 
+// -------- FULL BOOKING SNAPSHOT --------
+// GET /bookings/:id/full
+async function getBookingFull(req, res) {
+  const id = Number(req.params.id);
+  if (!id) return res.status(400).json({ error: "Invalid id" });
+
+  try {
+    // 1) Booking core
+    const bq = await pool.query(
+      `SELECT booking_id, guest_id, room_id,
+              check_in_date, check_out_date, status,
+              booked_rate, tax_rate_percent, advance_payment,
+              COALESCE(discount_amount, 0) AS discount_amount,
+              COALESCE(late_fee_amount, 0) AS late_fee_amount
+         FROM booking
+        WHERE booking_id = $1`,
+      [id],
+    );
+    if (!bq.rowCount) return res.status(404).json({ error: "Not found" });
+    const raw = bq.rows[0];
+    if (req.user && req.user.role === 'Customer') {
+      if (Number(req.user.guest_id) !== Number(raw.guest_id)) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+    }
+    const booking = {
+      ...raw,
+      check_in_pretty: prettyDateTime(raw.check_in_date),
+      check_out_pretty: prettyDateTime(raw.check_out_date),
+      date_range_pretty: prettyRangeDateTime(raw.check_in_date, raw.check_out_date),
+    };
+
+    // 2) Service usage list + total
+    const su = await pool.query(
+      `SELECT u.service_usage_id, u.booking_id, u.service_id, s.name AS service_name,
+              u.used_on, u.qty, u.unit_price_at_use,
+              (u.qty * u.unit_price_at_use)::numeric AS line_total
+         FROM service_usage u
+         JOIN service_catalog s ON s.service_id = u.service_id
+        WHERE u.booking_id = $1
+        ORDER BY u.used_on DESC, u.service_usage_id DESC`,
+      [id],
+    );
+    const suTotal = await pool.query(
+      `SELECT COALESCE(SUM(qty * unit_price_at_use), 0)::numeric AS services_total
+         FROM service_usage
+        WHERE booking_id = $1`,
+      [id],
+    );
+
+    // 3) Payments + adjustments + totals
+    const pay = await pool.query(
+      `SELECT payment_id, booking_id, amount, method, paid_at, payment_reference
+         FROM payment
+        WHERE booking_id = $1
+        ORDER BY paid_at DESC, payment_id DESC`,
+      [id],
+    );
+    const adj = await pool.query(
+      `SELECT adjustment_id, booking_id,
+              CASE WHEN type IN ('refund','chargeback') THEN -amount ELSE amount END AS amount,
+              type,
+              COALESCE(created_at, adjusted_at, createdon, created, "timestamp", ts, NOW()) AS created_at
+         FROM payment_adjustment
+        WHERE booking_id = $1
+        ORDER BY created_at DESC, adjustment_id DESC`,
+      [id],
+    );
+    const totals = await pool.query(
+      `SELECT
+         (SELECT COALESCE(SUM(amount),0)::numeric FROM payment WHERE booking_id=$1) AS total_paid,
+         (SELECT COALESCE(SUM(CASE WHEN type IN ('refund','chargeback') THEN -amount ELSE amount END),0)::numeric FROM payment_adjustment WHERE booking_id=$1) AS total_adjust`,
+      [id],
+    );
+
+    return res.json({
+      booking,
+      services: { total: suTotal.rows[0].services_total, list: su.rows },
+      payments: { totals: totals.rows[0], list: pay.rows, adjustments: adj.rows },
+    });
+  } catch (err) {
+    console.error("getBookingFull error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 // -------- CREATE --------
 // POST /bookings
 async function createBooking(req, res) {
@@ -97,6 +185,11 @@ async function createBooking(req, res) {
 
     const { rows } = await pool.query(sql, vals);
     const raw = rows[0];
+    if (req.user && req.user.role === 'Customer') {
+      if (Number(req.user.guest_id) !== Number(raw.guest_id)) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+    }
     const booking = {
       ...raw,
       check_in_pretty: prettyDateTime(raw.check_in_date),
@@ -161,7 +254,11 @@ async function getBookingById(req, res) {
 
   try {
     const { rows } = await pool.query(
-      `SELECT booking_id, guest_id, room_id, check_in_date, check_out_date, status
+      `SELECT booking_id, guest_id, room_id,
+              check_in_date, check_out_date, status,
+              booked_rate, tax_rate_percent, advance_payment,
+              COALESCE(discount_amount, 0) AS discount_amount,
+              COALESCE(late_fee_amount, 0) AS late_fee_amount
          FROM booking
         WHERE booking_id = $1`,
       [id],
@@ -243,7 +340,7 @@ async function updateStatus(req, res) {
 }
 
 // -------- LIST (with filters & pagination) --------
-// GET /bookings?from&to&room_id&guest_id&status&page&limit
+// GET /bookings?from&to&room_id&guest_id&status&page&limit&sort&dir
 async function listBookings(req, res) {
   const {
     from,
@@ -253,6 +350,8 @@ async function listBookings(req, res) {
     status,
     page = 1,
     limit = 20,
+    sort,
+    dir,
   } = req.query;
 
   const p = Math.max(Number(page) || 1, 1);
@@ -274,8 +373,14 @@ async function listBookings(req, res) {
     vals.push(Number(room_id));
     where.push(`room_id = $${vals.length}`);
   }
-  if (guest_id) {
-    vals.push(Number(guest_id));
+  // If the caller is a Customer, force-filter to their own guest_id
+  const callerRole = req.user?.role;
+  const callerGuestId = req.user?.guest_id;
+  const isCustomer = callerRole === "Customer" && Number(callerGuestId) > 0;
+
+  const effectiveGuestId = isCustomer ? Number(callerGuestId) : guest_id ? Number(guest_id) : null;
+  if (effectiveGuestId) {
+    vals.push(effectiveGuestId);
     where.push(`guest_id = $${vals.length}`);
   }
   if (status) {
@@ -285,11 +390,23 @@ async function listBookings(req, res) {
 
   const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
 
+  // Safe ORDER BY
+  const SORT_MAP = new Map([
+    ["booking_id", 'booking_id'],
+    ["check_in_date", 'check_in_date'],
+    ["check_out_date", 'check_out_date'],
+    ["status", 'status'],
+    ["guest_id", 'guest_id'],
+    ["room_id", 'room_id'],
+  ]);
+  const sortCol = SORT_MAP.get(String(sort||'').toLowerCase()) || 'check_in_date';
+  const sortDir = String(dir||'DESC').toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+
   const dataSql = `
     SELECT booking_id, guest_id, room_id, check_in_date, check_out_date, status
     FROM booking
     ${whereSql}
-    ORDER BY check_in_date DESC, booking_id DESC
+    ORDER BY ${sortCol} ${sortDir}, booking_id DESC
     LIMIT ${lim} OFFSET ${offset}
   `;
   const countSql = `SELECT COUNT(*)::int AS total FROM booking ${whereSql}`;
@@ -523,6 +640,7 @@ async function createBookingWithPayment(req, res) {
 module.exports = {
   createBooking,
   getBookingById,
+  getBookingFull,
   updateStatus,
   listBookings,
   roomAvailability,

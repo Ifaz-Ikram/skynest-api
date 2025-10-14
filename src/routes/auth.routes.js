@@ -1,24 +1,24 @@
 // src/routes/auth.routes.js
 const express = require("express");
-const { login } = require("../controllers/auth.controller");
+const { login, me, logout, register } = require("../controllers/auth.controller");
+const { requireAuth } = require("../middleware/auth");
 
-const { validate } = require("../middleware/validate"); // ✨ Zod validator
-const { loginSchema } = require("../schemas/auth.schema"); // ✨ Zod schema
+const { validate } = require("../middleware/validate");
+const { loginSchema } = require("../schemas/auth.schema");
 
 const router = express.Router();
 
-// ✅ Optional debug log — useful to see if route file is loading
-console.log("✅ auth.routes loaded");
+// POST /auth/register
+router.post("/register", register);
 
 // POST /auth/login
-router.post(
-  "/login",
-  (req, res, next) => {
-    console.log("➡️  POST /auth/login hit");
-    next();
-  },
-  validate(loginSchema), // ✨ validate body with Zod
-  login, // controller handles login logic
-);
+router.post("/login", validate(loginSchema), login);
 
-module.exports = router; // ✅ correct export
+// GET /auth/me (reads cookie or Bearer token)
+router.get("/me", requireAuth, me);
+
+// POST /auth/logout (clears cookie if present)
+router.post("/logout", logout);
+
+module.exports = router;
+

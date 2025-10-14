@@ -15,16 +15,47 @@ const router = express.Router();
 router.get(
   "/",
   requireAuth,
-  requireRole("Admin", "Manager", "Receptionist"),
-  validateRequest,
+  requireRole("Admin", "Manager", "Receptionist", "Customer"),
   (req, res, next) => require("../controllers/booking.controller").listBookings(req, res, next),
 );
 
 router.get(
-  "/:id(\\d+)",
+  "/:id/full",
   requireAuth,
-  requireRole("Admin", "Manager", "Receptionist"),
+  requireRole("Admin", "Manager", "Receptionist", "Accountant"),
+  (req, res, next) => require("../controllers/booking.controller").getBookingFull(req, res, next),
+);
+
+router.get(
+  "/:id",
+  requireAuth,
+  requireRole("Admin", "Manager", "Receptionist", "Customer"),
   (req, res, next) => require("../controllers/booking.controller").getBookingById(req, res, next),
+);
+
+// Aliases to align with prompt-style routes
+router.get(
+  "/:id/services",
+  requireAuth,
+  requireRole("Admin", "Manager", "Receptionist", "Accountant", "Customer"),
+  (req, res, next) =>
+    require("../controllers/service.controller").listServiceUsage(
+      { ...req, params: { bookingId: req.params.id } },
+      res,
+      next,
+    ),
+);
+
+router.get(
+  "/:id/payments",
+  requireAuth,
+  requireRole("Admin", "Manager", "Accountant", "Customer"),
+  (req, res, next) =>
+    require("../controllers/payment.controller").listPaymentsForBooking(
+      { ...req, params: { bookingId: req.params.id } },
+      res,
+      next,
+    ),
 );
 
 router.get(

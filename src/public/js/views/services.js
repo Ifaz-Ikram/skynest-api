@@ -23,11 +23,11 @@ const ServicesView = {
       <section class="card" style="margin-top:16px">
         <h3>Add Usage</h3>
         <form id="usageForm" class="grid cols-4">
-          <div><label>Booking ID</label><input name="booking_id" type="number" min="1" required /></div>
-          <div><label>Service</label><select name="service_id">${options}</select></div>
-          <div><label>Quantity</label><input name="quantity" type="number" min="1" value="1" required /></div>
-          <div><label>Unit Price (optional)</label><input name="unit_price" type="number" min="0" step="0.01" /></div>
-          <div><label>Used On (optional)</label><input name="used_on" type="date" /></div>
+          <div><label>Booking ID</label><input name="booking_id" type="number" min="1" required /><span class="hint error">Required, must be ≥ 1</span></div>
+          <div><label>Service</label><select name="service_id">${options}</select><span class="hint">Pick a service</span></div>
+          <div><label>Quantity</label><input name="quantity" type="number" min="1" value="1" required /><span class="hint error">Must be ≥ 1</span></div>
+          <div><label>Unit Price (optional)</label><input name="unit_price" type="number" min="0" step="0.01" /><span class="hint">Optional</span></div>
+          <div><label>Used On (optional)</label><input name="used_on" type="date" /><span class="hint">Optional</span></div>
           <div style="align-self:end"><button class="primary" type="submit">Add</button></div>
         </form>
         <div id="usageResult" style="margin-top:12px"></div>
@@ -59,6 +59,10 @@ const ServicesView = {
             <thead><tr><th>ID</th><th>Service</th><th>Used On</th><th>Qty</th><th>Unit</th><th>Total</th><th></th></tr></thead>
             <tbody>${rows || ''}</tbody>
           </table>
+          </div>
+          <div class="row" style="justify-content:flex-end;gap:8px;margin-top:8px">
+            <label class="muted">Go to</label>
+            <input id="suGoto" type="number" min="1" value="1" style="width:80px" />
           </div>
         `;
         for (const btn of panel.querySelectorAll('button[data-del]')) {

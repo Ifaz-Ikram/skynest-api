@@ -79,3 +79,37 @@ exports.serviceMonthlyTrend = async (_req, res, next) => {
     next(e);
   }
 };
+
+// GET /reports/payments-ledger?days=30
+exports.paymentsLedger = async (req, res, next) => {
+  try {
+    const days = Math.max(1, Math.min(365, Number(req.query.days || 30)));
+    const [rows] = await sequelize.query(
+      `SELECT p.payment_id, p.booking_id, p.amount, p.method, p.paid_at,
+              b.guest_id
+         FROM payment p
+         JOIN booking b ON b.booking_id = p.booking_id
+        WHERE p.paid_at >= NOW() - INTERVAL '${days} days'
+        ORDER BY p.paid_at DESC, p.payment_id DESC`
+    );
+    res.json(rows);
+  } catch (e) { next(e); }
+};
+
+// GET /reports/adjustments?days=30
+exports.adjustmentsLast = async (req, res, next) => {
+  try {
+    const days = Math.max(1, Math.min(365, Number(req.query.days || 30)));
+    const [rows] = await sequelize.query(
+      `SELECT a.adjustment_id, a.booking_id,
+              CASE WHEN a.type IN ('refund','chargeback') THEN -a.amount ELSE a.amount END AS amount,
+              a.type,
+              COALESCE(a.created_at, a.adjusted_at, a.createdon, a.created, a."timestamp", a.ts, NOW()) AS created_at
+         FROM payment_adjustment a
+        WHERE COALESCE(a.created_at, a.adjusted_at, a.createdon, a.created, a."timestamp", a.ts, NOW())
+              >= NOW() - INTERVAL '${days} days'
+        ORDER BY created_at DESC, adjustment_id DESC`
+    );
+    res.json(rows);
+  } catch (e) { next(e); }
+};

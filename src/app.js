@@ -1,4 +1,4 @@
-// src/app.js
+﻿// src/app.js
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
@@ -13,15 +13,11 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// routes
+// health
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
-// attach your existing routers (adjust paths if needed)
-app.use("/auth", require("./routes/auth.routes"));
-app.use("/bookings", require("./routes/booking.routes"));
-app.use("/services", require("./routes/service.routes"));
-app.use("/payments", require("./routes/payment.routes"));
-app.use("/reports", require("./routes/report.routes"));
+// routers - Comprehensive API routes with RBAC
+app.use("/api", require("./routes/api.routes"));
 
 // serve frontend (static SPA)
 const publicDir = path.join(__dirname, "public");
@@ -32,18 +28,14 @@ const reactBuildDir = path.join(__dirname, "..", "frontend", "dist");
 const preferReact = String(process.env.USE_REACT_BUILD || "").toLowerCase() === "true";
 if (preferReact && fs.existsSync(reactBuildDir)) {
   app.use("/app", express.static(reactBuildDir));
-  // Serve index.html only for non-asset routes under /app
   app.use("/app", (req, res, next) => {
     if (req.method !== "GET" && req.method !== "HEAD") return next();
-    // Let real files (e.g., /app/assets/*.js, *.css) pass through
     if (req.path.startsWith("/assets/") || req.path.includes(".")) return next();
-    // Only answer HTML navigation requests
     const accept = String(req.headers.accept || "");
     if (!accept.includes("text/html")) return next();
     res.sendFile(path.join(reactBuildDir, "index.html"));
   });
 } else {
-  // HTML5 history fallback for client routes under /app (static SPA)
   app.use("/app", (req, res, next) => {
     if (req.method !== "GET" && req.method !== "HEAD") return next();
     const accept = String(req.headers.accept || "");
@@ -55,13 +47,12 @@ if (preferReact && fs.existsSync(reactBuildDir)) {
 // 404
 app.use((_req, _res, next) => next(createError(404, "Route not found")));
 
-// error handler (quiet 404s and static-miss noise in dev)
+// error handler
 app.use((err, _req, res, _next) => {
   const status = err.status || err.statusCode || 500;
   const is404 = status === 404;
   const isStaticMiss = err && (err.code === "ENOENT" || err.code === "EISDIR");
   if (process.env.NODE_ENV !== "production" && !is404 && !isStaticMiss) {
-    // Only log non-404 errors in development
     console.error(err);
   }
   res.status(status).json({ error: err.message || "Internal Server Error" });

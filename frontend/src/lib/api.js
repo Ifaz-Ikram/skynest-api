@@ -35,6 +35,7 @@ export const API = (() => {
   const Payments = {
     create:(p)=>request('/payments',{method:'POST',body:JSON.stringify(p)}),
     adjust:(p)=>request('/payments/adjustment',{method:'POST',body:JSON.stringify(p)}),
+    listForBooking:(bookingId)=>request(`/payments/${bookingId}`),
   };
   const Reports = {
     occupancyByDay:()=>request('/reports/occupancy-by-day'),
@@ -42,7 +43,18 @@ export const API = (() => {
     serviceUsageDetail:(q={})=>{const qs=new URLSearchParams(q).toString(); return request('/reports/service-usage-detail'+(qs?`?${qs}`:''));},
     branchRevenueMonthly:()=>request('/reports/branch-revenue-monthly'),
     serviceMonthlyTrend:()=>request('/reports/service-monthly-trend'),
+    paymentsLedger:(days=30)=>request('/reports/payments-ledger?'+new URLSearchParams({days})),
+    adjustments:(days=30)=>request('/reports/adjustments?'+new URLSearchParams({days})),
   };
-  return { request, Auth, Bookings, Services, Payments, Reports };
+  const Admin = {
+    listUsers:()=>request('/admin/users'),
+    createUser:(p)=>request('/admin/users',{method:'POST',body:JSON.stringify(p)}),
+    updateUserRole:(id,role)=>request(`/admin/users/${id}/role`,{method:'PATCH',body:JSON.stringify({role})}),
+    updateUserPassword:(id,password)=>request(`/admin/users/${id}/password`,{method:'PATCH',body:JSON.stringify({password})}),
+    deleteUser:(id)=>request(`/admin/users/${id}`,{method:'DELETE'}),
+    createService:(p)=>request('/admin/service-catalog',{method:'POST',body:JSON.stringify(p)}),
+    updateService:(id,p)=>request(`/admin/service-catalog/${id}`,{method:'PATCH',body:JSON.stringify(p)}),
+    deleteService:(id)=>request(`/admin/service-catalog/${id}`,{method:'DELETE'}),
+  };
+  return { request, Auth, Bookings, Services, Payments, Reports, Admin };
 })();
-

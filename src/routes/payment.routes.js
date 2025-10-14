@@ -11,6 +11,19 @@ const {
 
 const router = express.Router();
 
+// -------------------- LIST PAYMENTS FOR BOOKING --------------------
+router.get(
+  "/:bookingId",
+  requireAuth,
+  requireRole("Admin", "Accountant", "Manager"),
+  (req, res, next) =>
+    require("../controllers/payment.controller").listPaymentsForBooking(
+      req,
+      res,
+      next,
+    ),
+);
+
 // -------------------- CREATE PAYMENT --------------------
 router.post(
   "/",

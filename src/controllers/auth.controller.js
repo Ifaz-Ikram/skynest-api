@@ -1,6 +1,6 @@
 // src/controllers/auth.controller.js
 const { pool } = require("../db");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 // If you already validate body with Zod in the route, this is just a safety net.
@@ -98,6 +98,21 @@ async function login(req, res) {
 
     const token = signJWT(payload);
 
+    // Set httpOnly cookie for browser clients (still return token for APIs)
+    const secure = String(process.env.NODE_ENV).toLowerCase() === "production";
+    const maxAgeMs = 1000 * 60 * 60 * 24 * 2; // ~2 days
+    try {
+      res.cookie("token", token, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure,
+        maxAge: maxAgeMs,
+        path: "/",
+      });
+    } catch {
+      // res.cookie available in Express; ignore if not
+    }
+
     // 5) Respond with token + some user profile data
     return res.json({
       token,
@@ -115,4 +130,134 @@ async function login(req, res) {
   }
 }
 
-module.exports = { login };
+function me(req, res) {
+  // requireAuth fills req.user
+  const u = req.user || null;
+  if (!u) return res.status(401).json({ error: "Unauthorized" });
+  res.json({ user: u });
+}
+
+function logout(_req, res) {
+  try {
+    res.clearCookie("token", { path: "/" });
+  } catch {
+    // Ignore cookie clear errors
+  }
+  res.json({ ok: true });
+}
+
+async function register(req, res) {
+  try {
+    console.log('📝 Registration request received:', req.body);
+    
+    const {
+      username,
+      password,
+      full_name,
+      email,
+      phone,
+      address,
+    } = req.body;
+
+    // Validation
+    if (!username || !password || !full_name || !email || !phone) {
+      console.log('❌ Missing required fields');
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    if (password.length < 6) {
+      console.log('❌ Password too short');
+      return res.status(400).json({ error: "Password must be at least 6 characters" });
+    }
+
+    console.log('✅ Validation passed, checking username...');
+    
+    // Check if username already exists
+    const existingUser = await pool.query(
+      "SELECT user_id FROM user_account WHERE username = $1",
+      [username]
+    );
+
+    if (existingUser.rows.length > 0) {
+      console.log('❌ Username already exists');
+      return res.status(400).json({ error: "Username already exists" });
+    }
+
+    console.log('✅ Username available, checking email...');
+    
+    // Check if email already exists
+    const existingEmail = await pool.query(
+      "SELECT guest_id FROM guest WHERE email = $1",
+      [email]
+    );
+
+    if (existingEmail.rows.length > 0) {
+      console.log('❌ Email already registered');
+      return res.status(400).json({ error: "Email already registered" });
+    }
+
+    console.log('✅ Email available, hashing password...');
+    
+    // Hash password
+    const password_hash = await bcrypt.hash(password, 10);
+
+    console.log('✅ Password hashed, starting transaction...');
+    
+    // Start transaction
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      console.log('✅ Transaction started, creating user account...');
+      
+      // 1. Create user_account with role 'Customer'
+      const userResult = await client.query(
+        `INSERT INTO user_account (username, password_hash, role)
+         VALUES ($1, $2, $3)
+         RETURNING user_id`,
+        [username, password_hash, "Customer"]
+      );
+      const user_id = userResult.rows[0].user_id;
+
+      console.log('✅ User account created, creating guest record...');
+      
+      // 2. Create guest record
+      const guestResult = await client.query(
+        `INSERT INTO guest (full_name, email, phone, address)
+         VALUES ($1, $2, $3, $4)
+         RETURNING guest_id`,
+        [full_name, email, phone, address || null]
+      );
+      const guest_id = guestResult.rows[0].guest_id;
+
+      console.log('✅ Guest record created, creating customer record...');
+      
+      // 3. Create customer record linking user and guest
+      await client.query(
+        `INSERT INTO customer (user_id, guest_id)
+         VALUES ($1, $2)`,
+        [user_id, guest_id]
+      );
+
+      await client.query("COMMIT");
+      
+      console.log('✅ Registration successful!');
+
+      return res.status(201).json({
+        message: "Account created successfully",
+        username: username,
+      });
+    } catch (err) {
+      await client.query("ROLLBACK");
+      console.error('❌ Transaction error:', err);
+      throw err;
+    } finally {
+      client.release();
+    }
+  } catch (err) {
+    console.error("❌ Registration error:", err);
+    return res.status(500).json({ error: "Failed to create account" });
+  }
+}
+
+module.exports = { login, me, logout, register };
