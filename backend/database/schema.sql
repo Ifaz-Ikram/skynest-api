@@ -657,7 +657,6 @@ ALTER SEQUENCE public.employee_employee_id_seq OWNED BY public.employee.employee
 
 CREATE TABLE public.guest (
     guest_id bigint NOT NULL,
-    nic character varying(30),
     full_name character varying(120) NOT NULL,
     email character varying(150),
     phone character varying(30),

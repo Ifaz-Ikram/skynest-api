@@ -70,13 +70,13 @@ const GuestsPage = () => {
                   Phone
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  NIC
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   ID Type
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   ID Number
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Nationality
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Total Bookings
@@ -102,13 +102,13 @@ const GuestsPage = () => {
                     {guest.phone || 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {guest.nic || 'N/A'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {guest.id_proof_type || 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {guest.id_proof_number || 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    {guest.nationality || 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {guest.total_bookings || 0}
@@ -117,7 +117,7 @@ const GuestsPage = () => {
               ))}
               {guests.length === 0 && (
                 <tr>
-                  <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
                     No guests found. Add your first guest to get started.
                   </td>
                 </tr>
@@ -148,7 +148,6 @@ const CreateGuestModal = ({ onClose, onSuccess }) => {
     email: '',
     phone: '',
     address: '',
-    nic: '',
     nationality: '',
     gender: '',
     date_of_birth: '',
@@ -236,16 +235,34 @@ const CreateGuestModal = ({ onClose, onSuccess }) => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                NIC Number
+                ID Proof Type
+              </label>
+              <select
+                value={formData.id_proof_type}
+                onChange={(e) => setFormData({ ...formData, id_proof_type: e.target.value })}
+                className="input-field"
+              >
+                <option value="">Select ID type</option>
+                <option value="NIC">NIC (National Identity Card)</option>
+                <option value="Passport">Passport</option>
+                <option value="Driving License">Driving License</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                ID Proof Number
               </label>
               <input
                 type="text"
-                value={formData.nic}
-                onChange={(e) => setFormData({ ...formData, nic: e.target.value })}
+                value={formData.id_proof_number}
+                onChange={(e) => setFormData({ ...formData, id_proof_number: e.target.value })}
                 className="input-field"
-                placeholder="National ID Card"
+                placeholder="Enter ID number"
               />
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Nationality
@@ -255,11 +272,9 @@ const CreateGuestModal = ({ onClose, onSuccess }) => {
                 value={formData.nationality}
                 onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
                 className="input-field"
+                placeholder="e.g., Sri Lankan, American"
               />
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Gender
@@ -275,6 +290,9 @@ const CreateGuestModal = ({ onClose, onSuccess }) => {
                 <option value="Other">Other</option>
               </select>
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Date of Birth
@@ -284,38 +302,6 @@ const CreateGuestModal = ({ onClose, onSuccess }) => {
                 value={formData.date_of_birth}
                 onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
                 className="input-field"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                ID Proof Type
-              </label>
-              <select
-                value={formData.id_proof_type}
-                onChange={(e) => setFormData({ ...formData, id_proof_type: e.target.value })}
-                className="input-field"
-              >
-                <option value="">Select ID type</option>
-                <option value="Passport">Passport</option>
-                <option value="Driver License">Driver License</option>
-                <option value="National ID">National ID</option>
-                <option value="Visa">Visa</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                ID Proof Number
-              </label>
-              <input
-                type="text"
-                value={formData.id_proof_number}
-                onChange={(e) => setFormData({ ...formData, id_proof_number: e.target.value })}
-                className="input-field"
-                placeholder="Enter ID number"
               />
             </div>
           </div>
