@@ -110,6 +110,4 @@ const App = () => {
   );
 };
 
-// React 18 render
-const root = createRoot(document.getElementById('root'));
-root.render(<App />);
+export default App;
