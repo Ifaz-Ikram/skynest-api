@@ -1,6 +1,0 @@
-{
-  "watch": ["server.js", "src", "models", "seeds"],
-  "ext": "js,json,env",
-  "ignore": ["node_modules"],
-  "exec": "node server.js"
-}
