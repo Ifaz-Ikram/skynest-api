@@ -1,7 +1,7 @@
 ﻿import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
-import './styles.css'
+import './index.css'
 
 // ============================================================================
 // ROOT - Simplified to just render the App component
