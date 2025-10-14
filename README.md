@@ -1,45 +1,128 @@
-# skynest-api
+# 🏨 SkyNest Hotel Management System
+
+A full-stack hotel reservation and guest services management system with role-based access control.
 
 [![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
 
-Replace `OWNER/REPO` above after pushing to GitHub.
+## 📁 Project Structure
 
-## Database Docs
+```
+skynest-api/
+├── backend/              # Node.js/Express API
+│   ├── src/             # Application source code
+│   ├── database/        # Schema & seeds
+│   ├── scripts/         # Utility scripts
+│   ├── tests/           # API tests
+│   └── README.md        # Backend documentation
+├── frontend/            # React + Vite UI
+│   ├── src/            # React components
+│   └── README.md       # Frontend documentation
+├── docs/               # Project documentation
+│   ├── setup/         # Setup guides
+│   ├── features/      # Feature documentation
+│   └── fixes/         # Bug fix documentation
+└── README.md          # This file
+```
 
-For the complete PostgreSQL schema, triggers, functions, and reporting views used by this API, see `docs/README_DB.md`.
+## 🚀 Quick Start
 
-## Scripts
+### Prerequisites
+- Node.js 18+ 
+- PostgreSQL 14+
+- npm or yarn
 
-- `npm run dev` — start with Nodemon
-- `npm run dev:react` — start API using React build toggle
-- `npm start` — start server
-- `npm run start:react` — start server and prefer React build under `/app`
-- `npm test` — run Jest tests
-- `npm run db:seed` — seed admin
-- `npm run db:seed:sample` — seed sample data
-- `npm run lint` — lint code
-- `npm run build:frontend` — build React app in `frontend/`
-- `npm run build-and-start` — build React and serve it under `/app`
-- `npm run setup:build:start` — seed DB, build React, then start API
+### Development Mode
+**Terminal 1 - Backend:**
+```powershell
+cd backend
+npm install
+npm run dev
+```
+Server: http://localhost:4000
 
-## Env
+**Terminal 2 - Frontend:**
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+Frontend: http://localhost:5173
 
-Copy `.env` from local or create one with Postgres credentials and `JWT_SECRET`.
+### Database Setup
+```bash
+# Create database
+psql -U postgres
+CREATE DATABASE skynest;
+\q
 
-## CI
+# Run schema
+cd backend
+psql -U postgres -d skynest -f database/schema.sql
 
-GitHub Actions workflow in `.github/workflows/ci.yml` provisions Postgres, applies schema, seeds, and runs tests on Node 20 and 22. It also builds the React app and uploads the artifact.
+# Seed demo data
+npm run db:seed:demo
+```
 
-## Frontend
+### Default Login
+- Username: `admin`
+- Password: `admin123`
 
-React app is under `frontend/` (Vite + React Router).
+## 🎯 Features
 
-- Dev:
-  - Terminal 1: `$env:PORT=4000; npm run dev`
-  - Terminal 2: `cd frontend && npm run dev`
-  - Open the printed URL (e.g. `http://localhost:5173/app/`)
-- Prod-like via API:
-  - `npm run build-and-start`
-  - Open `http://localhost:4000/app`
+- ✅ **User Authentication** - JWT-based login/logout
+- ✅ **Role-Based Access Control** - Admin, Manager, Receptionist, Accountant, Customer
+- ✅ **Room Booking Management** - Create, view, update bookings
+- ✅ **Service Management** - Laundry, room service, spa services
+- ✅ **Payment Processing** - Track and manage payments
+- ✅ **Invoice Generation** - Automated billing
+- ✅ **Pre-booking System** - Pre-booking codes for customers
+- ✅ **Customer Registration** - Public customer signup
+- ✅ **Audit Logging** - Track all system activities
 
-The React dev server bundles its own CSS (no proxy needed).
+## 📊 Tech Stack
+
+**Backend**: Node.js, Express 5, PostgreSQL, Sequelize, JWT  
+**Frontend**: React 18, Vite, Tailwind CSS, date-fns
+
+## 📚 Documentation
+
+- **Backend API**: [backend/README.md](backend/README.md)
+- **Frontend**: [frontend/README.md](frontend/README.md)
+- **Database Schema**: [docs/README_DB.md](docs/README_DB.md)
+- **Setup Guides**: [docs/setup/](docs/setup/)
+- **Features**: [docs/features/](docs/features/)
+
+## 🛠️ Development Commands
+
+**Backend:**
+```bash
+cd backend
+npm run dev          # Start dev server
+npm test             # Run tests
+npm run db:reset     # Reset database
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm run dev          # Start dev server
+npm run build        # Build for production
+```
+
+## 🔐 User Roles
+
+| Role | Permissions |
+|------|-------------|
+| **Admin** | Full system access |
+| **Manager** | Create Receptionist/Accountant, reports |
+| **Receptionist** | Bookings, check-ins, customers |
+| **Accountant** | Payments, invoices, financials |
+| **Customer** | View/create own bookings |
+
+## 📝 License
+
+ISC
+
+---
+
+**Built with ❤️ for efficient hotel management**
