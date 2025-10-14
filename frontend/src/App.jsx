@@ -13,11 +13,11 @@ import { ServicesPage } from './components/services';
 import { PaymentsPage } from './components/payments';
 import { ReportsPage } from './components/reports';
 import { UsersPage } from './components/users';
+import { GuestsPage } from './components/guests';
 
 // Temporary placeholders for components not yet extracted
 // TODO: Extract these in future phases
 const PreBookingsPage = () => <div className="card"><p className="text-gray-600">Pre-Bookings Page (To be extracted)</p></div>;
-const GuestsPage = () => <div className="card"><p className="text-gray-600">Guests Page (To be extracted)</p></div>;
 const ServiceUsagePage = () => <div className="card"><p className="text-gray-600">Service Usage Page (To be extracted)</p></div>;
 const InvoicesPage = () => <div className="card"><p className="text-gray-600">Invoices Page (To be extracted)</p></div>;
 const BranchesPage = () => <div className="card"><p className="text-gray-600">Branches Page (To be extracted)</p></div>;
