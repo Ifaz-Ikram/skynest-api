@@ -432,7 +432,7 @@ router.get('/guests', requireAuth, requireStaff, async (req, res) => {
   }
 });
 
-router.post('/guests', requireAuth, requireRole('Receptionist', 'Manager'), async (req, res) => {
+router.post('/guests', requireAuth, requireRole('Admin', 'Receptionist', 'Manager'), async (req, res) => {
   try {
     const { full_name, email, phone, address, id_proof_type, id_proof_number } = req.body;
     const { pool } = require('../db');
