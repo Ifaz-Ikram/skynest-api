@@ -16,7 +16,17 @@ const LoginPage = ({ onLogin }) => {
     setLoading(true);
 
     try {
-      await api.login(username, password);
+      const data = await api.login(username, password);
+      
+      // Store token and user data in localStorage
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+      
+      // Call onLogin to update App state
       onLogin();
     } catch (err) {
       setError(err.message);
