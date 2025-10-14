@@ -664,7 +664,9 @@ CREATE TABLE public.guest (
     gender character varying(20),
     date_of_birth date,
     address text,
-    nationality character varying(80)
+    nationality character varying(80),
+    id_proof_type character varying(50),
+    id_proof_number character varying(50)
 );
 
 

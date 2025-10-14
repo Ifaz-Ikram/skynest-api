@@ -421,10 +421,12 @@ router.get('/guests', requireAuth, requireStaff, async (req, res) => {
         g.nationality,
         g.gender,
         g.date_of_birth,
+        g.id_proof_type,
+        g.id_proof_number,
         COUNT(DISTINCT b.booking_id) as total_bookings
       FROM guest g
       LEFT JOIN booking b ON b.guest_id = g.guest_id
-      GROUP BY g.guest_id, g.full_name, g.email, g.phone, g.address, g.nic, g.nationality, g.gender, g.date_of_birth
+      GROUP BY g.guest_id, g.full_name, g.email, g.phone, g.address, g.nic, g.nationality, g.gender, g.date_of_birth, g.id_proof_type, g.id_proof_number
       ORDER BY g.full_name
     `);
     res.json(result.rows);
@@ -436,14 +438,14 @@ router.get('/guests', requireAuth, requireStaff, async (req, res) => {
 
 router.post('/guests', requireAuth, requireRole('Admin', 'Receptionist', 'Manager'), async (req, res) => {
   try {
-    const { full_name, email, phone, address, nic, nationality, gender, date_of_birth } = req.body;
+    const { full_name, email, phone, address, nic, nationality, gender, date_of_birth, id_proof_type, id_proof_number } = req.body;
     const { pool } = require('../db');
     
     const result = await pool.query(`
-      INSERT INTO guest (full_name, email, phone, address, nic, nationality, gender, date_of_birth)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO guest (full_name, email, phone, address, nic, nationality, gender, date_of_birth, id_proof_type, id_proof_number)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING *
-    `, [full_name, email, phone, address, nic || null, nationality || null, gender || null, date_of_birth || null]);
+    `, [full_name, email, phone, address, nic || null, nationality || null, gender || null, date_of_birth || null, id_proof_type || null, id_proof_number || null]);
     
     res.status(201).json(result.rows[0]);
   } catch (err) {
