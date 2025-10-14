@@ -70,10 +70,10 @@ const GuestsPage = () => {
                   Phone
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ID Type
+                  NIC
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ID Number
+                  Nationality
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Total Bookings
@@ -99,10 +99,10 @@ const GuestsPage = () => {
                     {guest.phone || 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {guest.id_proof_type || 'N/A'}
+                    {guest.nic || 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {guest.id_proof_number || 'N/A'}
+                    {guest.nationality || 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {guest.total_bookings || 0}
@@ -142,8 +142,10 @@ const CreateGuestModal = ({ onClose, onSuccess }) => {
     email: '',
     phone: '',
     address: '',
-    id_proof_type: 'Passport',
-    id_proof_number: '',
+    nic: '',
+    nationality: '',
+    gender: '',
+    date_of_birth: '',
   });
   const [loading, setLoading] = useState(false);
 
@@ -226,30 +228,54 @@ const CreateGuestModal = ({ onClose, onSuccess }) => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                ID Proof Type *
+                NIC Number
+              </label>
+              <input
+                type="text"
+                value={formData.nic}
+                onChange={(e) => setFormData({ ...formData, nic: e.target.value })}
+                className="input-field"
+                placeholder="National ID Card"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nationality
+              </label>
+              <input
+                type="text"
+                value={formData.nationality}
+                onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
+                className="input-field"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Gender
               </label>
               <select
-                value={formData.id_proof_type}
-                onChange={(e) => setFormData({ ...formData, id_proof_type: e.target.value })}
+                value={formData.gender}
+                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                 className="input-field"
-                required
               >
-                <option value="Passport">Passport</option>
-                <option value="Driver License">Driver License</option>
-                <option value="National ID">National ID</option>
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
                 <option value="Other">Other</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                ID Number *
+                Date of Birth
               </label>
               <input
-                type="text"
-                value={formData.id_proof_number}
-                onChange={(e) => setFormData({ ...formData, id_proof_number: e.target.value })}
+                type="date"
+                value={formData.date_of_birth}
+                onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
                 className="input-field"
-                required
               />
             </div>
           </div>
