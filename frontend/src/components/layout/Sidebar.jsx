@@ -93,7 +93,7 @@ export const Sidebar = ({ user, currentPage, onNavigate, isOpen }) => {
   }
 
   return (
-    <aside className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-50 to-white shadow-lg transition-all duration-300 z-40 ${
+    <aside className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-surface-secondary/95 dark:bg-slate-900/95 backdrop-blur-sm border-r border-border dark:border-slate-800 shadow-lg transition-all duration-300 z-40 ${
       isOpen ? 'w-64' : 'w-0 -translate-x-full'
     }`}>
       <nav className="h-full overflow-y-auto py-4">
@@ -119,7 +119,7 @@ export const Sidebar = ({ user, currentPage, onNavigate, isOpen }) => {
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group ${
                       isActive 
                         ? 'bg-luxury-gold text-white shadow-md scale-[1.02]' 
-                        : 'text-gray-700 hover:bg-white hover:shadow-sm'
+                        : 'text-text-secondary dark:text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-800 hover:shadow-sm'
                     }`}
                   >
                     <Icon className={`w-5 h-5 transition-transform ${

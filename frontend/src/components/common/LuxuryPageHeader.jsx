@@ -56,8 +56,8 @@ const LuxuryPageHeader = ({
                   className={
                     a.className ||
                     (a.variant === 'secondary'
-                      ? 'px-4 py-2 rounded-xl bg-white text-gray-800 hover:bg-gray-100 border border-white/40 shadow-sm flex items-center gap-2'
-                      : 'px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/30 shadow-sm flex items-center gap-2')
+                      ? 'px-4 py-2 rounded-xl bg-surface-secondary dark:bg-slate-800 text-text-primary dark:text-slate-100 border border-border dark:border-slate-700 hover:bg-surface-tertiary dark:hover:bg-slate-700/40 shadow-sm flex items-center gap-2 transition-colors'
+                      : 'px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-white/10 dark:hover:bg-white/20 border border-white/30 shadow-sm flex items-center gap-2 transition-colors')
                   }
                 >
                   {a.icon ? <a.icon className="w-4 h-4" /> : null}

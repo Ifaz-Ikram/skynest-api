@@ -231,7 +231,7 @@ const PreBookingsPage = () => {
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                         preBooking.status === 'Confirmed' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
                         preBooking.status === 'Pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
-                        'bg-gray-100 text-gray-700'
+                        'bg-gray-100 text-gray-700 dark:bg-slate-700/40 dark:text-slate-200'
                       }`}>
                         {preBooking.status}
                       </span>
@@ -722,7 +722,7 @@ const CreatePreBookingModal = ({ onClose, onSuccess }) => {
 
               {/* Room Availability Check */}
               {formData.room_type_id && formData.check_in_date && formData.check_out_date && selectedBranch && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="bg-blue-50 dark:bg-blue-500/15 border border-blue-200 dark:border-blue-500/30 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="text-sm font-medium text-blue-900">Room Availability</h4>
                     <button
@@ -776,7 +776,7 @@ const CreatePreBookingModal = ({ onClose, onSuccess }) => {
                   )}
                   
                   {/* Helpful message */}
-                  <div className="mt-3 p-2 bg-blue-50 rounded text-xs text-blue-700">
+                  <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-500/15 rounded text-xs text-blue-700 dark:text-blue-200">
                     💡 <strong>Tip:</strong> The system will automatically check availability before creating your pre-booking. If no rooms are available, the creation will be blocked.
                   </div>
                 </div>
@@ -1141,7 +1141,7 @@ const ConvertPreBookingModal = ({ preBooking, onClose, onSuccess }) => {
             <div className="text-center py-8 text-text-tertiary">Loading...</div>
           ) : (
             <>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <div className="bg-blue-50 dark:bg-blue-500/15 border border-blue-200 dark:border-blue-500/30 rounded-lg p-4 mb-4">
                 <p className="text-sm text-blue-800">
                   <strong>Note:</strong> Select the guest who will actually stay in the hotel. 
                   This can be the same as the customer who booked, or a different person.
@@ -1189,7 +1189,7 @@ const ConvertPreBookingModal = ({ preBooking, onClose, onSuccess }) => {
               {isGroupBooking ? (
                 // Group Booking Form
                 <>
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                  <div className="bg-green-50 dark:bg-emerald-500/15 border border-green-200 dark:border-emerald-500/30 rounded-lg p-4 mb-4">
                     <p className="text-sm text-green-800">
                       <strong>Group Booking:</strong> This pre-booking requires {preBooking.number_of_rooms} rooms of type {preBooking.room_type_name}.
                     </p>

@@ -86,7 +86,7 @@ export const ReportsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-surface-primary dark:bg-slate-950 p-6 transition-colors">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Hero Header */}
         <div className="bg-gradient-to-r from-luxury-navy to-indigo-900 rounded-2xl shadow-2xl p-8 text-white relative overflow-hidden">
@@ -109,7 +109,7 @@ export const ReportsPage = () => {
             {reportData && (
               <button 
                 onClick={exportReportToCSV} 
-                className="bg-white text-luxury-navy px-6 py-3 rounded-xl font-semibold hover:bg-surface-tertiary transition-all flex items-center gap-2 shadow-lg"
+                className="bg-surface-secondary dark:bg-slate-800 text-luxury-navy dark:text-slate-100 px-6 py-3 rounded-xl font-semibold hover:bg-surface-tertiary dark:hover:bg-slate-700/40 transition-all flex items-center gap-2 shadow-lg border border-border dark:border-slate-700"
               >
                 <Download className="w-5 h-5" />
                 Export CSV
@@ -262,9 +262,9 @@ export const ReportsPage = () => {
                 <p className="text-text-tertiary text-sm mt-2">Try adjusting your date range or filters</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-surface-tertiary border-b-2 border-border">
+              <div className="overflow-x-auto border border-border dark:border-slate-700 rounded-xl bg-surface-secondary dark:bg-slate-800">
+                <table className="min-w-full">
+                  <thead className="bg-surface-tertiary dark:bg-slate-800/60 border-b-2 border-border dark:border-slate-700">
                     <tr>
                       {Object.keys(reportData[0]).map((key) => (
                         <th key={key} className="px-6 py-4 text-left text-xs font-bold text-text-secondary uppercase tracking-wider">
@@ -273,7 +273,7 @@ export const ReportsPage = () => {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="bg-surface-secondary dark:bg-slate-800 divide-y divide-border dark:divide-slate-700">
                     {reportData.map((row, idx) => (
                       <tr key={idx} className="hover:bg-surface-tertiary transition-colors">
                         {Object.values(row).map((value, colIdx) => (
@@ -325,13 +325,13 @@ function OpsCard({ title, count, icon: Icon, data, onView, color }) {
   };
 
   const bgColors = {
-    green: 'bg-green-50',
-    orange: 'bg-orange-50',
-    blue: 'bg-blue-50'
+    green: 'bg-green-50 dark:bg-green-500/15',
+    orange: 'bg-orange-50 dark:bg-orange-500/15',
+    blue: 'bg-blue-50 dark:bg-blue-500/15'
   };
 
   return (
-    <div className={`${bgColors[color]} rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border-2 border-white group hover:scale-105 transform`}>
+    <div className={`${bgColors[color]} rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-border dark:border-slate-700 group hover:scale-105 transform`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
           <div className={`bg-gradient-to-br ${colorClasses[color]} p-4 rounded-xl shadow-md group-hover:scale-110 transition-transform`}>
@@ -345,7 +345,7 @@ function OpsCard({ title, count, icon: Icon, data, onView, color }) {
       </div>
       <div className="flex gap-2">
         <button 
-          className="flex-1 bg-white text-text-secondary px-4 py-2 rounded-xl font-medium hover:bg-surface-tertiary transition-all shadow-sm border border-border"
+          className="flex-1 bg-surface-secondary dark:bg-slate-800 text-text-secondary dark:text-slate-200 px-4 py-2 rounded-xl font-medium hover:bg-surface-tertiary dark:hover:bg-slate-700/40 transition-all shadow-sm border border-border dark:border-slate-700"
           onClick={exportCsv}
         >
           <Download className="w-4 h-4 inline mr-1" />

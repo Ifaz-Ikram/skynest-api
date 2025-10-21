@@ -495,7 +495,7 @@ const ReportingDashboard = () => {
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
               revenueTimeFilter === 'daily' 
                 ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' 
-                : 'text-gray-600 hover:bg-gray-100'
+                : 'text-text-secondary dark:text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-800'
             }`}
           >
             Daily
@@ -505,7 +505,7 @@ const ReportingDashboard = () => {
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
               revenueTimeFilter === 'weekly' 
                 ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' 
-                : 'text-gray-600 hover:bg-gray-100'
+                : 'text-text-secondary dark:text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-800'
             }`}
           >
             Weekly
@@ -515,7 +515,7 @@ const ReportingDashboard = () => {
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
               revenueTimeFilter === 'monthly' 
                 ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' 
-                : 'text-gray-600 hover:bg-gray-100'
+                : 'text-text-secondary dark:text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-800'
             }`}
           >
             Monthly
@@ -591,7 +591,7 @@ const ReportingDashboard = () => {
           </div>
           <h3 className="text-xl font-bold text-text-primary">Occupancy Rate</h3>
         </div>
-        <div className="px-3 py-1 bg-purple-50 text-purple-700 text-sm font-medium rounded-lg">
+        <div className="px-3 py-1 bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-200 text-sm font-medium rounded-lg">
           By Room Type
         </div>
       </div>
@@ -651,21 +651,21 @@ const ReportingDashboard = () => {
         <h3 className="text-xl font-bold text-text-primary">Guest Analytics</h3>
       </div>
       <div className="space-y-4">
-        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:shadow-md transition-shadow">
+        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-700 rounded-lg hover:shadow-md transition-shadow border border-border/60 dark:border-slate-700">
           <div className="flex items-center space-x-3">
             <Users className="w-5 h-5 text-text-tertiary" />
             <span className="text-text-secondary font-medium">Total Guests</span>
           </div>
           <span className="text-2xl font-bold text-text-primary">{reportData?.guests?.total || 0}</span>
         </div>
-        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:shadow-md transition-shadow">
+        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-700 rounded-lg hover:shadow-md transition-shadow border border-border/60 dark:border-slate-700">
           <div className="flex items-center space-x-3">
             <Clock className="w-5 h-5 text-text-tertiary" />
             <span className="text-text-secondary font-medium">Avg Stay Length</span>
           </div>
           <span className="text-2xl font-bold text-text-primary">{reportData?.guests?.avg_stay || 0} <span className="text-sm text-text-tertiary">nights</span></span>
         </div>
-        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:shadow-md transition-shadow">
+        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-700 rounded-lg hover:shadow-md transition-shadow border border-border/60 dark:border-slate-700">
           <div className="flex items-center space-x-3">
             <Calendar className="w-5 h-5 text-text-tertiary" />
             <span className="text-text-secondary font-medium">Total Bookings</span>
@@ -777,7 +777,7 @@ const ReportingDashboard = () => {
   // Show branch selector if no branch is selected
   if (showBranchSelector) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+      <div className="min-h-screen bg-surface-primary dark:bg-slate-950 p-6 transition-colors">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="luxury-gradient rounded-2xl p-8 text-white shadow-2xl">
             <div className="flex items-center justify-between mb-6">
@@ -804,7 +804,7 @@ const ReportingDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+    <div className="min-h-screen bg-surface-primary dark:bg-slate-950 p-6 transition-colors">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="luxury-gradient rounded-2xl p-8 text-white shadow-2xl">
@@ -869,7 +869,7 @@ const ReportingDashboard = () => {
         </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="bg-red-50 dark:bg-red-500/15 border border-red-200 dark:border-red-500/30 rounded-lg p-4">
           <div className="flex items-center">
             <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
             <span className="text-red-700">{error}</span>
@@ -933,7 +933,7 @@ const ReportingDashboard = () => {
 
       {/* Room Type Filter */}
       {showFilters && (
-        <div className="card shadow-lg bg-blue-50/50">
+        <div className="card shadow-lg bg-surface-secondary dark:bg-slate-800 border border-border dark:border-slate-700 ring-1 ring-blue-500/20">
           <h3 className="text-lg font-bold text-text-primary mb-4 flex items-center">
             <Filter className="w-5 h-5 mr-2 text-blue-600" />
             Advanced Filters
@@ -996,7 +996,3 @@ const ReportingDashboard = () => {
 };
 
 export default ReportingDashboard;
-
-
-
-

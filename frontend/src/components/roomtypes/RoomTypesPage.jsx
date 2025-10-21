@@ -61,7 +61,7 @@ const RoomTypesPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-surface-tertiary p-6">
+    <div className="min-h-screen bg-surface-primary dark:bg-slate-950 p-6 transition-colors">
       <div className="max-w-7xl mx-auto space-y-6">
         <LuxuryPageHeader
           title="Room Types"
@@ -80,7 +80,7 @@ const RoomTypesPage = () => {
           }]}
         />
 
-        <div className="bg-surface-secondary rounded-xl shadow-md border border-border overflow-hidden">
+        <div className="bg-surface-secondary dark:bg-slate-800 rounded-xl shadow-md border border-border dark:border-slate-700 overflow-hidden">
         {roomTypes.length === 0 ? (
           <div className="text-center py-12">
             <Bed className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -90,9 +90,9 @@ const RoomTypesPage = () => {
             </button>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-surface-tertiary">
+          <div className="overflow-x-auto border border-border dark:border-slate-700">
+            <table className="min-w-full divide-y divide-border dark:divide-slate-700">
+              <thead className="bg-surface-tertiary dark:bg-slate-800/60">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
                     Room Type
@@ -111,9 +111,9 @@ const RoomTypesPage = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-surface-secondary dark:bg-slate-800 divide-y divide-border dark:divide-slate-700">
                 {roomTypes.map((type) => (
-                  <tr key={type.room_type_id} className="hover:bg-surface-tertiary">
+                  <tr key={type.room_type_id} className="hover:bg-surface-tertiary dark:hover:bg-slate-700/40 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
                         <div className="p-2 bg-luxury-gold/10 rounded-lg">
@@ -322,8 +322,8 @@ const RateQuoteModal = ({ roomType, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-surface-secondary rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-border flex justify-between items-center sticky top-0 bg-white">
+      <div className="bg-surface-secondary dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-border flex justify-between items-center sticky top-0 bg-surface-secondary dark:bg-slate-800">
           <h2 className="text-2xl font-display font-bold text-text-primary">
             {isEdit ? 'Edit Room Type' : 'Add New Room Type'}
           </h2>

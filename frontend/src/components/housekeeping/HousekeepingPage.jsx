@@ -23,46 +23,46 @@ import { LuxuryPageHeader, LoadingSpinner, SearchableDropdown } from '../common'
 
 const statusColors = {
   Arrival: { 
-    bg: 'bg-blue-50', 
-    text: 'text-blue-700', 
-    border: 'border-blue-200',
-    icon: 'text-blue-600',
-    badge: 'bg-blue-100 text-blue-800'
+    bg: 'bg-blue-50 dark:bg-blue-500/15', 
+    text: 'text-blue-700 dark:text-blue-200', 
+    border: 'border-blue-200 dark:border-blue-500/30',
+    icon: 'text-blue-600 dark:text-blue-300',
+    badge: 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-200'
   },
   Stayover: { 
-    bg: 'bg-emerald-50', 
-    text: 'text-emerald-700', 
-    border: 'border-emerald-200',
-    icon: 'text-emerald-600',
-    badge: 'bg-emerald-100 text-emerald-800'
+    bg: 'bg-emerald-50 dark:bg-emerald-500/15', 
+    text: 'text-emerald-700 dark:text-emerald-200', 
+    border: 'border-emerald-200 dark:border-emerald-500/30',
+    icon: 'text-emerald-600 dark:text-emerald-300',
+    badge: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-200'
   },
   'Due Out': { 
-    bg: 'bg-amber-50', 
-    text: 'text-amber-700', 
-    border: 'border-amber-200',
-    icon: 'text-amber-600',
-    badge: 'bg-amber-100 text-amber-800'
+    bg: 'bg-amber-50 dark:bg-amber-500/15', 
+    text: 'text-amber-700 dark:text-amber-200', 
+    border: 'border-amber-200 dark:border-amber-500/30',
+    icon: 'text-amber-600 dark:text-amber-300',
+    badge: 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-200'
   },
   Dirty: { 
-    bg: 'bg-rose-50', 
-    text: 'text-rose-700', 
-    border: 'border-rose-200',
-    icon: 'text-rose-600',
-    badge: 'bg-rose-100 text-rose-800'
+    bg: 'bg-rose-50 dark:bg-rose-500/15', 
+    text: 'text-rose-700 dark:text-rose-200', 
+    border: 'border-rose-200 dark:border-rose-500/30',
+    icon: 'text-rose-600 dark:text-rose-300',
+    badge: 'bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-200'
   },
   Available: { 
     bg: 'bg-surface-tertiary dark:bg-slate-700/30', 
     text: 'text-gray-700', 
     border: 'border-border',
     icon: 'text-gray-600',
-    badge: 'bg-gray-100 text-gray-800'
+    badge: 'bg-gray-100 text-gray-800 dark:bg-slate-700/40 dark:text-slate-200'
   },
   OOO: { 
-    bg: 'bg-purple-50', 
-    text: 'text-purple-700', 
-    border: 'border-purple-200',
-    icon: 'text-purple-600',
-    badge: 'bg-purple-100 text-purple-800'
+    bg: 'bg-purple-50 dark:bg-purple-500/15', 
+    text: 'text-purple-700 dark:text-purple-200', 
+    border: 'border-purple-200 dark:border-purple-500/30',
+    icon: 'text-purple-600 dark:text-purple-300',
+    badge: 'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-200'
   },
 };
 
@@ -260,7 +260,7 @@ export default function HousekeepingPage() {
     return (
       <div className="min-h-screen bg-surface-tertiary flex items-center justify-center">
         <div className="max-w-md mx-auto text-center">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <div className="bg-red-50 dark:bg-red-500/15 border border-red-200 dark:border-red-500/30 rounded-lg p-6">
             <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-red-900 mb-2">Error Loading Board</h2>
             <p className="text-red-700 mb-4">{error}</p>
@@ -277,7 +277,7 @@ export default function HousekeepingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-tertiary p-6">
+    <div className="min-h-screen bg-surface-primary dark:bg-slate-950 p-6 transition-colors">
       <div className="max-w-7xl mx-auto space-y-6">
         <LuxuryPageHeader
           title="Housekeeping Board"
@@ -332,7 +332,7 @@ export default function HousekeepingPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <button
             onClick={() => setFilterStatus('Available')}
-            className={`bg-white rounded-xl shadow-md p-6 border hover:shadow-lg transition-all duration-200 ${
+            className={`bg-surface-secondary dark:bg-slate-800 rounded-xl shadow-md p-6 border border-border dark:border-green-800/40 hover:shadow-lg transition-all duration-200 ${
               filterStatus === 'Available' 
                 ? 'border-green-400 ring-2 ring-green-200 shadow-lg' 
                 : 'border-green-200 hover:border-green-300'
@@ -343,15 +343,15 @@ export default function HousekeepingPage() {
                 <p className="text-sm font-medium text-green-700">Available</p>
                 <p className="text-2xl font-bold text-green-700">{statusCounts.Available}</p>
               </div>
-              <div className="p-2 rounded-lg bg-green-100">
-                <Bed className="w-5 h-5 text-green-600" />
+              <div className="p-2 rounded-lg bg-green-100 dark:bg-emerald-500/20">
+                <Bed className="w-5 h-5 text-green-600 dark:text-emerald-200" />
               </div>
             </div>
           </button>
           
           <button
             onClick={() => setFilterStatus('Occupied')}
-            className={`bg-blue-50 border rounded-xl p-4 hover:shadow-md transition-all duration-200 ${
+            className={`bg-blue-50 dark:bg-blue-500/15 border border-blue-200 dark:border-blue-500/30 rounded-xl p-4 hover:shadow-md transition-all duration-200 ${
               filterStatus === 'Occupied' 
                 ? 'border-blue-400 ring-2 ring-blue-200 shadow-lg' 
                 : 'border-blue-200 hover:border-blue-300'
@@ -362,15 +362,15 @@ export default function HousekeepingPage() {
                 <p className="text-sm font-medium text-blue-700">Occupied</p>
                 <p className="text-2xl font-bold text-blue-700">{statusCounts.Occupied}</p>
               </div>
-              <div className="p-2 rounded-lg bg-blue-100">
-                <User className="w-5 h-5 text-blue-600" />
+              <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-500/20">
+                <User className="w-5 h-5 text-blue-600 dark:text-blue-200" />
               </div>
             </div>
           </button>
           
           <button
             onClick={() => setFilterStatus('Maintenance')}
-            className={`bg-orange-50 border rounded-xl p-4 hover:shadow-md transition-all duration-200 ${
+            className={`bg-orange-50 dark:bg-orange-500/15 border border-orange-200 dark:border-orange-500/30 rounded-xl p-4 hover:shadow-md transition-all duration-200 ${
               filterStatus === 'Maintenance' 
                 ? 'border-orange-400 ring-2 ring-orange-200 shadow-lg' 
                 : 'border-orange-200 hover:border-orange-300'
@@ -381,8 +381,8 @@ export default function HousekeepingPage() {
                 <p className="text-sm font-medium text-orange-700">Maintenance</p>
                 <p className="text-2xl font-bold text-orange-700">{statusCounts.Maintenance}</p>
               </div>
-              <div className="p-2 rounded-lg bg-orange-100">
-                <Wrench className="w-5 h-5 text-orange-600" />
+              <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-500/20">
+                <Wrench className="w-5 h-5 text-orange-600 dark:text-orange-200" />
               </div>
             </div>
           </button>
@@ -392,8 +392,8 @@ export default function HousekeepingPage() {
             onClick={() => setFilterStatus('Reserved')}
             className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all duration-200 ${
               filterStatus === 'Reserved' 
-                ? 'border-purple-300 bg-purple-50' 
-                : 'border-border hover:border-purple-200 hover:bg-purple-25'
+                ? 'border-purple-300 bg-purple-50 dark:bg-purple-500/15 dark:border-purple-500/30' 
+                : 'border-border hover:border-purple-200 hover:bg-purple-100 dark:hover:bg-purple-500/20'
             }`}
           >
             <div className="flex items-center space-x-3">
@@ -401,8 +401,8 @@ export default function HousekeepingPage() {
                 <p className="text-sm font-medium text-purple-700">Reserved</p>
                 <p className="text-2xl font-bold text-purple-700">{statusCounts.Reserved}</p>
               </div>
-              <div className="p-2 rounded-lg bg-purple-100">
-                <Calendar className="w-5 h-5 text-purple-600" />
+              <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-500/20">
+                <Calendar className="w-5 h-5 text-purple-600 dark:text-purple-200" />
               </div>
             </div>
           </button>
@@ -415,7 +415,7 @@ export default function HousekeepingPage() {
             className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
               filterStatus === 'All'
                 ? 'bg-luxury-gold text-white shadow-lg'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                : 'bg-surface-tertiary text-text-secondary dark:bg-slate-800 dark:text-slate-200 hover:bg-surface-secondary dark:hover:bg-slate-700/40'
             }`}
           >
             Show All Rooms ({board?.rooms?.length || 0})
@@ -431,7 +431,7 @@ export default function HousekeepingPage() {
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-blue-900 mb-3">Housekeeping Status Change Rules</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div className="bg-white p-3 rounded-lg border border-blue-200">
+                <div className="bg-surface-secondary dark:bg-slate-800 p-3 rounded-lg border border-blue-200 dark:border-blue-500/40">
                   <div className="font-semibold text-green-700 mb-2 flex items-center gap-1">
                     <span className="text-green-600">✓</span> What Housekeeping CAN Do:
                   </div>
@@ -441,7 +441,7 @@ export default function HousekeepingPage() {
                     <li>• Occupied → Maintenance (emergencies only)</li>
                   </ul>
                 </div>
-                <div className="bg-white p-3 rounded-lg border border-red-200">
+                <div className="bg-surface-secondary dark:bg-slate-800 p-3 rounded-lg border border-red-200 dark:border-red-500/40">
                   <div className="font-semibold text-red-700 mb-2 flex items-center gap-1">
                     <span className="text-red-600">✗</span> What Requires Booking System:
                   </div>
@@ -452,7 +452,7 @@ export default function HousekeepingPage() {
                   </ul>
                 </div>
               </div>
-              <div className="mt-3 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
+              <div className="mt-3 p-2 bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 rounded text-xs text-amber-800 dark:text-amber-200">
                 <strong>💡 Protection:</strong> Rooms with active bookings cannot be changed to Available/Maintenance.
                 Complete checkout or cancel booking first. Admins can use emergency override if needed.
               </div>
@@ -507,7 +507,7 @@ export default function HousekeepingPage() {
           
           {/* Pagination Controls */}
           {filteredRooms.length > 0 && pagination.totalPages > 1 && (
-            <div className="border-t border-border bg-white px-6 py-4">
+            <div className="border-t border-border dark:border-slate-700 bg-surface-secondary dark:bg-slate-800 px-6 py-4">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 {/* Result Count */}
                 <div className="text-sm text-text-secondary">
@@ -547,8 +547,8 @@ export default function HousekeepingPage() {
                     disabled={pagination.page === 1}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                       pagination.page === 1
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-white border border-border dark:border-slate-600 text-gray-700 hover:bg-surface-tertiary dark:bg-slate-700/30'
+                        ? 'bg-surface-tertiary text-text-tertiary cursor-not-allowed opacity-60'
+                        : 'bg-surface-secondary dark:bg-slate-800 border border-border dark:border-slate-600 text-text-secondary hover:bg-surface-tertiary dark:hover:bg-slate-700/40'
                     }`}
                   >
                     Previous
@@ -575,7 +575,7 @@ export default function HousekeepingPage() {
                           className={`w-8 h-8 rounded-md text-sm font-medium transition-all ${
                             pagination.page === pageNum
                               ? 'bg-luxury-gold text-white shadow-md transform scale-105'
-                              : 'bg-white border border-border dark:border-slate-600 text-gray-700 hover:bg-surface-tertiary dark:bg-slate-700/30 hover:border-luxury-gold'
+                              : 'bg-surface-secondary dark:bg-slate-800 border border-border dark:border-slate-600 text-text-secondary hover:bg-surface-tertiary dark:hover:bg-slate-700/40 hover:border-luxury-gold'
                           }`}
                         >
                           {pageNum}
@@ -589,8 +589,8 @@ export default function HousekeepingPage() {
                     disabled={pagination.page === pagination.totalPages}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                       pagination.page === pagination.totalPages
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-white border border-border dark:border-slate-600 text-gray-700 hover:bg-surface-tertiary dark:bg-slate-700/30'
+                        ? 'bg-surface-tertiary text-text-tertiary cursor-not-allowed opacity-60'
+                        : 'bg-surface-secondary dark:bg-slate-800 border border-border dark:border-slate-600 text-text-secondary hover:bg-surface-tertiary dark:hover:bg-slate-700/40'
                     }`}
                   >
                     Next
@@ -638,23 +638,23 @@ function SimpleRoomCard({ room, isEditing, onEdit, onCancel, onStatusUpdate, upd
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Available': return 'bg-green-100 text-green-800';
-      case 'Occupied': return 'bg-blue-100 text-blue-800';
-      case 'Maintenance': return 'bg-orange-100 text-orange-800';
-      case 'Reserved': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Available': return 'bg-green-100 dark:bg-emerald-500/15 text-green-800 dark:text-emerald-200';
+      case 'Occupied': return 'bg-blue-100 dark:bg-blue-500/15 text-blue-800 dark:text-blue-200';
+      case 'Maintenance': return 'bg-orange-100 dark:bg-orange-500/15 text-orange-800 dark:text-orange-200';
+      case 'Reserved': return 'bg-purple-100 dark:bg-purple-500/15 text-purple-800 dark:text-purple-200';
+      default: return 'bg-gray-100 dark:bg-slate-700/40 text-gray-800 dark:text-slate-200';
     }
   };
 
   const getDerivedColor = (derived) => {
     switch (derived) {
-      case 'Available': return 'bg-gray-100 text-gray-800';
-      case 'Arrival': return 'bg-blue-100 text-blue-800';
-      case 'Stayover': return 'bg-green-100 text-green-800';
-      case 'Due Out': return 'bg-yellow-100 text-yellow-800';
-      case 'Dirty': return 'bg-red-100 text-red-800';
-      case 'OOO': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Available': return 'bg-gray-100 dark:bg-slate-700/40 text-gray-800 dark:text-slate-200';
+      case 'Arrival': return 'bg-blue-100 dark:bg-blue-500/15 text-blue-800 dark:text-blue-200';
+      case 'Stayover': return 'bg-green-100 dark:bg-emerald-500/15 text-green-800 dark:text-emerald-200';
+      case 'Due Out': return 'bg-yellow-100 dark:bg-amber-500/15 text-yellow-800 dark:text-amber-200';
+      case 'Dirty': return 'bg-red-100 dark:bg-rose-500/15 text-red-800 dark:text-rose-200';
+      case 'OOO': return 'bg-purple-100 dark:bg-purple-500/15 text-purple-800 dark:text-purple-200';
+      default: return 'bg-gray-100 dark:bg-slate-700/40 text-gray-800 dark:text-slate-200';
     }
   };
 
@@ -694,7 +694,7 @@ function SimpleRoomCard({ room, isEditing, onEdit, onCancel, onStatusUpdate, upd
       {room.booking && (
         <div className="mb-3">
           {/* Booking Protection Alert */}
-          <div className="mb-2 p-2 bg-amber-50 border border-amber-300 rounded-lg">
+          <div className="mb-2 p-2 bg-amber-50 dark:bg-amber-500/15 border border-amber-300 dark:border-amber-500/30 rounded-lg">
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
               <div className="text-xs text-amber-800">
@@ -705,7 +705,7 @@ function SimpleRoomCard({ room, isEditing, onEdit, onCancel, onStatusUpdate, upd
           </div>
 
           {/* Guest Information */}
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="p-3 bg-blue-50 dark:bg-blue-500/15 border border-blue-200 dark:border-blue-500/30 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
               <Users className="w-4 h-4 text-blue-600" />
               <span className="text-sm font-medium text-blue-800">Guest Information</span>
@@ -765,7 +765,7 @@ function SimpleRoomCard({ room, isEditing, onEdit, onCancel, onStatusUpdate, upd
           ) : validTransitions ? (
             <div className="space-y-2">
               {/* Helper Text Based on Current Status */}
-              <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded-md">
+              <div className="mb-3 p-2 bg-blue-50 dark:bg-blue-500/15 border border-blue-200 dark:border-blue-500/30 rounded-md">
                 <div className="text-xs text-blue-800">
                   {room.room_status === 'Available' && (
                     <>
@@ -822,7 +822,7 @@ function SimpleRoomCard({ room, isEditing, onEdit, onCancel, onStatusUpdate, upd
                     {validTransitions.invalidTransitions.map((transition) => (
                       <div
                         key={transition.status}
-                        className="px-3 py-2 bg-red-50 text-red-700 rounded-md cursor-not-allowed text-sm font-medium opacity-75 border border-red-200"
+                        className="px-3 py-2 bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-200 rounded-md cursor-not-allowed text-sm font-medium opacity-75 border border-red-200 dark:border-red-500/30"
                         title={transition.reason}
                       >
                         ✗ {transition.status}
@@ -858,7 +858,7 @@ function SimpleRoomCard({ room, isEditing, onEdit, onCancel, onStatusUpdate, upd
                       </button>
                     ))}
                   </div>
-                  <div className="text-xs text-red-700 mt-2 p-2 bg-red-50 rounded border border-red-300">
+                  <div className="text-xs text-red-700 dark:text-red-200 mt-2 p-2 bg-red-50 dark:bg-red-500/15 rounded border border-red-300 dark:border-red-500/30">
                     ⚠️ <strong>Warning:</strong> Emergency override bypasses all business rules and is permanently logged to audit trail. Only use in genuine emergencies.
                   </div>
                 </div>

@@ -404,7 +404,7 @@ const ServiceUsageManagement = () => {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3 py-2 border border-border dark:border-slate-600 rounded text-sm font-medium text-text-secondary hover:bg-surface-tertiary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+                className="px-3 py-2 border border-border dark:border-slate-600 rounded text-sm font-medium text-text-secondary hover:bg-surface-tertiary dark:hover:bg-slate-700/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
               >
                 Previous
               </button>
@@ -429,7 +429,7 @@ const ServiceUsageManagement = () => {
                     className={`min-w-[40px] px-3 py-2 border rounded text-sm font-medium transition-colors ${
                       page === pageNum
                         ? 'bg-yellow-500 text-white border-yellow-500'
-                        : 'border-border dark:border-slate-600 text-gray-700 hover:bg-gray-50'
+                        : 'border-border dark:border-slate-600 text-text-secondary dark:text-slate-200 hover:bg-surface-tertiary dark:hover:bg-slate-700/30'
                     }`}
                   >
                     {pageNum}
@@ -440,7 +440,7 @@ const ServiceUsageManagement = () => {
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-3 py-2 border border-border dark:border-slate-600 rounded text-sm font-medium text-text-secondary hover:bg-surface-tertiary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+                className="px-3 py-2 border border-border dark:border-slate-600 rounded text-sm font-medium text-text-secondary hover:bg-surface-tertiary dark:hover:bg-slate-700/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
               >
                 Next
               </button>

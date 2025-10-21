@@ -174,7 +174,7 @@ const BranchSelector = ({ onBranchSelect, selectedBranch }) => {
               <div className={`absolute inset-0 bg-gradient-to-br ${branch.color} opacity-10 group-hover:opacity-20 transition-opacity`}></div>
               
               {/* Card Content */}
-              <div className="relative bg-white p-6">
+              <div className="relative bg-surface-secondary dark:bg-slate-800 p-6 rounded-xl border border-border dark:border-slate-700">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
@@ -201,21 +201,21 @@ const BranchSelector = ({ onBranchSelect, selectedBranch }) => {
                 {/* Metrics */}
                 {!branch.isOverall ? (
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg group-hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-700 rounded-lg group-hover:shadow-md transition-shadow border border-border/60 dark:border-slate-700">
                       <div className="flex items-center space-x-2">
                         <Bed className="w-4 h-4 text-text-tertiary" />
                         <span className="text-sm font-medium text-text-secondary">Rooms:</span>
                       </div>
                       <span className="font-bold text-text-primary text-lg">{branch.rooms}</span>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-green-50 to-green-100 rounded-lg group-hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-green-50 to-green-100 dark:from-emerald-500/15 dark:to-emerald-500/20 rounded-lg group-hover:shadow-md transition-shadow border border-emerald-200/70 dark:border-emerald-500/30">
                       <div className="flex items-center space-x-2">
                         <TrendingUp className="w-4 h-4 text-green-600" />
                         <span className="text-sm font-medium text-text-secondary">Occupancy:</span>
                       </div>
                       <span className="font-bold text-green-600 text-lg">{branch.occupancy.toFixed(1)}%</span>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg group-hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-500/15 dark:to-blue-500/20 rounded-lg group-hover:shadow-md transition-shadow border border-blue-200/70 dark:border-blue-500/30">
                       <div className="flex items-center space-x-2">
                         <DollarSign className="w-4 h-4 text-blue-600" />
                         <span className="text-sm font-medium text-text-secondary">Revenue:</span>
@@ -224,7 +224,7 @@ const BranchSelector = ({ onBranchSelect, selectedBranch }) => {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+                  <div className="text-center py-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-500/15 dark:to-purple-500/20 rounded-lg border border-border/60 dark:border-slate-700">
                     <Users className="w-12 h-12 text-blue-600 mx-auto mb-3" />
                     <p className="text-sm font-medium text-text-secondary">Combined analytics from all branches</p>
                     <div className="mt-4 grid grid-cols-3 gap-2 text-xs">

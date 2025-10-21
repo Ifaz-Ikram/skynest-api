@@ -548,7 +548,7 @@ export const BookingsPage = () => {
               placeholder="All branches"
               searchPlaceholder="Search branches..."
               className="flex-1"
-              buttonclassName="!px-4 !py-3 !rounded-xl !border-2 !border-border dark:border-slate-600 !bg-white !font-medium !text-text-secondary focus-visible:!ring-purple-500 focus-visible:!ring-offset-0 focus-visible:!border-purple-500 hover:!border-purple-400"
+            buttonclassName="!px-4 !py-3 !rounded-xl !border-2 !border-border dark:border-slate-600 !bg-surface-secondary dark:!bg-slate-800 !font-medium !text-text-secondary dark:!text-slate-200 focus-visible:!ring-purple-500 focus-visible:!ring-offset-0 focus-visible:!border-purple-500 hover:!border-purple-400"
               dropdownClassName="!border-border"
             />
             {selectedBranch && (
@@ -572,7 +572,7 @@ export const BookingsPage = () => {
             className={`px-4 py-2 rounded-lg font-medium transition-all ${
               filter === status
                 ? 'bg-luxury-gold text-white'
-                : 'bg-white text-text-primary dark:text-slate-200 hover:bg-surface-tertiary dark:bg-slate-700/30 border border-border dark:border-slate-600'
+                : 'bg-surface-secondary dark:bg-slate-800 text-text-primary dark:text-slate-200 hover:bg-surface-tertiary dark:hover:bg-slate-700/30 border border-border dark:border-slate-600'
             }`}
           >
             {status}
@@ -605,17 +605,22 @@ export const BookingsPage = () => {
                         {booking.guest_name || 'Guest'}
                       </h3>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        booking.status === 'Checked-In' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
-                        booking.status === 'Booked' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
-                        'bg-gray-100 text-gray-700'
+                        booking.status === 'Checked-In'
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                          : booking.status === 'Booked'
+                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                            : 'bg-gray-100 text-gray-700 dark:bg-slate-700/40 dark:text-slate-200'
                       }`}>
                         {booking.status}
                       </span>
                       {(() => {
                         const s = booking.payment_status;
-                        const cls = s === 'Paid' ? 'bg-emerald-100 text-emerald-700'
-                          : s === 'Partial' ? 'bg-amber-100 text-amber-700'
-                          : 'bg-rose-100 text-rose-700';
+                        const cls =
+                          s === 'Paid'
+                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-500/25'
+                            : s === 'Partial'
+                              ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-200 border border-amber-200 dark:border-amber-500/25'
+                              : 'bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-200 border border-rose-200 dark:border-rose-500/25';
                         return (
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${cls}`}>
                             {s || 'Unpaid'}
@@ -905,10 +910,10 @@ const PaidPill = ({ booking }) => {
   const pct = total > 0 ? Math.round((paid / total) * 100) : 0;
   const status = booking.payment_status;
   const colorClass = status === 'Paid'
-    ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+    ? 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-500/25'
     : status === 'Partial'
-      ? 'bg-luxury-gold/10 text-luxury-gold border border-luxury-gold/20'
-      : 'bg-rose-100 text-rose-700 border border-rose-200';
+      ? 'bg-luxury-gold/10 dark:bg-luxury-gold/20 text-luxury-gold border border-luxury-gold/20 dark:border-luxury-gold/30'
+      : 'bg-rose-100 dark:bg-rose-500/15 text-rose-700 dark:text-rose-200 border border-rose-200 dark:border-rose-500/25';
 
   const containerRef = useRef(null);
   const [show, setShow] = useState(false);
@@ -941,7 +946,7 @@ const PaidPill = ({ booking }) => {
       </span>
       {show && (
         <div
-          className={`absolute right-0 w-64 bg-white border border-border shadow-lg rounded-md p-3 text-xs text-text-primary dark:text-slate-200 z-50 ${
+          className={`absolute right-0 w-64 bg-surface-secondary dark:bg-slate-800 border border-border dark:border-slate-700 shadow-lg rounded-md p-3 text-xs text-text-primary dark:text-slate-200 z-50 ${
             position === 'below' ? 'top-full mt-2' : 'bottom-full mb-2'
           }`}
         >

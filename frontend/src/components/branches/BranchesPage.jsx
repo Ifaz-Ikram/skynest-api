@@ -51,7 +51,7 @@ const BranchesPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-surface-tertiary p-6">
+    <div className="min-h-screen bg-surface-primary dark:bg-slate-950 p-6 transition-colors">
       <div className="max-w-7xl mx-auto space-y-6">
         <LuxuryPageHeader
           title="Branches"
@@ -70,7 +70,7 @@ const BranchesPage = () => {
           }]}
         />
 
-      <div className="card">
+      <div className="card bg-surface-secondary dark:bg-slate-800">
         {branches.length === 0 ? (
           <div className="text-center py-12">
             <Building2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -79,7 +79,7 @@ const BranchesPage = () => {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {branches.map((branch) => (
-              <div key={branch.branch_id} className="border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
+              <div key={branch.branch_id} className="border border-border dark:border-slate-700 rounded-lg p-6 hover:shadow-md transition-shadow bg-surface-secondary dark:bg-slate-800/80">
                 <div className="flex items-start gap-3 mb-4">
                   <div className="p-2 bg-luxury-gold/10 rounded-lg">
                     <Building2 className="w-6 h-6 text-luxury-gold" />
@@ -112,7 +112,7 @@ const BranchesPage = () => {
                   </button>
                   <button
                     onClick={() => handleDelete(branch.branch_id)}
-                    className="flex-1 bg-red-50 text-red-600 hover:bg-red-100 px-3 py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors"
+                    className="flex-1 bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/15 dark:text-red-200 dark:hover:bg-red-500/25 px-3 py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                     Delete

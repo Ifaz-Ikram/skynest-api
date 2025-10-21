@@ -166,10 +166,10 @@ const UserManagementPage = () => {
     });
 
     return (
-      <div className="bg-surface-secondary rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-surface-tertiary">
+      <div className="bg-surface-secondary dark:bg-slate-800 rounded-lg shadow overflow-hidden">
+        <div className="overflow-x-auto border border-border dark:border-slate-700 rounded-xl">
+          <table className="min-w-full divide-y divide-border dark:divide-slate-700">
+            <thead className="bg-surface-tertiary dark:bg-slate-800/60">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
                   User
@@ -193,12 +193,12 @@ const UserManagementPage = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-surface-secondary dark:bg-slate-800 divide-y divide-border dark:divide-slate-700">
               {filteredUsers.map((user) => {
                 const branch = branches.find(br => br.branch_id === user.branch_id);
                 
                 return (
-                  <tr key={user.user_id} className="hover:bg-surface-tertiary">
+                  <tr key={user.user_id} className="hover:bg-surface-tertiary dark:hover:bg-slate-700/40 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
@@ -352,7 +352,7 @@ const UserManagementPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-surface-primary dark:bg-slate-950 p-6 space-y-6 transition-colors">
       <LuxuryPageHeader
         title="User Management"
         subtitle="Manage employees and customer accounts"
