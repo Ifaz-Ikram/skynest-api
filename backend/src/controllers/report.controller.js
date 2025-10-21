@@ -1,5 +1,6 @@
 // src/controllers/report.controller.js
 const { sequelize } = require("../models");
+const { pool } = require("../db");
 
 // GET /reports/occupancy-by-day
 exports.occupancyByDay = async (_req, res, next) => {
@@ -109,6 +110,61 @@ exports.adjustmentsLast = async (req, res, next) => {
         WHERE COALESCE(a.created_at, a.adjusted_at, a.createdon, a.created, a."timestamp", a.ts, NOW())
               >= NOW() - INTERVAL '${days} days'
         ORDER BY created_at DESC, adjustment_id DESC`
+    );
+    res.json(rows);
+  } catch (e) { next(e); }
+};
+
+// Simple operational lists (no schema changes)
+// GET /reports/arrivals-today
+exports.arrivalsToday = async (_req, res, next) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT b.booking_id, COALESCE(g.full_name, 'Unknown Guest') AS guest, COALESCE(r.room_number, 'Unknown Room') AS room_number, COALESCE(br.branch_name, 'Unknown Branch') AS branch_name,
+              b.check_in_date, b.check_out_date, b.status
+         FROM booking b
+         LEFT JOIN guest g ON g.guest_id = b.guest_id
+         LEFT JOIN room r ON r.room_id = b.room_id
+         LEFT JOIN branch br ON br.branch_id = r.branch_id
+        WHERE b.check_in_date = CURRENT_DATE
+          AND b.status IN ('Booked','Checked-In')
+        ORDER BY br.branch_name, r.room_number, g.full_name`
+    );
+    res.json(rows);
+  } catch (e) { next(e); }
+};
+
+// GET /reports/departures-today
+exports.departuresToday = async (_req, res, next) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT b.booking_id, COALESCE(g.full_name, 'Unknown Guest') AS guest, COALESCE(r.room_number, 'Unknown Room') AS room_number, COALESCE(br.branch_name, 'Unknown Branch') AS branch_name,
+              b.check_in_date, b.check_out_date, b.status
+         FROM booking b
+         LEFT JOIN guest g ON g.guest_id = b.guest_id
+         LEFT JOIN room r ON r.room_id = b.room_id
+         LEFT JOIN branch br ON br.branch_id = r.branch_id
+        WHERE b.check_out_date = CURRENT_DATE
+          AND b.status IN ('Booked','Checked-In')
+        ORDER BY br.branch_name, r.room_number, g.full_name`
+    );
+    res.json(rows);
+  } catch (e) { next(e); }
+};
+
+// GET /reports/in-house
+exports.inHouse = async (_req, res, next) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT b.booking_id, COALESCE(g.full_name, 'Unknown Guest') AS guest, COALESCE(r.room_number, 'Unknown Room') AS room_number, COALESCE(br.branch_name, 'Unknown Branch') AS branch_name,
+              b.check_in_date, b.check_out_date, b.status
+         FROM booking b
+         LEFT JOIN guest g ON g.guest_id = b.guest_id
+         LEFT JOIN room r ON r.room_id = b.room_id
+         LEFT JOIN branch br ON br.branch_id = r.branch_id
+        WHERE CURRENT_DATE >= b.check_in_date AND CURRENT_DATE < b.check_out_date
+          AND b.status = 'Checked-In'
+        ORDER BY br.branch_name, r.room_number`
     );
     res.json(rows);
   } catch (e) { next(e); }

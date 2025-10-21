@@ -41,7 +41,7 @@ router.post(
 router.post(
   "/adjustment",
   requireAuth,
-  requireRole("Admin", "Accountant"),
+  requireRole("Admin", "Accountant", "Manager"),
   body("payment_id").isInt({ min: 1 }),
   body("adjusted_on").isISO8601(),
   body("amount").isFloat(),

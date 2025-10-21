@@ -8,6 +8,11 @@ pnpm-debug.log*
 # Env & local
 .env
 .env.*
+
+**/.env
+
+backend/.env
+
 .DS_Store
 .vscode/
 .idea/
@@ -29,3 +34,6 @@ logs/
 *.swo
 *.tmp
 *.bak
+backend/src/data/booking-meta.json
+
+

@@ -14,8 +14,8 @@ const StatsCard = ({ title, value, icon: Icon, trend, color = 'blue' }) => {
     <div className="card">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-600 font-medium">{title}</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
+          <p className="text-sm text-text-secondary font-medium">{title}</p>
+          <p className="text-3xl font-bold text-text-primary mt-2">{value}</p>
           {trend && (
             <div className="flex items-center mt-2 text-sm">
               <TrendingUp className="w-4 h-4 text-green-500 mr-1" />

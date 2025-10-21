@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { createRoot } from 'react-dom/client';
 
 // Layout Components
 import { Header, Sidebar } from './components/layout';
@@ -11,24 +10,33 @@ import { BookingsPage } from './components/bookings';
 import { RoomsPage } from './components/rooms';
 import { ServicesPage } from './components/services';
 import { PaymentsPage } from './components/payments';
-import { ReportsPage } from './components/reports';
-import { UsersPage } from './components/users';
+import { ReportsPage, ReportsPageEnhanced } from './components/reports';
+import UserManagementPage from './components/users/UserManagementPage';
 import { GuestsPage } from './components/guests';
 import { PreBookingsPage } from './components/prebookings';
 import { ServiceUsagePage } from './components/serviceusage';
-import { InvoicesPage } from './components/invoices';
+// import { InvoicesPage } from './components/invoices'; // REMOVED: No backend endpoints
 import { BranchesPage } from './components/branches';
-import { AuditLogPage } from './components/auditlog';
+// import { AuditLogPage } from './components/auditlog'; // REMOVED: No UI implementation
+import AuditLogPage from './components/auditlog/AuditLogPage';
+import RoomTypesPage from './components/roomtypes/RoomTypesPage';
+// REMOVED: Deposits & Guarantees - file-based storage is architecturally flawed
+// See docs/DEPOSIT_GUARANTEE_ANALYSIS.md for detailed analysis
+// Will be reimplemented in Phase 2 with proper database tables
+// import DepositsManagementPage from './components/deposits/DepositsManagementPage';
+// import GuaranteesManagementPage from './components/guarantees/GuaranteesManagementPage';
+// REMOVED: CheckoutModal - checkout is handled via modal from Bookings page
+// import { CheckoutModal } from './components/checkout/CheckoutModal';
+import ReportingDashboard from './components/reports/ReportingDashboard';
+// REMOVED: Manager Forecasting - Phase 3 feature (Q2 2026)
+// import ManagerForecasting from './components/manager/ManagerForecasting';
+import CustomerPortal from './components/customer/CustomerPortal';
+// REMOVED: ReceptionistGuestProfile - Phase 2 feature requiring additional database tables
+// import ReceptionistGuestProfile from './components/receptionist/ReceptionistGuestProfile';
+import ServiceUsageManagement from './components/services/ServiceUsageManagement';
+import HousekeepingPage from './components/housekeeping/HousekeepingPage';
+import RoomAvailabilityPage from './components/availability/RoomAvailabilityPage';
 
-/**
- * Main App Component
- * 
- * This is the simplified, professional App.jsx following MedSync structure.
- * - Clean component imports
- * - Separated layout components (Header, Sidebar)
- * - Page routing logic
- * - Authentication handling
- */
 const App = () => {
   // State management
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -62,45 +70,51 @@ const App = () => {
 
   // Main authenticated app layout
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Fixed Header */}
-      <Header 
-        user={user} 
+    <div className="dark min-h-screen bg-surface-secondary text-text-primary transition-colors duration-300">
+      <Header
+        user={user}
+        currentPage={currentPage}
+        onNavigate={setCurrentPage}
         onLogout={handleLogout}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+        isSidebarOpen={sidebarOpen}
       />
 
-      {/* Collapsible Sidebar */}
-      <Sidebar 
+      <Sidebar
         user={user}
         currentPage={currentPage}
         onNavigate={setCurrentPage}
         isOpen={sidebarOpen}
       />
 
-      {/* Main Content Area */}
-      <main className={`pt-16 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-0'}`}>
-        <div className="p-6 sm:p-8 max-w-7xl mx-auto">
-          {/* Page Routing */}
-          {currentPage === 'dashboard' && <Dashboard user={user} />}
+      <main
+        className={`pt-24 transition-[margin] duration-300 ease-smooth ${
+          sidebarOpen ? 'lg:ml-64' : 'lg:ml-0'
+        }`}
+      >
+        <div className="mx-auto w-full max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+          {currentPage === 'dashboard' && <Dashboard user={user} onNavigate={setCurrentPage} />}
           {currentPage === 'bookings' && <BookingsPage />}
           {currentPage === 'rooms' && <RoomsPage />}
+          {currentPage === 'room-availability' && <RoomAvailabilityPage />}
           {currentPage === 'services' && <ServicesPage />}
           {currentPage === 'payments' && <PaymentsPage />}
-          {currentPage === 'reports' && <ReportsPage />}
-          
-          {/* Admin/Manager Pages */}
-          {currentPage === 'users' && (user?.role === 'Admin' || user?.role === 'Manager') && <UsersPage />}
-          
-          {/* Admin Only Pages */}
-          {currentPage === 'branches' && user?.role === 'Admin' && <BranchesPage />}
-          {currentPage === 'auditlog' && user?.role === 'Admin' && <AuditLogPage />}
-          
-          {/* Pages to be extracted */}
-          {currentPage === 'prebookings' && <PreBookingsPage />}
+          {currentPage === 'reports' && <ReportsPageEnhanced />}
+          {currentPage === 'serviceusage' && <ServiceUsageManagement />}
+          {currentPage === 'housekeeping' && <HousekeepingPage />}
           {currentPage === 'guests' && <GuestsPage />}
-          {currentPage === 'serviceusage' && <ServiceUsagePage />}
-          {currentPage === 'invoices' && <InvoicesPage />}
+          {currentPage === 'reports-old' && <ReportsPage />}
+          {currentPage === 'reports-dashboard' && <ReportingDashboard />}
+          {currentPage === 'auditlog' && <AuditLogPage />}
+          {currentPage === 'customer-portal' && user?.role === 'Customer' && <CustomerPortal />}
+          {currentPage === 'users' && (user?.role === 'Admin' || user?.role === 'Manager') && (
+            <UserManagementPage />
+          )}
+          {currentPage === 'roomtypes' && (user?.role === 'Admin' || user?.role === 'Manager') && (
+            <RoomTypesPage />
+          )}
+          {currentPage === 'branches' && user?.role === 'Admin' && <BranchesPage />}
+          {currentPage === 'prebookings' && <PreBookingsPage />}
         </div>
       </main>
     </div>

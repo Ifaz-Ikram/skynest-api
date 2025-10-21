@@ -4,8 +4,8 @@
  */
 
 require('dotenv').config();
-const { pool } = require('../src/db');
-const bcrypt = require('bcrypt');
+const { pool } = require('../../src/db');
+const bcrypt = require('bcryptjs');
 
 async function seedDemoData() {
   try {
@@ -69,6 +69,7 @@ async function seedDemoData() {
       const { rows } = await pool.query(
         `INSERT INTO room_type (name, capacity, daily_rate, amenities)
          VALUES ($1, $2, $3, 'AC, TV, WiFi')
+         ON CONFLICT (name) DO NOTHING
          RETURNING room_type_id, name, daily_rate`,
         [type.name, type.capacity, type.rate]
       );
@@ -100,10 +101,10 @@ async function seedDemoData() {
     // ========== 5. CREATE GUEST (for Customer user) ==========
     console.log('\n🧑 Creating guest...');
     const { rows: [guest] } = await pool.query(
-      `INSERT INTO guest (nic, full_name, email, phone, gender, address, nationality)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO guest (id_proof_type, id_proof_number, full_name, email, phone, gender, address, nationality)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING guest_id, full_name`,
-      ['NIC123456789', 'John Customer', 'customer@example.com', '+94771234567', 'Male', '456 Beach Rd, Galle', 'Sri Lankan']
+      ['NIC', '123456789V', 'John Customer', 'customer@example.com', '+94771234567', 'Male', '456 Beach Rd, Galle', 'Sri Lankan']
     );
     
     // Link guest to Customer user

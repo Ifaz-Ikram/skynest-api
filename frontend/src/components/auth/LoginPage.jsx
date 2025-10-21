@@ -56,8 +56,8 @@ const LoginPage = ({ onLogin }) => {
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Welcome Back</h2>
+        <div className="bg-surface-secondary rounded-2xl shadow-2xl p-8">
+          <h2 className="text-2xl font-bold text-text-primary mb-6">Welcome Back</h2>
           
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center">
@@ -68,7 +68,7 @@ const LoginPage = ({ onLogin }) => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">Username</label>
               <input
                 type="text"
                 value={username}
@@ -80,7 +80,7 @@ const LoginPage = ({ onLogin }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">Password</label>
               <input
                 type="password"
                 value={password}
@@ -101,8 +101,8 @@ const LoginPage = ({ onLogin }) => {
           </form>
 
           {/* Demo Credentials */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <p className="text-sm font-medium text-gray-700 mb-3">Demo Accounts:</p>
+          <div className="mt-6 pt-6 border-t border-border">
+            <p className="text-sm font-medium text-text-secondary mb-3">Demo Accounts:</p>
             <div className="grid grid-cols-2 gap-2">
               {demoUsers.map((user) => (
                 <button
@@ -111,10 +111,10 @@ const LoginPage = ({ onLogin }) => {
                     setUsername(user.username);
                     setPassword(user.password);
                   }}
-                  className="text-xs px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-left transition-colors"
+                  className="text-xs px-3 py-2 bg-surface-tertiary hover:bg-surface-tertiary rounded-lg text-left transition-colors"
                 >
-                  <div className="font-medium text-gray-900">{user.role}</div>
-                  <div className="text-gray-500">{user.username}</div>
+                  <div className="font-medium text-text-primary">{user.role}</div>
+                  <div className="text-text-tertiary">{user.username}</div>
                 </button>
               ))}
             </div>
@@ -122,7 +122,7 @@ const LoginPage = ({ onLogin }) => {
 
           {/* Register Link */}
           <div className="mt-4 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-text-secondary">
               Don't have an account?{' '}
               <button
                 onClick={() => setShowRegister(true)}

@@ -1,5 +1,7 @@
 require("dotenv").config(); // ✅ load .env first
 const { Sequelize, DataTypes } = require("sequelize");
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, "..", "..", ".env") });
 const { types } = require("pg"); // for type parsers used by sequelize/pg
 
 // ---- Parse Postgres types to sane JS numbers ----
@@ -13,11 +15,11 @@ const useUrl = !!process.env.DATABASE_URL;
 
 const dbName = process.env.PGDATABASE || process.env.DB_NAME || "skynest";
 const dbUser = process.env.PGUSER || process.env.DB_USER || "postgres";
-const dbPass = process.env.PGPASSWORD || process.env.DB_PASSWORD || "";
+const dbPass = process.env.PGPASSWORD || process.env.DB_PASSWORD || undefined;
 
 // Basic sanity checks for non-URL config
 if (!useUrl) {
-  if (typeof dbPass !== "string") {
+  if (dbPass !== undefined && typeof dbPass !== "string") {
     throw new Error(
       "DB password env must be a string. Check PGPASSWORD or DB_PASSWORD in .env",
     );
@@ -64,23 +66,84 @@ db.types = DataTypes;
 
 // ---- Load models ----
 db.UserAccount = require("./UserAccount")(sequelize, DataTypes);
+db.Guest = require("./Guest")(sequelize, DataTypes);
 db.Customer = require("./Customer")(sequelize, DataTypes);
 db.Employee = require("./Employee")(sequelize, DataTypes);
+db.Branch = require("./Branch")(sequelize, DataTypes);
+db.RoomType = require("./RoomType")(sequelize, DataTypes);
+db.Room = require("./Room")(sequelize, DataTypes);
+db.PreBooking = require("./PreBooking")(sequelize, DataTypes);
 db.Booking = require("./Booking")(sequelize, DataTypes);
+db.GroupBooking = require("./GroupBooking")(sequelize, DataTypes);
+db.CheckinValidation = require("./CheckinValidation")(sequelize, DataTypes);
+db.IdValidationRule = require("./IdValidationRule")(sequelize, DataTypes);
+db.ServiceCatalog = require("./ServiceCatalog")(sequelize, DataTypes);
 db.ServiceUsage = require("./ServiceUsage")(sequelize, DataTypes);
 db.Payment = require("./Payment")(sequelize, DataTypes);
+db.PaymentAdjustment = require("./PaymentAdjustment")(sequelize, DataTypes);
+db.Invoice = require("./Invoice")(sequelize, DataTypes);
+db.AuditLog = require("./AuditLog")(sequelize, DataTypes);
 
-// ---- Associations (match ONLY what's in your DB today) ----
-// ❌ Do NOT inject FKs that don't exist in user_account:
-/// db.UserAccount.belongsTo(db.Customer, { foreignKey: 'customer_id' });
-/// db.UserAccount.belongsTo(db.Employee, { foreignKey: 'employee_id' });
+// ---- Associations (based on schema FK constraints) ----
 
-// ✅ These map to real columns
-db.Booking.hasMany(db.ServiceUsage, { foreignKey: "booking_id" });
-db.ServiceUsage.belongsTo(db.Booking, { foreignKey: "booking_id" });
+// UserAccount associations
+db.UserAccount.belongsTo(db.Guest, { foreignKey: "guest_id", as: "guest" });
 
-db.Booking.hasMany(db.Payment, { foreignKey: "booking_id" });
-db.Payment.belongsTo(db.Booking, { foreignKey: "booking_id" });
+// Customer associations
+db.Customer.belongsTo(db.UserAccount, { foreignKey: "user_id", as: "user" });
+// Note: customer.guest_id has NO FK in schema (orphaned)
+
+// Employee associations
+db.Employee.belongsTo(db.UserAccount, { foreignKey: "user_id", as: "user" });
+db.Employee.belongsTo(db.Branch, { foreignKey: "branch_id", as: "branch" });
+
+// Room associations
+db.Room.belongsTo(db.Branch, { foreignKey: "branch_id", as: "branch" });
+db.Room.belongsTo(db.RoomType, { foreignKey: "room_type_id", as: "roomType" });
+
+// PreBooking associations
+db.PreBooking.belongsTo(db.Room, { foreignKey: "room_id", as: "room" });
+db.PreBooking.belongsTo(db.Employee, { foreignKey: "created_by_employee_id", as: "createdBy" });
+db.PreBooking.belongsTo(db.Customer, { foreignKey: "customer_id", as: "customer" });
+db.PreBooking.belongsTo(db.RoomType, { foreignKey: "room_type_id", as: "roomType" });
+// Note: pre_booking.guest_id has NO FK in schema (orphaned)
+
+// Booking associations
+db.Booking.belongsTo(db.PreBooking, { foreignKey: "pre_booking_id", as: "preBooking" });
+db.Booking.belongsTo(db.Room, { foreignKey: "room_id", as: "room" });
+db.Booking.belongsTo(db.GroupBooking, { foreignKey: "group_booking_id", as: "groupBooking" });
+// Note: booking.guest_id has NO FK in schema (orphaned)
+
+// GroupBooking associations
+db.GroupBooking.belongsTo(db.Employee, { foreignKey: "created_by_employee_id", as: "createdBy" });
+db.GroupBooking.hasMany(db.Booking, { foreignKey: "group_booking_id", as: "bookings" });
+
+// CheckinValidation associations
+db.CheckinValidation.belongsTo(db.Booking, { foreignKey: "booking_id", as: "booking" });
+db.CheckinValidation.belongsTo(db.Guest, { foreignKey: "guest_id", as: "guest" });
+db.CheckinValidation.belongsTo(db.Employee, { foreignKey: "validated_by_employee_id", as: "validatedBy" });
+
+db.Booking.hasMany(db.ServiceUsage, { foreignKey: "booking_id", as: "serviceUsages" });
+db.Booking.hasMany(db.Payment, { foreignKey: "booking_id", as: "payments" });
+db.Booking.hasMany(db.PaymentAdjustment, { foreignKey: "booking_id", as: "paymentAdjustments" });
+db.Booking.hasMany(db.Invoice, { foreignKey: "booking_id", as: "invoices" });
+
+// ServiceUsage associations
+db.ServiceUsage.belongsTo(db.Booking, { foreignKey: "booking_id", as: "booking" });
+db.ServiceUsage.belongsTo(db.ServiceCatalog, { foreignKey: "service_id", as: "service" });
+
+// Payment associations
+db.Payment.belongsTo(db.Booking, { foreignKey: "booking_id", as: "booking" });
+
+// PaymentAdjustment associations
+db.PaymentAdjustment.belongsTo(db.Booking, { foreignKey: "booking_id", as: "booking" });
+
+// Invoice associations
+db.Invoice.belongsTo(db.Booking, { foreignKey: "booking_id", as: "booking" });
+
+// AuditLog associations
+// Note: actor field contains user_id as string, not a proper foreign key
+// We'll handle user lookup manually in the controller
 
 // ---- Connectivity check (don't hard-exit in dev) ----
 // models/index.js

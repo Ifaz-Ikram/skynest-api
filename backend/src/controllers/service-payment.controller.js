@@ -3,6 +3,7 @@
  */
 
 const { pool } = require('../db');
+const { logAudit } = require('../middleware/audit');
 const { formatMoney } = require('../utils/money');
 const { getToday } = require('../utils/dates');
 
@@ -14,7 +15,19 @@ async function listServiceCatalog(req, res) {
   try {
     const { active = 'true' } = req.query;
     
-    let query = 'SELECT * FROM service_catalog WHERE 1=1';
+    let query = `
+      SELECT 
+        service_id,
+        code,
+        name as service_name,
+        category,
+        category as description,
+        unit_price as price,
+        tax_rate_percent,
+        active
+      FROM service_catalog 
+      WHERE 1=1
+    `;
     const params = [];
     
     if (active === 'true') {
@@ -110,7 +123,13 @@ async function createServiceUsage(req, res) {
        RETURNING *`,
       [booking_id, service_id, used_on, qty, price]
     );
-    
+    // audit
+    logAudit(req, {
+      action: 'create_service_usage',
+      entity: 'service_usage',
+      entityId: rows[0]?.service_usage_id,
+      details: rows[0],
+    });
     res.status(201).json({ service_usage: rows[0] });
   } catch (err) {
     console.error('Create service usage error:', err);
@@ -189,7 +208,13 @@ async function createPayment(req, res) {
        RETURNING *`,
       [booking_id, amount, method, paid_at, payment_reference]
     );
-    
+    // audit
+    logAudit(req, {
+      action: 'create_payment',
+      entity: 'payment',
+      entityId: rows[0]?.payment_id,
+      details: rows[0],
+    });
     res.status(201).json({ payment: rows[0] });
   } catch (err) {
     console.error('Create payment error:', err);
@@ -274,7 +299,13 @@ async function createAdjustment(req, res) {
        RETURNING *`,
       [booking_id, amount, type, reference_note]
     );
-    
+    // audit
+    logAudit(req, {
+      action: 'create_payment_adjustment',
+      entity: 'payment_adjustment',
+      entityId: rows[0]?.adjustment_id,
+      details: rows[0],
+    });
     res.status(201).json({ adjustment: rows[0] });
   } catch (err) {
     console.error('Create adjustment error:', err);

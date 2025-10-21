@@ -1,8 +1,8 @@
 ﻿// src/controllers/service.controller.js
 const { pool } = require("../db");
 
-// Normalize request body â†’ your DB names are used_on / qty / unit_price_at_use
-function pickUsage(body = {}) {
+// Normalize request body → your DB names are used_on / qty / unit_price_at_use
+function _pickUsage(body = {}) { // Reserved for future use
   const {
     booking_id,
     service_id,
@@ -25,7 +25,7 @@ function pickUsage(body = {}) {
   };
 }
 
-function prettyDateTime(ts, tz = "Asia/Colombo", locale = "en-GB") {
+function _prettyDateTime(ts, tz = "Asia/Colombo", locale = "en-GB") { // Reserved for future use
   if (!ts) return null;
   return new Date(ts).toLocaleString(locale, {
     dateStyle: "medium", // e.g., 11 Nov 2025
@@ -35,7 +35,7 @@ function prettyDateTime(ts, tz = "Asia/Colombo", locale = "en-GB") {
   });
 }
 
-// GET /services  â†’ list catalog
+// GET /services  → list catalog
 async function listServices(req, res) {
   try {
     const { active } = req.query || {};
@@ -50,3 +50,7 @@ async function listServices(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+module.exports = {
+  listServices
+};

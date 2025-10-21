@@ -1,5 +1,5 @@
 const request = require("supertest");
-const { app } = require("../src/app");
+const { app } = require("../../src/app");
 
 describe("Health", () => {
   it("GET /health returns ok:true", async () => {
@@ -8,3 +8,5 @@ describe("Health", () => {
     expect(res.body).toEqual({ ok: true });
   });
 });
+
+

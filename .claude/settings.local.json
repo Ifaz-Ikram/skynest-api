@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(psql:*)",
+      "Bash(PGPASSWORD=200320701070 psql:*)",
+      "Bash(npm run build:*)",
+      "Bash(node:*)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
-import { CreditCard } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { CreditCard, Building2, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import api from '../../utils/api';
 import { CreatePaymentModal } from './CreatePaymentModal';
 import { PaymentAdjustmentModal } from './PaymentAdjustmentModal';
+import { LuxuryPageHeader, LoadingSpinner, SearchableDropdown } from '../common';
 
 export const PaymentsPage = () => {
   const [payments, setPayments] = useState([]);
@@ -11,15 +12,73 @@ export const PaymentsPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAdjustModal, setShowAdjustModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  
+  // Branch filtering state
+  const [branches, setBranches] = useState([]);
+  const [selectedBranch, setSelectedBranch] = useState('');
+  
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [limit] = useState(50); // Fixed at 50 items per page
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const branchOptions = useMemo(() => {
+    const base = [{ id: '', name: 'All branches' }];
+    if (!Array.isArray(branches) || branches.length === 0) {
+      return base;
+    }
+    return [
+      ...base,
+      ...branches.map((branch) => ({
+        id: String(branch.branch_id),
+        name: branch.branch_name || `Branch ${branch.branch_id}`,
+      })),
+    ];
+  }, [branches]);
 
   useEffect(() => {
+    loadBranches();
     loadPayments();
-  }, []);
+  }, [page]);
+
+  useEffect(() => {
+    // Reload payments when branch filter changes
+    if (branches.length > 0) {
+      loadPayments();
+    }
+  }, [selectedBranch]);
+
+  const loadBranches = async () => {
+    try {
+      const branchesData = await api.getBranches();
+      const branchList = Array.isArray(branchesData) ? branchesData : branchesData?.branches || [];
+      setBranches(branchList);
+    } catch (error) {
+      console.error('Failed to load branches:', error);
+    }
+  };
 
   const loadPayments = async () => {
+    setLoading(true);
     try {
-      const data = await api.request('/api/payments');
-      setPayments(data);
+      let url = `/api/payments?page=${page}&limit=${limit}`;
+      if (selectedBranch) {
+        url += `&branch_id=${selectedBranch}`;
+      }
+      const response = await api.request(url);
+      
+      // Handle paginated response
+      if (response.data && response.pagination) {
+        setPayments(response.data);
+        setTotal(response.pagination.total);
+        setTotalPages(response.pagination.totalPages);
+      } else {
+        // Fallback for non-paginated response (backward compatibility)
+        setPayments(response);
+        setTotal(response.length);
+        setTotalPages(1);
+      }
     } catch (error) {
       console.error('Failed to load payments:', error);
     } finally {
@@ -32,75 +91,232 @@ export const PaymentsPage = () => {
     setShowAdjustModal(true);
   };
 
+  // Calculate stats
+  const totalTransactions = total;
+  const paymentsOnly = payments.filter(p => p.transaction_type === 'payment');
+  const adjustmentsOnly = payments.filter(p => p.transaction_type === 'adjustment');
+  const totalRevenue = paymentsOnly.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+  const totalAdjustments = adjustmentsOnly.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+  const avgPayment = paymentsOnly.length > 0 ? totalRevenue / paymentsOnly.length : 0;
+
+  if (loading && payments.length === 0) {
+    return <LoadingSpinner size="xl" message="Loading payments..." />;
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Payments</h1>
-          <p className="text-gray-600 mt-1">Track all payment transactions</p>
+    <div className="min-h-screen bg-surface-tertiary p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <LuxuryPageHeader
+          title="Payments"
+          description="Track all payment transactions"
+          icon={CreditCard}
+          stats={[
+            { label: 'Total Transactions', value: totalTransactions, trend: `Across ${totalPages} pages` },
+            { label: 'Total Revenue', value: `Rs ${totalRevenue.toLocaleString()}`, trend: 'Payments only' },
+            { label: 'Net Adjustments', value: `Rs ${totalAdjustments.toLocaleString()}`, trend: 'Refunds & charges' },
+          ]}
+          actions={[{
+            label: 'Record Payment',
+            icon: CreditCard,
+            onClick: () => setShowCreateModal(true),
+            variant: 'secondary'
+          }]}
+        />
+
+        {/* Branch Filter */}
+        <div className="bg-surface-secondary rounded-xl shadow-md p-6 border border-border">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Building2 className="w-5 h-5 text-text-secondary" />
+            <span className="font-medium text-text-secondary">Filter by Branch:</span>
+          </div>
+          <SearchableDropdown
+            value={selectedBranch}
+            onChange={(value) => setSelectedBranch(value || '')}
+            options={branchOptions}
+            placeholder="All branches"
+            searchPlaceholder="Search branches..."
+            className="min-w-[220px]"
+            buttonclassName="!px-4 !py-2.5 !rounded-xl !border border-border dark:border-slate-600 !bg-white text-text-secondary font-medium hover:!border-luxury-gold focus-visible:!ring-luxury-gold focus-visible:!ring-offset-0"
+            dropdownClassName="!border-border"
+          />
+          {selectedBranch && (
+            <button
+              onClick={() => setSelectedBranch('')}
+              className="text-sm text-text-tertiary hover:text-text-secondary underline"
+            >
+              Clear Filter
+            </button>
+          )}
         </div>
-        <button onClick={() => setShowCreateModal(true)} className="btn-primary">
-          <CreditCard className="w-5 h-5 mr-2 inline" />
-          Record Payment
-        </button>
       </div>
 
       <div className="card">
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-luxury-gold mx-auto"></div>
-            <p className="text-gray-600 mt-4">Loading payments...</p>
+            <p className="text-text-secondary mt-4">Loading payments...</p>
           </div>
         ) : payments.length === 0 ? (
           <div className="text-center py-12">
             <CreditCard className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-600">No payments found</p>
+            <p className="text-text-secondary">No transactions found</p>
+            <p className="text-text-tertiary text-sm mt-2">Payments and adjustments will appear here</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Payment ID</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Booking ID</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Amount</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Method</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Date</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
+                <tr className="border-b border-border">
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Transaction ID</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Type</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Booking ID</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Amount</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Method</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Reason</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Date</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {payments.map((payment) => (
-                  <tr key={payment.payment_id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-4 px-4 font-medium text-gray-900">{payment.payment_id}</td>
-                    <td className="py-4 px-4 text-gray-600">{payment.booking_id}</td>
-                    <td className="py-4 px-4 font-bold text-luxury-gold">${payment.amount}</td>
-                    <td className="py-4 px-4 text-gray-600">{payment.payment_method}</td>
-                    <td className="py-4 px-4 text-gray-600">
-                      {payment.payment_date ? format(new Date(payment.payment_date), 'dd/MM/yyyy') : 'N/A'}
+                {payments.map((transaction) => (
+                  <tr 
+                    key={`${transaction.transaction_type}-${transaction.payment_id}`} 
+                    className={`border-b border-border hover:bg-surface-tertiary dark:bg-slate-700/30 ${
+                      transaction.transaction_type === 'adjustment' ? 'bg-blue-50' : ''
+                    }`}
+                  >
+                    <td className="py-4 px-4 font-medium text-text-primary">
+                      <div className="flex items-center gap-2">
+                        {transaction.transaction_type === 'payment' ? (
+                          <ArrowUpCircle className="w-4 h-4 text-green-600" />
+                        ) : (
+                          <ArrowDownCircle className="w-4 h-4 text-blue-600" />
+                        )}
+                        {transaction.transaction_type === 'payment' ? 'P' : 'A'}{transaction.payment_id}
+                      </div>
                     </td>
                     <td className="py-4 px-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        payment.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                        payment.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-red-100 text-red-700'
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        transaction.transaction_type === 'payment' 
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' 
+                          : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
                       }`}>
-                        {payment.status}
+                        {transaction.transaction_type === 'payment' ? 'Payment' : 'Adjustment'}
                       </span>
                     </td>
+                    <td className="py-4 px-4 text-text-secondary">{transaction.booking_id}</td>
+                    <td className={`py-4 px-4 font-bold ${
+                      transaction.transaction_type === 'adjustment' && transaction.amount < 0
+                        ? 'text-red-600' 
+                        : 'text-luxury-gold'
+                    }`}>
+                      {transaction.transaction_type === 'adjustment' && transaction.amount < 0 ? '-' : ''}Rs {Math.abs(transaction.amount)}
+                    </td>
+                    <td className="py-4 px-4 text-text-secondary">
+                      {transaction.transaction_type === 'payment' 
+                        ? transaction.method || 'N/A'
+                        : transaction.adjustment_type || 'N/A'
+                      }
+                    </td>
+                    <td className="py-4 px-4 text-text-secondary text-sm">
+                      {transaction.transaction_type === 'adjustment' 
+                        ? (transaction.reason || 'No reason provided')
+                        : '-'
+                      }
+                    </td>
+                    <td className="py-4 px-4 text-text-secondary">
+                      {transaction.paid_at ? format(new Date(transaction.paid_at), 'dd/MM/yyyy') : 'N/A'}
+                    </td>
                     <td className="py-4 px-4">
-                      <button 
-                        onClick={() => handleAdjustment(payment)}
-                        className="text-blue-600 hover:text-blue-800 font-medium text-sm"
-                      >
-                        Adjust
-                      </button>
+                      {transaction.transaction_type === 'payment' ? (
+                        <button 
+                          onClick={() => handleAdjustment(transaction)}
+                          className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+                        >
+                          Adjust
+                        </button>
+                      ) : (
+                        <span className="text-text-tertiary text-sm">-</span>
+                      )}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+        
+        {/* Load More Button */}
+        {!loading && payments.length > 0 && page < totalPages && (
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={() => setPage(p => p + 1)}
+              className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-md shadow-sm transition-colors"
+            >
+              Load More Payments ({payments.length} loaded)
+            </button>
+          </div>
+        )}
+        
+        {!loading && payments.length > 0 && (
+          <div className="mt-4 text-center text-sm text-text-secondary">
+            Load more payments for better search results
+          </div>
+        )}
+        
+        {/* Pagination Controls */}
+        {!loading && payments.length > 0 && totalPages > 1 && (
+          <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
+            <div className="text-sm text-text-secondary">
+              Showing <span className="font-medium">{payments.length}</span> filtered results from{' '}
+              <span className="font-medium">{total}</span> loaded payments
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-2 border border-border dark:border-slate-600 rounded text-sm font-medium text-text-secondary hover:bg-surface-tertiary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+              >
+                Previous
+              </button>
+              
+              {/* Page Numbers */}
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (page <= 3) {
+                  pageNum = i + 1;
+                } else if (page >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = page - 2 + i;
+                }
+                
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setPage(pageNum)}
+                    className={`min-w-[40px] px-3 py-2 border rounded text-sm font-medium transition-colors ${
+                      page === pageNum
+                        ? 'bg-yellow-500 text-white border-yellow-500'
+                        : 'border-border dark:border-slate-600 text-text-primary dark:text-slate-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+              
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="px-3 py-2 border border-border dark:border-slate-600 rounded text-sm font-medium text-text-secondary hover:bg-surface-tertiary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -129,6 +345,7 @@ export const PaymentsPage = () => {
           }}
         />
       )}
+      </div>
     </div>
   );
 };

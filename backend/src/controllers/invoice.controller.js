@@ -1,7 +1,7 @@
-const pool = require("../db");
+const { pool } = require("../db");
 const { formatMoney } = require("../utils/money");
 const { formatDate, calculateNights } = require("../utils/dates");
-const { calculateBookingTotals } = require("../utils/totals");
+const { calculateBookingTotals: _calculateBookingTotals } = require("../utils/totals"); // Reserved for future use
 
 /**
  * Generate invoice data for a booking
@@ -26,23 +26,23 @@ async function generateInvoice(req, res) {
         b.status,
         b.created_at,
         g.guest_id,
-        g.full_name AS guest_name,
-        g.email,
-        g.phone,
-        g.address,
+        COALESCE(g.full_name, 'Unknown Guest') AS guest_name,
+        COALESCE(g.email, '') AS email,
+        COALESCE(g.phone, '') AS phone,
+        COALESCE(g.address, '') AS address,
         r.room_id,
-        r.room_number,
-        rt.name AS room_type,
+        COALESCE(r.room_number, 'Unknown Room') AS room_number,
+        COALESCE(rt.name, 'Unknown Type') AS room_type,
         br.branch_id,
-        br.branch_name,
-        br.address AS branch_address,
-        br.contact_number AS branch_phone,
+        COALESCE(br.branch_name, 'Unknown Branch') AS branch_name,
+        COALESCE(br.address, '') AS branch_address,
+        COALESCE(br.contact_number, '') AS branch_phone,
         '' AS branch_email
       FROM booking b
-      JOIN guest g ON b.guest_id = g.guest_id
-      JOIN room r ON b.room_id = r.room_id
-      JOIN room_type rt ON r.room_type_id = rt.room_type_id
-      JOIN branch br ON r.branch_id = br.branch_id
+      LEFT JOIN guest g ON b.guest_id = g.guest_id
+      LEFT JOIN room r ON b.room_id = r.room_id
+      LEFT JOIN room_type rt ON r.room_type_id = rt.room_type_id
+      LEFT JOIN branch br ON r.branch_id = br.branch_id
       WHERE b.booking_id = $1
     `;
 
@@ -70,10 +70,10 @@ async function generateInvoice(req, res) {
         s.code,
         s.name,
         s.category,
-        su.quantity,
-        su.unit_price,
+        su.qty AS quantity,
+        su.unit_price_at_use AS unit_price,
         su.used_on,
-        (su.quantity * su.unit_price) AS line_total
+        (su.qty * su.unit_price_at_use) AS line_total
       FROM service_usage su
       JOIN service_catalog s ON su.service_id = s.service_id
       WHERE su.booking_id = $1
@@ -89,11 +89,11 @@ async function generateInvoice(req, res) {
         payment_id,
         amount,
         method,
-        payment_date,
+        paid_at AS payment_date,
         payment_reference
       FROM payment
       WHERE booking_id = $1
-      ORDER BY payment_date
+      ORDER BY paid_at
     `;
 
     const paymentsRes = await pool.query(paymentsQuery, [bookingId]);
@@ -105,7 +105,7 @@ async function generateInvoice(req, res) {
         adjustment_id,
         amount,
         type,
-        reason,
+        reference_note AS reason,
         created_at
       FROM payment_adjustment
       WHERE booking_id = $1
@@ -114,6 +114,21 @@ async function generateInvoice(req, res) {
 
     const adjustmentsRes = await pool.query(adjustmentsQuery, [bookingId]);
     const adjustments = adjustmentsRes.rows;
+
+    // Check if invoice already exists for this booking
+    const existingInvoice = await pool.query(
+      'SELECT invoice_id FROM invoice WHERE booking_id = $1',
+      [bookingId]
+    );
+
+    // If invoice doesn't exist, create it
+    if (existingInvoice.rows.length === 0) {
+      await pool.query(
+        `INSERT INTO invoice (booking_id, period_start, period_end, issued_at)
+         VALUES ($1, $2, $3, NOW())`,
+        [bookingId, booking.check_in_date, booking.check_out_date]
+      );
+    }
 
     // Calculate totals
     const nights = calculateNights(booking.check_in_date, booking.check_out_date);
@@ -224,7 +239,16 @@ async function generateInvoice(req, res) {
     res.json({ invoice });
   } catch (error) {
     console.error("Error generating invoice:", error);
-    res.status(500).json({ error: "Failed to generate invoice" });
+    console.error("Error stack:", error.stack);
+    console.error("Error details:", {
+      message: error.message,
+      code: error.code,
+      detail: error.detail
+    });
+    res.status(500).json({ 
+      error: "Failed to generate invoice",
+      details: error.message 
+    });
   }
 }
 

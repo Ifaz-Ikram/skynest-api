@@ -1,5 +1,39 @@
-version: '3.9'
 services:
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - backend/.env
+    environment:
+      # Connect to host's Postgres from inside container
+      PGHOST: host.docker.internal
+      DB_HOST: host.docker.internal
+      PGPORT: 5432
+      # Override only values that must differ from env_file
+      NODE_ENV: development
+
+  api-dev:
+    image: node:20
+    working_dir: /app/backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - backend/.env
+    environment:
+      PGHOST: host.docker.internal
+      DB_HOST: host.docker.internal
+      NODE_ENV: development
+    volumes:
+      - ./backend:/app/backend
+      # Keep container node_modules separate from host
+      - /app/backend/node_modules
+    command: sh -lc "npm install && npx nodemon server.js"
+    # No hard dependency on bundled db; uses host DB by default
   db:
     image: postgres:16
     restart: unless-stopped
@@ -18,4 +52,3 @@ services:
       retries: 5
 volumes:
   pgdata:
-

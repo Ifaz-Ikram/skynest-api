@@ -3,11 +3,23 @@ const define = (sequelize, DataTypes) => {
     "Customer",
     {
       customer_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         primaryKey: true,
         autoIncrement: true,
       },
-      guest_id: { type: DataTypes.INTEGER, allowNull: true }, // if your schema has it
+      user_id: {
+        type: DataTypes.BIGINT,
+        allowNull: true,
+      },
+      guest_id: {
+        type: DataTypes.BIGINT,
+        allowNull: false,
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: DataTypes.NOW,
+      },
     },
     {
       tableName: "customer",

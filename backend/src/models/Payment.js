@@ -3,15 +3,31 @@ const define = (sequelize, DataTypes) => {
     "Payment",
     {
       payment_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         primaryKey: true,
         autoIncrement: true,
       },
-      booking_id: { type: DataTypes.INTEGER, allowNull: false },
-      paid_on: { type: DataTypes.DATEONLY, allowNull: false },
-      amount: { type: DataTypes.DECIMAL(12, 2), allowNull: false },
-      method: { type: DataTypes.STRING, allowNull: false }, // or ENUM if you want
-      reference: { type: DataTypes.STRING, allowNull: true },
+      booking_id: {
+        type: DataTypes.BIGINT,
+        allowNull: false,
+      },
+      amount: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      method: {
+        type: DataTypes.ENUM("Cash", "Card", "Online", "BankTransfer"),
+        allowNull: true,
+      },
+      paid_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+      payment_reference: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
     },
     {
       tableName: "payment",

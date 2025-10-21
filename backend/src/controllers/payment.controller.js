@@ -1,5 +1,9 @@
 // src/controllers/payment.controller.js
 const { pool } = require("../db");
+// bookingMetaStore removed - feature not in schema
+// const bookingMetaStore = require("../data/bookingMetaStore");
+// buildDepositSummary removed - deposit feature not in schema
+// const { buildDepositSummary } = require("../utils/deposit");
 
 // ---------- helpers ----------
 function normalizePaymentMethod(input) {
@@ -18,7 +22,6 @@ function pickPayment(body = {}) {
     booking_id,
     amount,
     method,
-    paid_at = null,
     payment_reference = null,
   } = body;
 
@@ -29,9 +32,19 @@ function pickPayment(body = {}) {
     booking_id: Number(booking_id),
     amount: Number(amount),
     method,
-    paid_at,
+    paid_at: new Date().toISOString(), // Always use current timestamp
     payment_reference,
   };
+}
+
+function prettyDateTime(ts, tz = "Asia/Colombo", locale = "en-GB") {
+  if (!ts) return null;
+  return new Date(ts).toLocaleString(locale, {
+    dateStyle: "medium",
+    timeStyle: "short",
+    hour12: true,
+    timeZone: tz,
+  });
 }
 
 function pickAdjustment(body = {}) {
@@ -200,6 +213,120 @@ async function createPayment(req, res) {
   }
 }
 
+// GET /payments - List all payments
+async function listPayments(req, res) {
+  try {
+    // Pagination parameters
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 50;
+    const offset = (page - 1) * limit;
+    const { branch_id } = req.query; // NEW: Get branch filter
+    
+    console.log(`Payments pagination: page=${page}, limit=${limit}, offset=${offset}`);
+    console.log(`Branch filter: ${branch_id || 'none'}`);
+    
+    // Build branch filter condition
+    let branchFilter = '';
+    let branchParams = [];
+    if (branch_id) {
+      branchFilter = 'WHERE r.branch_id = $1';
+      branchParams = [Number(branch_id)];
+    }
+    
+    // Use INNER JOIN for room when branch filtering is used
+    const roomJoin = branch_id ? 'INNER JOIN' : 'LEFT JOIN';
+    
+    // Get total count - include both payments and adjustments
+    const countQuery = `
+      SELECT COUNT(*) as total FROM (
+        SELECT p.payment_id
+        FROM payment p
+        JOIN booking b ON p.booking_id = b.booking_id
+        LEFT JOIN guest g ON b.guest_id = g.guest_id
+        ${roomJoin} room r ON b.room_id = r.room_id
+        ${branchFilter}
+        
+        UNION ALL
+        
+        SELECT pa.adjustment_id as payment_id
+        FROM payment_adjustment pa
+        JOIN booking b ON pa.booking_id = b.booking_id
+        LEFT JOIN guest g ON b.guest_id = g.guest_id
+        ${roomJoin} room r ON b.room_id = r.room_id
+        ${branchFilter}
+      ) combined_transactions
+    `;
+    
+    const countResult = await pool.query(countQuery, branchParams);
+    const total = parseInt(countResult.rows[0].total, 10);
+    
+    // Get paginated data - include both payments and adjustments
+    const { rows: payments } = await pool.query(
+      `(SELECT p.payment_id,
+              p.booking_id,
+              p.amount,
+              p.method::text,
+              p.paid_at,
+              p.payment_reference,
+              'payment' as transaction_type,
+              NULL as adjustment_type,
+              NULL as reason,
+              COALESCE(g.full_name, 'Unknown Guest') as guest_name,
+              COALESCE(r.room_number, 'Unknown Room') as room_number,
+              b.check_in_date,
+              b.check_out_date,
+              b.status as booking_status
+         FROM payment p
+         JOIN booking b ON p.booking_id = b.booking_id
+         LEFT JOIN guest g ON b.guest_id = g.guest_id
+         ${roomJoin} room r ON b.room_id = r.room_id
+        ${branchFilter})
+        
+        UNION ALL
+        
+        (SELECT pa.adjustment_id as payment_id,
+               pa.booking_id,
+               CASE WHEN pa.type IN ('refund','chargeback') THEN -pa.amount ELSE pa.amount END as amount,
+               pa.type::text as method,
+               pa.created_at as paid_at,
+               pa.reference_note as payment_reference,
+               'adjustment' as transaction_type,
+               pa.type::text as adjustment_type,
+               pa.reference_note as reason,
+               COALESCE(g.full_name, 'Unknown Guest') as guest_name,
+               COALESCE(r.room_number, 'Unknown Room') as room_number,
+               b.check_in_date,
+               b.check_out_date,
+               b.status as booking_status
+         FROM payment_adjustment pa
+         JOIN booking b ON pa.booking_id = b.booking_id
+         LEFT JOIN guest g ON b.guest_id = g.guest_id
+         ${roomJoin} room r ON b.room_id = r.room_id
+        ${branchFilter})
+        
+        ORDER BY paid_at DESC
+        LIMIT $${branchParams.length + 1} OFFSET $${branchParams.length + 2}`,
+      [...branchParams, limit, offset]
+    );
+
+    console.log(`Returning ${payments.length} payments (page ${page} of ${Math.ceil(total / limit)})`);
+    
+    // Return paginated response with metadata
+    res.json({
+      data: payments,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
+  } catch (err) {
+    console.error("listPayments error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 // GET /payments/:bookingId
 async function listPaymentsForBooking(req, res) {
   const bookingId = Number(req.params.bookingId);
@@ -225,52 +352,12 @@ async function listPaymentsForBooking(req, res) {
           adjustment_id,
           booking_id,
           CASE WHEN type IN ('refund','chargeback') THEN -amount ELSE amount END AS amount,
-          CASE
-            WHEN EXISTS (
-              SELECT 1 FROM information_schema.columns
-              WHERE table_schema='public' AND table_name='payment_adjustment' AND column_name='reason'
-            ) THEN reason
-            WHEN EXISTS (
-              SELECT 1 FROM information_schema.columns
-              WHERE table_schema='public' AND table_name='payment_adjustment' AND column_name='remarks'
-            ) THEN remarks
-            WHEN EXISTS (
-              SELECT 1 FROM information_schema.columns
-              WHERE table_schema='public' AND table_name='payment_adjustment' AND column_name='note'
-            ) THEN note
-            ELSE NULL
-          END AS reason,
-          CASE
-            WHEN EXISTS (
-              SELECT 1 FROM information_schema.columns
-              WHERE table_schema='public' AND table_name='payment_adjustment' AND column_name='created_at'
-            ) THEN created_at
-            WHEN EXISTS (
-              SELECT 1 FROM information_schema.columns
-              WHERE table_schema='public' AND table_name='payment_adjustment' AND column_name='adjusted_at'
-            ) THEN adjusted_at
-            WHEN EXISTS (
-              SELECT 1 FROM information_schema.columns
-              WHERE table_schema='public' AND table_name='payment_adjustment' AND column_name='createdon'
-            ) THEN createdon
-            WHEN EXISTS (
-              SELECT 1 FROM information_schema.columns
-              WHERE table_schema='public' AND table_name='payment_adjustment' AND column_name='created'
-            ) THEN created
-            WHEN EXISTS (
-              SELECT 1 FROM information_schema.columns
-              WHERE table_schema='public' AND table_name='payment_adjustment' AND column_name='timestamp'
-            ) THEN "timestamp"
-            WHEN EXISTS (
-              SELECT 1 FROM information_schema.columns
-              WHERE table_schema='public' AND table_name='payment_adjustment' AND column_name='ts'
-            ) THEN ts
-            ELSE NULL
-          END AS created_at,
+          reference_note AS reason,
+          created_at,
           type
        FROM payment_adjustment
        WHERE booking_id = $1
-       ORDER BY COALESCE(created_at, NOW()) DESC, adjustment_id DESC`,
+       ORDER BY created_at DESC, adjustment_id DESC`,
       [bookingId],
     );
 
@@ -431,8 +518,84 @@ async function createPaymentAdjustment(req, res) {
   }
 }
 
+async function getDepositReceipt(req, res) {
+  const bookingId = Number(req.params.id);
+  if (!bookingId) return res.status(400).json({ error: "Invalid id" });
+
+  try {
+    const bookingResult = await pool.query(
+      `SELECT 
+         b.booking_id,
+         b.guest_id,
+         COALESCE(g.full_name, 'Unknown Guest') AS guest_name,
+         b.room_id,
+         COALESCE(r.room_number, 'Unknown Room') AS room_number,
+         b.status,
+         b.check_in_date,
+         b.check_out_date,
+         b.advance_payment
+       FROM booking b
+       LEFT JOIN guest g ON g.guest_id = b.guest_id
+       LEFT JOIN room r ON r.room_id = b.room_id
+       WHERE b.booking_id = $1`,
+      [bookingId],
+    );
+    if (!bookingResult.rowCount) {
+      return res.status(404).json({ error: "Not found" });
+    }
+    const booking = bookingResult.rows[0];
+
+    const payments = await pool.query(
+      `SELECT payment_id, amount, method, paid_at, payment_reference
+         FROM payment
+        WHERE booking_id = $1
+        ORDER BY paid_at ASC, payment_id ASC`,
+      [bookingId],
+    );
+    const payment = payments.rows.find(
+      (row) => Number(row.amount || 0) > 0,
+    );
+
+    // Meta and deposit features removed - not in schema
+    // const meta = await bookingMetaStore.getMeta(bookingId);
+    // const deposit = buildDepositSummary(booking, meta || {});
+    const deposit = null; // Deposit feature removed
+
+    return res.json({
+      receipt: {
+        booking: {
+          booking_id: booking.booking_id,
+          guest_id: booking.guest_id,
+          guest_name: booking.guest_name || null,
+          room_id: booking.room_id,
+          room_number: booking.room_number || null,
+          status: booking.status,
+          check_in_date: booking.check_in_date,
+          check_out_date: booking.check_out_date,
+        },
+        deposit,
+        payment: payment
+          ? {
+              payment_id: payment.payment_id,
+              amount: Number(payment.amount),
+              method: payment.method,
+              paid_at: payment.paid_at,
+              paid_at_pretty: prettyDateTime(payment.paid_at),
+              payment_reference: payment.payment_reference,
+            }
+          : null,
+      },
+    });
+  } catch (err) {
+    console.error("getDepositReceipt error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 module.exports = {
   createPayment,
   createPaymentAdjustment,
+  listPayments,
   listPaymentsForBooking,
+  getDepositReceipt,
 };
