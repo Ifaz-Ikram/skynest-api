@@ -15,24 +15,11 @@ import UserManagementPage from './components/users/UserManagementPage';
 import { GuestsPage } from './components/guests';
 import { PreBookingsPage } from './components/prebookings';
 import { ServiceUsagePage } from './components/serviceusage';
-// import { InvoicesPage } from './components/invoices'; // REMOVED: No backend endpoints
 import { BranchesPage } from './components/branches';
-// import { AuditLogPage } from './components/auditlog'; // REMOVED: No UI implementation
 import AuditLogPage from './components/auditlog/AuditLogPage';
 import RoomTypesPage from './components/roomtypes/RoomTypesPage';
-// REMOVED: Deposits & Guarantees - file-based storage is architecturally flawed
-// See docs/DEPOSIT_GUARANTEE_ANALYSIS.md for detailed analysis
-// Will be reimplemented in Phase 2 with proper database tables
-// import DepositsManagementPage from './components/deposits/DepositsManagementPage';
-// import GuaranteesManagementPage from './components/guarantees/GuaranteesManagementPage';
-// REMOVED: CheckoutModal - checkout is handled via modal from Bookings page
-// import { CheckoutModal } from './components/checkout/CheckoutModal';
 import ReportingDashboard from './components/reports/ReportingDashboard';
-// REMOVED: Manager Forecasting - Phase 3 feature (Q2 2026)
-// import ManagerForecasting from './components/manager/ManagerForecasting';
 import CustomerPortal from './components/customer/CustomerPortal';
-// REMOVED: ReceptionistGuestProfile - Phase 2 feature requiring additional database tables
-// import ReceptionistGuestProfile from './components/receptionist/ReceptionistGuestProfile';
 import ServiceUsageManagement from './components/services/ServiceUsageManagement';
 import HousekeepingPage from './components/housekeeping/HousekeepingPage';
 import RoomAvailabilityPage from './components/availability/RoomAvailabilityPage';

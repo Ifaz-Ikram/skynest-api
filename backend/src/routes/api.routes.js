@@ -11,7 +11,6 @@ const { pool } = require('../db');
 // Controllers (only those that work with actual database)
 const authController = require('../controllers/auth.controller');
 const bookingController = require('../controllers/booking.controller');
-const servicePaymentController = require('../controllers/service-payment.controller');
 const paymentController = require('../controllers/payment.controller');
 const invoiceController = require('../controllers/invoice.controller');
 const reportController = require('../controllers/report.controller');
@@ -19,19 +18,12 @@ const branchController = require('../controllers/branch.controller');
 const emailController = require('../utils/email');
 const housekeepingController = require('../controllers/housekeeping.controller');
 const ratesController = require('../controllers/rates.controller');
-// Deposit and guarantee controllers removed - features not in schema
 const checkinController = require('../controllers/checkin.controller');
 const checkoutController = require('../controllers/checkout.controller');
 const roomAvailabilityController = require('../controllers/room-availability.controller');
 const reportingDashboardsController = require('../controllers/reporting-dashboards.controller');
-const reportsController = require('../controllers/reports.controller');
-const customerController = require('../controllers/customer.controller');
 const serviceUsageController = require('../controllers/service-usage.controller');
-// REMOVED: Manager Forecasting - Phase 3 feature (Q2 2026)
-// const managerForecastingController = require('../controllers/manager-forecasting.controller');
 const prebookingController = require('../controllers/prebooking.controller');
-// REMOVED: Guest Profile Management - Phase 2 feature requiring additional database tables
-// const receptionistGuestProfileController = require('../controllers/receptionist-guest-profile.controller');
 const customerPortalController = require('../controllers/customer-portal.controller');
 const serviceController = require('../controllers/service.controller');
 const guestController = require('../controllers/guest.controller');
@@ -39,8 +31,6 @@ const auditLogController = require('../controllers/auditlog.controller');
 
 // Import booking routes for additional booking endpoints
 const bookingRoutes = require('./booking.routes');
-
-// Simple housekeeping controller removed - references non-existent employee columns
 
 // ============================================================================
 // AUTH ROUTES (Public)
@@ -508,23 +498,6 @@ router.delete('/guests/:id', requireAuth, requireRole('Admin', 'Manager'), async
   }
 });
 
-// REMOVED: Guest Profile Management - Phase 2 feature requiring additional database tables
-// ============================================================================
-// GUEST PROFILE ROUTES
-// ============================================================================
-// router.get('/guests/:guestId/profile', requireAuth, requireStaff, receptionistGuestProfileController.getGuestProfile);
-// router.post('/guests/:guestId/notes', requireAuth, requireRole('Receptionist', 'Manager'), receptionistGuestProfileController.addGuestNote);
-// router.patch('/guests/:guestId/notes/:noteId', requireAuth, requireRole('Receptionist', 'Manager'), receptionistGuestProfileController.updateGuestNote);
-// router.delete('/guests/:guestId/notes/:noteId', requireAuth, requireRole('Receptionist', 'Manager'), receptionistGuestProfileController.deleteGuestNote);
-// router.post('/guests/:guestId/preferences', requireAuth, requireRole('Receptionist', 'Manager'), receptionistGuestProfileController.addGuestPreference);
-// router.patch('/guests/:guestId/preferences/:prefId', requireAuth, requireRole('Receptionist', 'Manager'), receptionistGuestProfileController.updateGuestPreference);
-// router.post('/guests/:guestId/alerts', requireAuth, requireRole('Receptionist', 'Manager'), receptionistGuestProfileController.addGuestAlert);
-// router.patch('/guests/:guestId/alerts/:alertId', requireAuth, requireRole('Receptionist', 'Manager'), receptionistGuestProfileController.updateGuestAlert);
-// router.delete('/guests/:guestId/alerts/:alertId', requireAuth, requireRole('Receptionist', 'Manager'), receptionistGuestProfileController.deleteGuestAlert);
-// router.get('/guests/search', requireAuth, requireStaff, receptionistGuestProfileController.searchGuests);
-// router.get('/guests/dashboard', requireAuth, requireStaff, receptionistGuestProfileController.getGuestDashboard);
-
-
 // ============================================================================
 // HOUSEKEEPING MANAGEMENT ROUTES (Uses housekeeping.controller only)
 // ============================================================================
@@ -726,12 +699,6 @@ router.put('/rooms/:roomId/status', requireAuth, requireStaff, async (req, res) 
 });
 
 // ============================================================================
-// DEPOSIT & GUARANTEE ROUTES - REMOVED (not in schema)
-// ============================================================================
-// Deposit tracking is via booking.advance_payment only
-// Guarantee feature removed - no table in schema
-
-// ============================================================================
 // CHECK-IN/CHECK-OUT ROUTES
 // ============================================================================
 router.post('/checkin', requireAuth, requireRole('Admin', 'Receptionist', 'Manager'), checkinController.createCheckIn);
@@ -845,14 +812,6 @@ router.get('/reports/dashboard/occupancy-trends', requireAuth, requireStaff, rep
 router.get('/reports/dashboard/revenue-analysis', requireAuth, requireStaff, reportingDashboardsController.getRevenueAnalysis);
 router.get('/reports/dashboard/guest-analytics', requireAuth, requireStaff, reportingDashboardsController.getGuestAnalytics);
 router.get('/reports/export', requireAuth, requireStaff, reportingDashboardsController.exportReportData);
-
-// Branch routes - REMOVED DUPLICATE (already defined at line 137)
-
-// REMOVED: Manager forecasting - Phase 3 feature (Q2 2026)
-// router.get('/reports/forecasting/pace', requireAuth, requireRole('Manager'), managerForecastingController.getPaceAnalysis);
-// router.get('/reports/forecasting/pickup', requireAuth, requireRole('Manager'), managerForecastingController.getPickupAnalysis);
-// router.get('/reports/forecasting/segmentation', requireAuth, requireRole('Manager'), managerForecastingController.getSegmentationAnalysis);
-// router.get('/reports/forecasting/dashboard', requireAuth, requireRole('Manager'), managerForecastingController.getForecastingDashboard);
 
 // ============================================================================
 // BOOKING ROUTES (Additional endpoints) - Already included above
