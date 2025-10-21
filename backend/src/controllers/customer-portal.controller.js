@@ -26,12 +26,6 @@ const onlineCheckOutSchema = z.object({
   marketing_consent: z.boolean().default(false)
 });
 
-const customerPreferenceSchema = z.object({
-  preference_type: z.enum(['Room', 'Dining', 'Amenities', 'Communication', 'Service', 'Other']),
-  preference_value: z.string().min(1).max(500),
-  is_active: z.boolean().default(true)
-});
-
 // Customer Bookings Management
 async function getCustomerBookings(req, res) {
   try {

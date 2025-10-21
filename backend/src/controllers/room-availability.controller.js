@@ -26,7 +26,7 @@ async function getRoomAvailability(req, res) {
     console.log('🔍 Availability request query:', req.query);
     const validatedData = availabilityQuerySchema.parse(req.query);
     console.log('✅ Validated data:', validatedData);
-    const { check_in_date, check_out_date, room_type_id, room_id, capacity, quantity, branch_id, exclude_booking_id } = validatedData;
+    const { check_in_date, check_out_date, room_type_id, room_id, quantity, branch_id, exclude_booking_id } = validatedData;
     
     // Convert dates
     const checkInDate = new Date(check_in_date);

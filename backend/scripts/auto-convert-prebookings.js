@@ -10,7 +10,6 @@
  */
 
 const { Pool } = require('pg');
-const path = require('path');
 
 // Database connection
 const pool = new Pool({

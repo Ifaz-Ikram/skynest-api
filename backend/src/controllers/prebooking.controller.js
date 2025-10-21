@@ -384,8 +384,6 @@ async function createPreBooking(req, res) {
  * POST /pre-bookings/:id/convert
  * Convert pre-booking to full booking (Receptionist/Manager)
  */
-const { logAudit } = require('../middleware/audit');
-
 async function convertPreBookingToBooking(req, res) {
   const client = await pool.connect();
   try {

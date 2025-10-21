@@ -19,8 +19,8 @@ exports.billingSummary = async (req, res, next) => {
   try {
     const { start_date, end_date, status, branch_id } = req.query;
     
-    let whereConditions = [];
-    let queryParams = [];
+    const whereConditions = [];
+    const queryParams = [];
     let paramIndex = 1;
     
     // Add date filter if provided
@@ -260,8 +260,8 @@ exports.detailedBookings = async (req, res, next) => {
   try {
     const { start_date, end_date, status, branch_id } = req.query;
     
-    let whereConditions = [];
-    let queryParams = [];
+    const whereConditions = [];
+    const queryParams = [];
     let paramIndex = 1;
     
     // Add date filter if provided

@@ -3,7 +3,7 @@ const { pool } = require('../db');
 
 // Get report data
 async function getReportData(req, res) {
-  const { start_date, end_date, report_type, property, roomType, channel, segment } = req.query;
+  const { start_date, end_date, report_type } = req.query;
 
   try {
     let reportData = {};
@@ -263,7 +263,7 @@ async function getGuestReport(startDate, endDate) {
         complaints: Math.round((parseInt(sat.complaints) / parseInt(sat.total_reviews)) * 100) || 0
       };
     }
-  } catch (error) {
+  } catch (_error) {
     console.log('Guest reviews table not available, using default values');
   }
 
@@ -324,15 +324,14 @@ async function getForecastingReport(startDate, endDate) {
     if (forecastRes.rows.length > 0) {
       const data = forecastRes.rows[0];
       const avgDailyRevenue = parseFloat(data.historical_revenue) / 30;
-      const avgBookingValue = parseFloat(data.avg_booking_value) || 0;
-      
+
       forecast = {
         next_week: Math.round(avgDailyRevenue * 7),
         next_month: Math.round(avgDailyRevenue * 30),
         next_quarter: Math.round(avgDailyRevenue * 90)
       };
     }
-  } catch (error) {
+  } catch (_error) {
     console.log('Forecasting calculation failed, using default values');
   }
 
@@ -355,7 +354,7 @@ async function getForecastingReport(startDate, endDate) {
       bookings: parseInt(row.bookings),
       revenue: parseFloat(row.revenue)
     }));
-  } catch (error) {
+  } catch (_error) {
     console.log('Pickup data query failed, using empty array');
     pickupData = [];
   }

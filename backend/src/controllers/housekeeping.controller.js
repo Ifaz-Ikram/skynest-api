@@ -110,7 +110,7 @@ exports.board = async (req, res) => {
     `;
     const countResult = await pool.query(countQuery, branchParams);
     const total = Number(countResult.rows[0].total);
-    const totalPages = Math.ceil(total / lim);
+    const _totalPages = Math.ceil(total / lim);
 
     // Get rooms with type and branch (with pagination)
     const rooms = await pool.query(
@@ -157,7 +157,7 @@ exports.board = async (req, res) => {
     for (const b of bookings.rows) {
       const room = byRoom.get(b.room_id);
       if (!room) continue;
-      const inD = new Date(b.check_in_date);
+      const _inD = new Date(b.check_in_date);
       const outD = new Date(b.check_out_date);
       const isLastNight = outD.getTime() - todayDate.getTime() === 24 * 3600 * 1000;
       const derived = b.status === 'Checked-In' ? (isLastNight ? 'Due Out' : 'Stayover') : 'Arrival';

@@ -1,16 +1,4 @@
 const { pool } = require('../db');
-const { z } = require('zod');
-
-// Zod schemas for validation
-const reportQuerySchema = z.object({
-  start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  branch_id: z.string().optional(),
-  property_id: z.number().int().positive().optional(),
-  room_type_id: z.number().int().positive().optional(),
-  segment: z.enum(['Individual', 'Corporate', 'Group']).optional(),
-  channel: z.string().optional()
-});
 
 // Get KPIs dashboard data
 async function getKPIsDashboard(req, res) {
@@ -213,16 +201,13 @@ async function getOccupancyTrends(req, res) {
 
     const startDate = start_date; // Keep as string for query
     const endDate = end_date; // Keep as string for query
-    
-    let dateFormat, groupBy;
+
+    let groupBy;
     if (granularity === 'daily') {
-      dateFormat = 'YYYY-MM-DD';
       groupBy = 'DATE(b.check_in_date)';
     } else if (granularity === 'weekly') {
-      dateFormat = 'YYYY-"W"WW';
       groupBy = 'DATE_TRUNC(\'week\', b.check_in_date)';
     } else if (granularity === 'monthly') {
-      dateFormat = 'YYYY-MM';
       groupBy = 'DATE_TRUNC(\'month\', b.check_in_date)';
     } else {
       return res.status(400).json({ error: "Invalid granularity. Use 'daily', 'weekly', or 'monthly'" });

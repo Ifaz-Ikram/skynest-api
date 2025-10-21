@@ -67,7 +67,7 @@ async function runScheduledTasks() {
 // Run the scheduled tasks
 if (require.main === module) {
   runScheduledTasks()
-    .then(({ successCount, failureCount }) => {
+    .then(({ failureCount }) => {
       if (failureCount === 0) {
         console.log('🎉 All scheduled tasks completed successfully');
         process.exit(0);

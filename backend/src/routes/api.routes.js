@@ -997,7 +997,7 @@ router.put('/users/:id', requireAuth, requireRole('Admin'), async (req, res) => 
       
       // Update user account
       let updateQuery = 'UPDATE user_account SET username = $1, role = $2';
-      let params = [username, role];
+      const params = [username, role];
       let paramCount = 2;
       
       if (password) {

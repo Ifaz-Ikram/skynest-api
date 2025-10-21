@@ -33,7 +33,7 @@ async function addTestUsers() {
 
   for (const user of users) {
     try {
-      const result = await pool.query(
+      await pool.query(
         `INSERT INTO user_account (username, password_hash, role)
          VALUES ($1, $2, $3) RETURNING user_id`,
         [user.username, user.password_hash, user.role]

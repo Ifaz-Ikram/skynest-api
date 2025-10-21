@@ -16,7 +16,7 @@ function loadConfig() {
   try {
     const raw = fs.readFileSync(RATE_CONFIG_PATH, "utf8");
     cachedConfig = JSON.parse(raw);
-  } catch (err) {
+  } catch (_err) {
     cachedConfig = {
       default_plan: "BAR",
       plans: [],
