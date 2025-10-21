@@ -19,8 +19,8 @@ export const ReportsPageEnhanced = () => {
   const [loading, setLoading] = useState(false);
   const [activeReport, setActiveReport] = useState(null);
   const [dateRange, setDateRange] = useState({
-    start_date: '2025-10-01',
-    end_date: '2025-10-31'
+    start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days ago
+    end_date: new Date().toISOString().split('T')[0] // Today
   });
 
   // Filters state
@@ -44,9 +44,29 @@ export const ReportsPageEnhanced = () => {
   const [departures, setDepartures] = useState([]);
   const [inHouse, setInHouse] = useState([]);
 
+  // Filter data
+  const [branches, setBranches] = useState([]);
+  const [roomTypes, setRoomTypes] = useState([]);
+
   useEffect(() => {
     loadOperationsData();
+    loadFilterData();
   }, []);
+
+  const loadFilterData = async () => {
+    try {
+      const [branchesData, roomTypesData] = await Promise.all([
+        api.getBranches(),
+        api.getRoomTypes()
+      ]);
+      setBranches(branchesData || []);
+      setRoomTypes(roomTypesData || []);
+    } catch (error) {
+      console.error('Failed to load filter data:', error);
+      setBranches([]);
+      setRoomTypes([]);
+    }
+  };
 
   const loadOperationsData = async () => {
     try {
@@ -145,7 +165,7 @@ export const ReportsPageEnhanced = () => {
     }, []).slice(0, 30);
 
     return (
-      <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-hidden">
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700/50 overflow-hidden">
         <div className="bg-gradient-to-r from-luxury-navy to-indigo-900 p-6">
           <div className="flex items-center justify-between text-white">
             <div className="flex items-center space-x-3">
@@ -219,7 +239,7 @@ export const ReportsPageEnhanced = () => {
                 sortable: true,
                 render: (value) => (
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    value === 'Checked-In' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                    value === 'Checked-In' ? 'bg-green-800/30 text-green-200 dark:bg-green-900/30 dark:text-green-300' : 'bg-blue-800/30 text-blue-200 dark:bg-blue-900/30 dark:text-blue-300'
                   }`}>
                     {value}
                   </span>
@@ -257,7 +277,7 @@ export const ReportsPageEnhanced = () => {
       <div className="space-y-6">
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-hidden transform hover:scale-105 transition-all duration-300">
+          <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700/50 overflow-hidden transform hover:scale-105 transition-all duration-300">
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6">
               <div className="flex items-center justify-between text-white">
                 <div>
@@ -270,7 +290,7 @@ export const ReportsPageEnhanced = () => {
               </div>
             </div>
           </div>
-          <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-hidden transform hover:scale-105 transition-all duration-300">
+          <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700/50 overflow-hidden transform hover:scale-105 transition-all duration-300">
             <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-6">
               <div className="flex items-center justify-between text-white">
                 <div>
@@ -283,7 +303,7 @@ export const ReportsPageEnhanced = () => {
               </div>
             </div>
           </div>
-          <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-hidden transform hover:scale-105 transition-all duration-300">
+          <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700/50 overflow-hidden transform hover:scale-105 transition-all duration-300">
             <div className="bg-gradient-to-r from-red-500 to-rose-600 p-6">
               <div className="flex items-center justify-between text-white">
                 <div>
@@ -299,7 +319,7 @@ export const ReportsPageEnhanced = () => {
         </div>
 
         {/* Pie Chart */}
-        <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-hidden">
+        <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700/50 overflow-hidden">
           <div className="bg-gradient-to-r from-luxury-navy to-indigo-900 p-6">
             <div className="flex items-center justify-between text-white">
               <div className="flex items-center space-x-3">
@@ -344,7 +364,7 @@ export const ReportsPageEnhanced = () => {
         </div>
 
         {/* Top Revenue Guests */}
-        <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-hidden">
+        <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700/50 overflow-hidden">
           <div className="bg-gradient-to-r from-luxury-gold to-yellow-600 p-6">
             <div className="flex items-center space-x-3 text-white">
               <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
@@ -359,10 +379,10 @@ export const ReportsPageEnhanced = () => {
           <div className="p-6">
           <div className="space-y-3">
             {topRevenue.map((guest, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 bg-surface-tertiary rounded-lg">
+              <div key={idx} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
                 <div>
-                  <p className="font-medium text-text-primary">{guest.guest || 'Unknown'}</p>
-                  <p className="text-sm text-text-secondary">{guest.room || 'N/A'} • {guest.nights || 0} nights</p>
+                  <p className="font-medium text-white">{guest.guest || 'Unknown'}</p>
+                  <p className="text-sm text-slate-300">{guest.room || 'N/A'} • {guest.nights || 0} nights</p>
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-bold text-luxury-gold">Rs {parseFloat(guest.total_bill || 0).toLocaleString()}</p>
@@ -378,12 +398,12 @@ export const ReportsPageEnhanced = () => {
 
         {/* Outstanding Payments Alert */}
         {billingData.filter(b => parseFloat(b.balance_due || 0) > 0).length > 0 && (
-          <div className="card shadow-lg bg-red-50 border-2 border-red-200">
+          <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-red-700/50">
             <div className="flex items-start space-x-3">
-              <AlertCircle className="w-6 h-6 text-red-600 mt-1" />
+              <AlertCircle className="w-6 h-6 text-red-400 mt-1" />
               <div>
-                <h4 className="font-bold text-red-900 mb-2">Outstanding Payments Alert</h4>
-                <p className="text-red-700 mb-3">
+                <h4 className="font-bold text-white mb-2">Outstanding Payments Alert</h4>
+                <p className="text-slate-300 mb-3">
                   {billingData.filter(b => parseFloat(b.balance_due || 0) > 0).length} bookings with outstanding balance
                 </p>
                 <div className="overflow-x-auto">
@@ -427,7 +447,7 @@ export const ReportsPageEnhanced = () => {
     const chartData = branchRevenueData.slice(0, 12).reverse();
 
     return (
-      <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-hidden">
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700/50 overflow-hidden">
         <div className="bg-gradient-to-r from-purple-500 to-purple-700 p-6">
           <div className="flex items-center justify-between text-white">
             <div className="flex items-center space-x-3">
@@ -500,7 +520,7 @@ export const ReportsPageEnhanced = () => {
     const chartData = Object.values(dateMap).slice(-30); // Last 30 data points
 
     return (
-      <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-hidden">
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700/50 overflow-hidden">
         <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-6">
           <div className="flex items-center justify-between text-white">
             <div className="flex items-center space-x-3">
@@ -551,9 +571,9 @@ export const ReportsPageEnhanced = () => {
   const renderActiveReport = () => {
     if (loading) {
       return (
-        <div className="card shadow-xl text-center py-20">
+        <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl p-12 text-center border border-slate-700/50">
           <RefreshCw className="w-16 h-16 text-blue-500 animate-spin mx-auto mb-4" />
-          <p className="text-text-secondary text-xl font-semibold">Loading Report...</p>
+          <p className="text-slate-300 text-xl font-semibold">Loading Report...</p>
         </div>
       );
     }
@@ -573,7 +593,7 @@ export const ReportsPageEnhanced = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 p-6">
+    <div className="min-h-screen bg-slate-950 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Hero Header with Gradient */}
         <div className="bg-gradient-to-r from-luxury-navy to-indigo-900 rounded-2xl shadow-2xl p-8 text-white relative overflow-hidden">
@@ -604,7 +624,7 @@ export const ReportsPageEnhanced = () => {
 
         {/* Today's Operations - Premium Cards */}
         <div>
-          <h2 className="text-2xl font-bold text-text-primary mb-4 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
             <TrendingUp className="w-7 h-7 text-luxury-gold" />
             Today's Operations
           </h2>
@@ -653,14 +673,14 @@ export const ReportsPageEnhanced = () => {
             });
             console.log('Filters cleared');
           }}
-          branches={['Colombo', 'Kandy', 'Galle']}
-          roomTypes={['Deluxe', 'Suite', 'Standard', 'Family Room']}
-          bookingStatuses={['confirmed', 'pending', 'checked-in', 'checked-out']}
+          branches={branches}
+          roomTypes={roomTypes}
+          bookingStatuses={['Booked', 'Checked-In', 'Checked-Out', 'Cancelled']}
         />
 
         {/* Report Cards - Premium Grid */}
         <div>
-          <h2 className="text-2xl font-bold text-text-primary mb-4 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
             <BarChart3 className="w-7 h-7 text-luxury-gold" />
             Available Reports
           </h2>
@@ -718,7 +738,7 @@ function ReportCard({ title, description, icon: Icon, color, onClick, active }) 
   return (
     <button
       onClick={onClick}
-      className={`group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 text-left transform hover:scale-105 ${
+      className={`group bg-slate-800/90 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 text-left transform hover:scale-105 ${
         active ? 'ring-4 ring-luxury-gold shadow-xl scale-105' : ''
       }`}
     >
@@ -728,8 +748,8 @@ function ReportCard({ title, description, icon: Icon, color, onClick, active }) 
         </div>
         {active && <Eye className="w-6 h-6 text-luxury-gold animate-pulse" />}
       </div>
-      <h3 className="font-bold text-text-primary text-xl mb-2">{title}</h3>
-      <p className="text-sm text-text-secondary">{description}</p>
+      <h3 className="font-bold text-white text-xl mb-2">{title}</h3>
+      <p className="text-sm text-slate-300">{description}</p>
       <div className="mt-4 text-luxury-gold text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
         View Report →
       </div>
@@ -762,26 +782,26 @@ function OpsCard({ title, count, icon: Icon, data, color }) {
   };
 
   const bgColors = {
-    green: 'bg-green-50',
-    orange: 'bg-orange-50',
-    blue: 'bg-blue-50'
+    green: 'bg-green-900/30 border border-green-700/50',
+    orange: 'bg-orange-900/30 border border-orange-700/50',
+    blue: 'bg-blue-900/30 border border-blue-700/50'
   };
 
   return (
-    <div className={`${bgColors[color]} rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border-2 border-white group hover:scale-105 transform`}>
+    <div className={`${bgColors[color]} backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 group hover:scale-105 transform`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
           <div className={`bg-gradient-to-br ${colorClasses[color]} p-4 rounded-xl shadow-md group-hover:scale-110 transition-transform`}>
             <Icon className="w-8 h-8 text-white" />
           </div>
           <div>
-            <div className="text-sm font-medium text-text-secondary mb-1">{title}</div>
-            <div className="text-4xl font-bold text-text-primary">{count}</div>
+            <div className="text-sm font-medium text-slate-300 mb-1">{title}</div>
+            <div className="text-4xl font-bold text-white">{count}</div>
           </div>
         </div>
       </div>
-      <button 
-        className="w-full bg-white text-text-secondary px-4 py-2 rounded-xl font-medium hover:bg-surface-tertiary transition-all shadow-sm border border-border flex items-center justify-center gap-2"
+      <button
+        className="w-full bg-slate-800/80 text-slate-200 px-4 py-2 rounded-xl font-medium hover:bg-slate-700 transition-all shadow-sm border border-slate-600 flex items-center justify-center gap-2"
         onClick={exportCsv}
       >
         <Download className="w-4 h-4" />
@@ -793,10 +813,10 @@ function OpsCard({ title, count, icon: Icon, data, color }) {
 
 function EmptyState({ message }) {
   return (
-    <div className="card text-center py-16">
-      <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-      <p className="text-text-secondary text-lg">{message}</p>
-      <p className="text-text-tertiary text-sm mt-2">Try selecting a different date range or report type</p>
+    <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl p-12 text-center border border-slate-700/50">
+      <AlertCircle className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+      <p className="text-slate-300 text-lg">{message}</p>
+      <p className="text-slate-400 text-sm mt-2">Try selecting a different date range or report type</p>
     </div>
   );
 }

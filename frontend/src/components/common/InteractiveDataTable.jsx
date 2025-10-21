@@ -80,7 +80,7 @@ const InteractiveDataTable = ({
     if (!sortable) return null;
     
     if (sortConfig.key !== columnKey) {
-      return <ChevronsUpDown className="w-4 h-4 text-text-tertiary" />;
+      return <ChevronsUpDown className="w-4 h-4 text-slate-400" />;
     }
     
     return sortConfig.direction === 'asc' 
@@ -100,7 +100,7 @@ const InteractiveDataTable = ({
       {searchable && (
         <div className="mb-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text-tertiary" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
               placeholder="Search across all columns..."
@@ -113,7 +113,7 @@ const InteractiveDataTable = ({
             />
           </div>
           {searchTerm && (
-            <p className="text-sm text-text-tertiary mt-2">
+            <p className="text-sm text-slate-400 mt-2">
               Found {filteredData.length} result{filteredData.length !== 1 ? 's' : ''}
             </p>
           )}
@@ -129,7 +129,7 @@ const InteractiveDataTable = ({
                 <th
                   key={column.key}
                   onClick={() => column.sortable !== false && handleSort(column.key)}
-                  className={`px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider transition-colors ${
+                  className={`px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider transition-colors ${
                     sortable && column.sortable !== false ? 'cursor-pointer hover:bg-surface-tertiary dark:hover:bg-slate-700/40' : ''
                   }`}
                 >
@@ -146,7 +146,7 @@ const InteractiveDataTable = ({
               <tr>
                 <td 
                   colSpan={columns.length} 
-                  className="px-6 py-8 text-center text-text-tertiary"
+                  className="px-6 py-8 text-center text-slate-400"
                 >
                   {searchTerm ? 'No matching results found' : 'No data available'}
                 </td>
@@ -160,7 +160,7 @@ const InteractiveDataTable = ({
                   {columns.map((column) => (
                     <td 
                       key={column.key} 
-                      className="px-6 py-4 whitespace-nowrap text-sm text-text-primary dark:text-slate-100"
+                      className="px-6 py-4 whitespace-nowrap text-sm text-white dark:text-slate-100"
                     >
                       {column.render 
                         ? column.render(row[column.key], row) 
@@ -178,7 +178,7 @@ const InteractiveDataTable = ({
       {/* Pagination */}
       {paginated && totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm text-text-secondary">
+          <p className="text-sm text-slate-300">
             Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, filteredData.length)} of {filteredData.length} results
           </p>
           
@@ -186,7 +186,7 @@ const InteractiveDataTable = ({
             <button
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="p-2 border border-border dark:border-slate-600 rounded-lg hover:bg-surface-tertiary dark:hover:bg-slate-700/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-surface-secondary dark:bg-slate-800 text-text-secondary dark:text-slate-200"
+              className="p-2 border border-border dark:border-slate-600 rounded-lg hover:bg-surface-tertiary dark:hover:bg-slate-700/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-surface-secondary dark:bg-slate-800 text-slate-300 dark:text-slate-200"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -212,7 +212,7 @@ const InteractiveDataTable = ({
                     className={`px-3 py-1 rounded-lg transition-colors ${
                       currentPage === pageNum
                         ? 'bg-luxury-gold text-white'
-                        : 'border border-border dark:border-slate-600 bg-surface-secondary dark:bg-slate-800 text-text-secondary dark:text-slate-200 hover:bg-surface-tertiary dark:hover:bg-slate-700/40'
+                        : 'border border-border dark:border-slate-600 bg-surface-secondary dark:bg-slate-800 text-slate-300 dark:text-slate-200 hover:bg-surface-tertiary dark:hover:bg-slate-700/40'
                     }`}
                   >
                     {pageNum}
@@ -224,7 +224,7 @@ const InteractiveDataTable = ({
             <button
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="p-2 border border-border dark:border-slate-600 rounded-lg hover:bg-surface-tertiary dark:hover:bg-slate-700/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-surface-secondary dark:bg-slate-800 text-text-secondary dark:text-slate-200"
+              className="p-2 border border-border dark:border-slate-600 rounded-lg hover:bg-surface-tertiary dark:hover:bg-slate-700/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-surface-secondary dark:bg-slate-800 text-slate-300 dark:text-slate-200"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

@@ -36,7 +36,7 @@ const TableSkeleton = ({ rows = 5, columns = 5, cardBackground, headerBackground
     style={{ backgroundColor: cardBackground }}
   >
     <div
-      className="grid grid-cols-12 border-b border-border px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-text-secondary"
+      className="grid grid-cols-12 border-b border-border px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-300"
       style={{ backgroundColor: headerBackground }}
     >
       {repeat(columns).map((item) => (

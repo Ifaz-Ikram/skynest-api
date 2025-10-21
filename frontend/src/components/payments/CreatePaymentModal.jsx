@@ -99,17 +99,17 @@ export const CreatePaymentModal = ({ onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-surface-secondary rounded-2xl shadow-2xl max-w-md w-full">
-        <div className="p-6 border-b border-border">
-          <h2 className="text-2xl font-bold text-text-primary">Record Payment</h2>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 'var(--z-modal)' }}>
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-md w-full border border-slate-700/50" style={{minWidth: '600px'}}>
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0" style={{ zIndex: 'var(--z-sticky)' }}>
+          <h2 className="text-2xl font-bold text-white">Record Payment</h2>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">Booking ID</label>
+          <div className="relative z-30">
+            <label className="block text-sm font-medium text-slate-300 mb-2">Booking ID</label>
             {loadingData ? (
-              <div className="input-field flex items-center justify-center">
-                <span className="text-text-tertiary">Loading bookings...</span>
+              <div className="input-field flex items-center justify-center bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400">
+                <span className="text-slate-400">Loading bookings...</span>
               </div>
             ) : (
               <SearchableDropdown
@@ -118,7 +118,7 @@ export const CreatePaymentModal = ({ onClose, onSuccess }) => {
                 onChange={(value) => setFormData({...formData, booking_id: value})}
                 placeholder="Select a booking"
                 searchPlaceholder="Search by booking ID, guest name, or room..."
-                className="input-field"
+                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                 required
                 displayKey="displayText"
                 valueKey="booking_id"
@@ -127,7 +127,7 @@ export const CreatePaymentModal = ({ onClose, onSuccess }) => {
                   <div className="flex justify-between items-center w-full">
                     <div>
                       <div className="font-medium">Booking #{booking.booking_id}</div>
-                      <div className="text-sm text-text-secondary">
+                      <div className="text-sm text-slate-300">
                         {booking.guest_name || booking.customer_name}
                         {booking.room_number ? ` - Room ${booking.room_number}` : ''}
                       </div>
@@ -144,7 +144,7 @@ export const CreatePaymentModal = ({ onClose, onSuccess }) => {
                             : 'Paid in Full'
                         }
                       </div>
-                      <div className="text-xs text-text-tertiary">
+                      <div className="text-xs text-slate-400">
                         Total: Rs {parseFloat(booking.total_amount || 0).toFixed(2)}
                       </div>
                     </div>
@@ -154,7 +154,7 @@ export const CreatePaymentModal = ({ onClose, onSuccess }) => {
                   <div className="flex justify-between items-center w-full">
                     <div>
                       <span className="font-medium">Booking #{booking.booking_id}</span>
-                      <span className="ml-2 text-text-secondary">
+                      <span className="ml-2 text-slate-300">
                         {booking.guest_name || booking.customer_name}
                     {booking.room_number ? ` - Room ${booking.room_number}` : ''}
                       </span>
@@ -178,7 +178,7 @@ export const CreatePaymentModal = ({ onClose, onSuccess }) => {
               />
             )}
             {bookings.length === 0 && !loadingData && (
-              <p className="text-sm text-text-tertiary mt-2">
+              <p className="text-sm text-slate-400 mt-2">
                 No active bookings found. Only confirmed, checked-in, or checked-out bookings can receive payments.
               </p>
             )}
@@ -186,18 +186,18 @@ export const CreatePaymentModal = ({ onClose, onSuccess }) => {
 
           {selectedBooking && (
             <div className="bg-surface-tertiary p-4 rounded-lg space-y-3 text-sm">
-              <h3 className="font-semibold text-text-primary">Booking Details</h3>
+              <h3 className="font-semibold text-white">Booking Details</h3>
               <div className="grid grid-cols-2 gap-2">
-                <div className="text-text-secondary">
+                <div className="text-slate-300">
                   <span className="font-medium">Customer:</span> {selectedBooking.guest_name || selectedBooking.customer_name}
                 </div>
-                <div className="text-text-secondary">
+                <div className="text-slate-300">
                   <span className="font-medium">Room:</span> {selectedBooking.room_number}
                 </div>
-                <div className="text-text-secondary">
+                <div className="text-slate-300">
                   <span className="font-medium">Status:</span> {selectedBooking.status}
                 </div>
-                <div className="text-text-secondary">
+                <div className="text-slate-300">
                   <span className="font-medium">Total Amount:</span> 
                   <span className="text-luxury-gold font-bold ml-1">
                     Rs {parseFloat(selectedBooking.total_amount || 0).toFixed(2)}
@@ -207,18 +207,18 @@ export const CreatePaymentModal = ({ onClose, onSuccess }) => {
               
               {/* Payment Summary */}
               <div className="border-t border-border pt-3">
-                <h4 className="font-semibold text-text-primary mb-2">Payment Summary</h4>
+                <h4 className="font-semibold text-white mb-2">Payment Summary</h4>
                 <div className="space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-text-secondary">Total Amount:</span>
+                    <span className="text-slate-300">Total Amount:</span>
                     <span className="font-medium">Rs {parseFloat(selectedBooking.total_amount || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-text-secondary">Amount Paid:</span>
+                    <span className="text-slate-300">Amount Paid:</span>
                     <span className="font-medium">Rs {parseFloat(selectedBooking.total_paid || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between border-t border-border pt-1">
-                    <span className="font-semibold text-text-primary">
+                    <span className="font-semibold text-white">
                       {selectedBooking.is_overpaid ? 'Overpaid Amount:' : 'Balance Due:'}
                     </span>
                     <span className={`font-bold ${
@@ -237,18 +237,18 @@ export const CreatePaymentModal = ({ onClose, onSuccess }) => {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">Amount</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Amount</label>
             <input
               type="number"
               step="0.01"
               value={formData.amount}
               onChange={(e) => setFormData({...formData, amount: e.target.value})}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               required
               placeholder={selectedBooking ? `Suggested: Rs ${Math.max(0, selectedBooking.balance_due).toFixed(2)}` : ''}
             />
             {selectedBooking && (
-              <div className="mt-1 text-xs text-text-tertiary">
+              <div className="mt-1 text-xs text-slate-400">
                 {selectedBooking.is_overpaid ? (
                   <span className="text-red-600">⚠️ This booking is already overpaid by Rs {Math.abs(selectedBooking.balance_due).toFixed(2)}</span>
                 ) : selectedBooking.balance_due > 0 ? (
@@ -259,8 +259,8 @@ export const CreatePaymentModal = ({ onClose, onSuccess }) => {
               </div>
             )}
           </div>
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">Payment Method</label>
+          <div className="relative z-20">
+            <label className="block text-sm font-medium text-slate-300 mb-2">Payment Method</label>
             <SearchableDropdown
               value={formData.method}
               onChange={(value) => setFormData({ ...formData, method: value })}

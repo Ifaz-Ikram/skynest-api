@@ -45,7 +45,7 @@ const LoginPage = ({ onLogin }) => {
 
   return (
     <div className="min-h-screen luxury-gradient flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+      <div className="max-w-md w-full" style={{minWidth: '400px'}}>
         {/* Logo & Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-luxury-gold rounded-2xl mb-4 shadow-luxury">
@@ -57,35 +57,47 @@ const LoginPage = ({ onLogin }) => {
 
         {/* Login Form */}
         <div className="bg-surface-secondary rounded-2xl shadow-2xl p-8">
-          <h2 className="text-2xl font-bold text-text-primary mb-6">Welcome Back</h2>
+          <h2 className="text-2xl font-bold text-white mb-6">Welcome Back</h2>
           
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center">
+            <div className="bg-red-900/20 border border-red-700 text-red-300 px-4 py-3 rounded-lg mb-4 flex items-center">
               <AlertCircle className="w-5 h-5 mr-2" />
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" style={{width: '100%'}}>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Username</label>
+              <label className="block text-sm font-medium text-slate-200 mb-2">Username</label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="input-field"
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.20)',
+                  borderColor: 'rgba(203, 213, 225, 0.7)',
+                  color: 'rgb(255, 255, 255)',
+                  fontWeight: '500'
+                }}
                 placeholder="Enter your username"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Password</label>
+              <label className="block text-sm font-medium text-slate-200 mb-2">Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="input-field"
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.20)',
+                  borderColor: 'rgba(203, 213, 225, 0.7)',
+                  color: 'rgb(255, 255, 255)',
+                  fontWeight: '500'
+                }}
                 placeholder="Enter your password"
                 required
               />
@@ -102,7 +114,7 @@ const LoginPage = ({ onLogin }) => {
 
           {/* Demo Credentials */}
           <div className="mt-6 pt-6 border-t border-border">
-            <p className="text-sm font-medium text-text-secondary mb-3">Demo Accounts:</p>
+            <p className="text-sm font-medium text-slate-200 mb-3">Demo Accounts:</p>
             <div className="grid grid-cols-2 gap-2">
               {demoUsers.map((user) => (
                 <button
@@ -111,10 +123,23 @@ const LoginPage = ({ onLogin }) => {
                     setUsername(user.username);
                     setPassword(user.password);
                   }}
-                  className="text-xs px-3 py-2 bg-surface-tertiary hover:bg-surface-tertiary rounded-lg text-left transition-colors"
+                  className="text-xs px-3 py-2 rounded-lg text-left transition-colors border-2"
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    borderColor: 'rgba(203, 213, 225, 0.5)',
+                    color: 'rgb(255, 255, 255)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
+                    e.currentTarget.style.borderColor = 'rgba(203, 213, 225, 0.8)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+                    e.currentTarget.style.borderColor = 'rgba(203, 213, 225, 0.5)';
+                  }}
                 >
-                  <div className="font-medium text-text-primary">{user.role}</div>
-                  <div className="text-text-tertiary">{user.username}</div>
+                  <div className="font-medium text-white">{user.role}</div>
+                  <div className="text-slate-300">{user.username}</div>
                 </button>
               ))}
             </div>
@@ -122,7 +147,7 @@ const LoginPage = ({ onLogin }) => {
 
           {/* Register Link */}
           <div className="mt-4 text-center">
-            <p className="text-sm text-text-secondary">
+            <p className="text-sm text-slate-200">
               Don't have an account?{' '}
               <button
                 onClick={() => setShowRegister(true)}

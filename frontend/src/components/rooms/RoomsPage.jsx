@@ -181,7 +181,7 @@ export const RoomsPage = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="px-6 py-3 rounded-xl font-medium transition-all bg-surface-secondary text-text-secondary dark:text-slate-200 border-2 border-border dark:border-slate-700 hover:border-blue-300 flex items-center gap-2"
+                className="px-6 py-3 rounded-xl font-medium transition-all bg-surface-secondary text-slate-300 dark:text-slate-200 border-2 border-border dark:border-slate-700 hover:border-blue-600 flex items-center gap-2"
               >
                 <Plus className="w-5 h-5" /> Add Room
               </button>
@@ -190,7 +190,7 @@ export const RoomsPage = () => {
                 className={`px-6 py-3 rounded-xl font-medium transition-all ${
                   viewMode === 'all' 
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' 
-                    : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 border-2 border-border dark:border-slate-700 hover:border-blue-300'
+                    : 'bg-slate-800 dark:bg-slate-800 text-slate-100 dark:text-slate-200 border-2 border-border dark:border-slate-700 hover:border-blue-600'
                 }`}
               >
                 All ({rooms.length})
@@ -200,7 +200,7 @@ export const RoomsPage = () => {
                 className={`px-6 py-3 rounded-xl font-medium transition-all ${
                   viewMode === 'available' 
                     ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg' 
-                    : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 border-2 border-border dark:border-slate-700 hover:border-green-300'
+                    : 'bg-slate-800 dark:bg-slate-800 text-slate-100 dark:text-slate-200 border-2 border-border dark:border-slate-700 hover:border-green-600'
                 }`}
               >
                 Available ({freeRooms.length})
@@ -209,44 +209,13 @@ export const RoomsPage = () => {
           }
         />
 
-      {/* Branch Filter */}
-      <div className="bg-surface-secondary rounded-xl shadow-md p-6 border border-border dark:border-slate-700/80">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-text-secondary dark:text-slate-200">View Mode:</span>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setViewMode('all')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                viewMode === 'all' 
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' 
-                  : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 border hover:border-blue-300'
-              }`}
-            >
-              All Rooms ({rooms.length})
-            </button>
-            <button
-              onClick={() => setViewMode('available')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                viewMode === 'available' 
-                  ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md' 
-                  : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 border hover:border-green-300'
-              }`}
-            >
-              Available ({freeRooms.length})
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Create Room Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-surface-secondary rounded-lg shadow-xl max-w-md w-full">
-            <div className="p-6 border-b border-border dark:border-slate-700 flex justify-between items-center">
-              <h2 className="text-2xl font-display font-bold text-text-primary dark:text-slate-100">Add New Room</h2>
-              <button onClick={() => setShowCreateModal(false)} className="text-text-tertiary hover:text-text-secondary dark:text-slate-300">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 'var(--z-modal)' }}>
+          <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-md w-full border border-slate-700/50" style={{minWidth: '600px'}}>
+            <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 flex justify-between items-center" style={{ zIndex: 'var(--z-sticky)' }}>
+              <h2 className="text-2xl font-display font-bold text-white">Add New Room</h2>
+              <button onClick={() => setShowCreateModal(false)} className="text-slate-400 hover:text-slate-300 dark:text-slate-300">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -282,12 +251,12 @@ export const RoomsPage = () => {
         />
       )}
 
-      {/* Branch Filter */}
-      <div className="card">
+      {/* Branch Filter - Second Priority */}
+      <div className="card relative">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-text-secondary dark:text-slate-300" />
-            <span className="font-medium text-text-secondary dark:text-slate-200">Filter by Branch:</span>
+            <Building2 className="w-5 h-5 text-slate-300 dark:text-slate-300" />
+            <span className="font-medium text-slate-300 dark:text-slate-200">Filter by Branch:</span>
           </div>
           <SearchableDropdown
             options={branches}
@@ -304,7 +273,7 @@ export const RoomsPage = () => {
           {selectedBranch && (
             <button
               onClick={() => setSelectedBranch('')}
-              className="text-sm text-text-tertiary dark:text-slate-400 hover:text-text-secondary dark:text-slate-200 underline"
+              className="text-sm text-slate-400 dark:text-slate-400 hover:text-slate-300 dark:text-slate-200 underline"
             >
               Clear Filter
             </button>
@@ -312,12 +281,12 @@ export const RoomsPage = () => {
         </div>
       </div>
 
-      {/* Room Search Filter */}
-      <div className="card">
+      {/* Room Search Filter - Third Priority */}
+      <div className="card relative">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Bed className="w-5 h-5 text-text-secondary dark:text-slate-300" />
-            <span className="font-medium text-text-secondary dark:text-slate-200">Search Room:</span>
+            <Bed className="w-5 h-5 text-slate-300 dark:text-slate-300" />
+            <span className="font-medium text-slate-300 dark:text-slate-200">Search Room:</span>
           </div>
           <SearchableDropdown
             options={displayRooms.map(room => ({
@@ -340,11 +309,42 @@ export const RoomsPage = () => {
           {selectedRoom && (
             <button
               onClick={() => setSelectedRoom('')}
-              className="text-sm text-text-tertiary dark:text-slate-400 hover:text-text-secondary dark:text-slate-200 underline"
+              className="text-sm text-slate-400 dark:text-slate-400 hover:text-slate-300 dark:text-slate-200 underline"
             >
               Clear Filter
             </button>
           )}
+        </div>
+      </div>
+
+      {/* View Mode - Lower Priority */}
+      <div className="bg-surface-secondary rounded-xl shadow-md p-6 border border-border dark:border-slate-700/80 relative">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-slate-300 dark:text-slate-200">View Mode:</span>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setViewMode('all')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                viewMode === 'all' 
+                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' 
+                  : 'bg-slate-800 dark:bg-slate-800 text-slate-100 dark:text-slate-200 border hover:border-blue-600'
+              }`}
+            >
+              All Rooms ({rooms.length})
+            </button>
+            <button
+              onClick={() => setViewMode('available')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                viewMode === 'available' 
+                  ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md' 
+                  : 'bg-slate-800 dark:bg-slate-800 text-slate-100 dark:text-slate-200 border hover:border-green-600'
+              }`}
+            >
+              Available ({freeRooms.length})
+            </button>
+          </div>
         </div>
       </div>
 
@@ -355,43 +355,43 @@ export const RoomsPage = () => {
           ))
         ) : filteredRooms.length === 0 ? (
           <div className="col-span-full text-center py-12">
-            <Bed className="w-16 h-16 text-gray-300 dark:text-slate-500 mx-auto mb-4" />
-            <p className="text-text-secondary dark:text-slate-300">No rooms found</p>
+            <Bed className="w-16 h-16 text-slate-500 dark:text-slate-500 mx-auto mb-4" />
+            <p className="text-slate-300 dark:text-slate-300">No rooms found</p>
           </div>
         ) : (
           filteredRooms.map(room => (
             <div key={room.room_id} className="card hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-xl font-bold text-text-primary dark:text-slate-100">Room {room.room_number}</h3>
-                  <p className="text-sm text-text-secondary dark:text-slate-300">{room.room_type_name}</p>
+                  <h3 className="text-xl font-bold text-white dark:text-slate-100">Room {room.room_number}</h3>
+                  <p className="text-sm text-slate-300 dark:text-slate-300">{room.room_type_name}</p>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  room.status === 'Available' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 dark:bg-green-50 dark:bg-green-500/100/20 dark:text-green-300' :
-                  room.status === 'Occupied' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 dark:bg-red-50 dark:bg-red-500/100/20 dark:text-red-300' :
-                  room.status === 'Maintenance' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 dark:bg-yellow-50 dark:bg-yellow-500/100/20 dark:text-yellow-300' :
-                  room.status === 'Reserved' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 dark:bg-blue-50 dark:bg-blue-500/100/20 dark:text-blue-300' :
-                  'bg-gray-100 text-gray-700 dark:bg-slate-600/30 dark:text-slate-200 dark:text-slate-200'
+                  room.status === 'Available' ? 'bg-green-800/30 text-green-200 dark:bg-green-900/30 dark:text-green-300 dark:bg-green-900/20 dark:bg-green-900/200/100/20 dark:text-green-300' :
+                  room.status === 'Occupied' ? 'bg-red-800/30 text-red-200 dark:bg-red-900/30 dark:text-red-300 dark:bg-red-900/20 dark:bg-red-900/200/100/20 dark:text-red-300' :
+                  room.status === 'Maintenance' ? 'bg-yellow-800/30 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 dark:bg-yellow-900/20 dark:bg-yellow-900/200/100/20 dark:text-yellow-300' :
+                  room.status === 'Reserved' ? 'bg-blue-800/30 text-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:bg-blue-900/20 dark:bg-blue-900/200/100/20 dark:text-blue-300' :
+                  'bg-slate-800 text-slate-100 dark:bg-slate-600/30 dark:text-slate-200 dark:text-slate-200'
                 }`}>
                   {room.status}
                 </span>
               </div>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-text-secondary dark:text-slate-300">Room Type:</span>
-                  <span className="font-medium text-text-primary dark:text-slate-100">{room.room_type_name || 'N/A'}</span>
+                  <span className="text-slate-300 dark:text-slate-300">Room Type:</span>
+                  <span className="font-medium text-white dark:text-slate-100">{room.room_type_name || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-text-secondary dark:text-slate-300">Branch:</span>
-                  <span className="font-medium text-text-primary dark:text-slate-100">{room.branch_name || 'N/A'}</span>
+                  <span className="text-slate-300 dark:text-slate-300">Branch:</span>
+                  <span className="font-medium text-white dark:text-slate-100">{room.branch_name || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-text-secondary dark:text-slate-300">Price per Night:</span>
+                  <span className="text-slate-300 dark:text-slate-300">Price per Night:</span>
                   <span className="font-bold text-luxury-gold">Rs {room.daily_rate ? parseFloat(room.daily_rate).toFixed(2) : 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-text-secondary dark:text-slate-300">Max Occupancy:</span>
-                  <span className="font-medium text-text-primary dark:text-slate-100">{room.capacity || 'N/A'} guests</span>
+                  <span className="text-slate-300 dark:text-slate-300">Max Occupancy:</span>
+                  <span className="font-medium text-white dark:text-slate-100">{room.capacity || 'N/A'} guests</span>
                 </div>
               </div>
               
@@ -400,14 +400,14 @@ export const RoomsPage = () => {
                 <div className="flex justify-end space-x-2">
                   <button
                     onClick={() => handleEdit(room)}
-                    className="text-blue-600 dark:text-blue-300 hover:text-blue-900 p-2 rounded hover:bg-blue-50 dark:bg-blue-500/10"
+                    className="text-blue-600 dark:text-blue-300 hover:text-blue-900 p-2 rounded hover:bg-blue-900/20 dark:bg-blue-900/200/10"
                     title="Edit Room"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(room.room_id)}
-                    className="text-red-600 dark:text-red-300 hover:text-red-900 p-2 rounded hover:bg-red-50 dark:bg-red-500/10"
+                    className="text-red-600 dark:text-red-300 hover:text-red-900 p-2 rounded hover:bg-red-900/20 dark:bg-red-900/200/10"
                     title="Delete Room"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -429,7 +429,7 @@ export const RoomsPage = () => {
           >
             {loading ? 'Loading...' : `Load More Rooms (${allRooms.length} loaded)`}
           </button>
-          <p className="text-sm text-text-secondary dark:text-slate-300 mt-2">
+          <p className="text-sm text-slate-300 dark:text-slate-300 mt-2">
             Load more rooms for better inventory overview
           </p>
         </div>
@@ -438,7 +438,7 @@ export const RoomsPage = () => {
       {/* Pagination Controls */}
       {pagination.totalPages > 1 && displayRooms.length > 0 && (
         <div className="mt-8 flex items-center justify-between">
-          <div className="text-sm text-text-secondary dark:text-slate-200">
+          <div className="text-sm text-slate-300 dark:text-slate-200">
             Showing {displayRooms.length} {viewMode === 'available' ? 'available' : ''} rooms from {allRooms.length} loaded rooms
           </div>
           <div className="flex items-center space-x-2">
@@ -462,7 +462,7 @@ export const RoomsPage = () => {
                     className={`px-3 py-2 text-sm border rounded-md ${
                       pageNum === (pagination.page || 1)
                         ? 'bg-luxury-gold text-white border-luxury-gold'
-                        : 'border-border dark:border-slate-600 dark:border-slate-600 hover:bg-gray-50 dark:bg-slate-700/30'
+                        : 'border-border dark:border-slate-600 dark:border-slate-600 hover:bg-slate-900 dark:bg-slate-700/30'
                     }`}
                   >
                     {pageNum}
@@ -510,15 +510,15 @@ const CreateRoomForm = ({ branches, roomTypes, loading, onCancel, onCreated }) =
 
   return (
     <form onSubmit={submit} className="p-6 space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-text-secondary dark:text-slate-200 mb-2">Room Type *</label>
+      <div className="relative z-30">
+        <label className="block text-sm font-medium text-slate-300 dark:text-slate-200 mb-2">Room Type *</label>
         <SearchableDropdown
           options={roomTypes}
           value={form.room_type_id}
           onChange={(value) => setForm({...form, room_type_id: value})}
           placeholder="Select Room Type"
           searchPlaceholder="Search room types..."
-          className="input-field"
+          className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
           required
           displayKey="name"
           valueKey="room_type_id"
@@ -526,33 +526,26 @@ const CreateRoomForm = ({ branches, roomTypes, loading, onCancel, onCreated }) =
           renderOption={(roomType) => (
             <div className="flex justify-between items-center w-full">
               <div>
-                <div className="font-medium">{roomType.name}</div>
-                <div className="text-sm text-text-secondary dark:text-slate-300">
+                <div className="font-semibold text-white">{roomType.name}</div>
+                <div className="text-sm text-slate-200">
                   Capacity: {roomType.capacity} | Rs {parseFloat(roomType.daily_rate).toFixed(2)}/night
                 </div>
               </div>
             </div>
           )}
-          renderSelected={(roomType) => (
-            <div className="flex justify-between items-center w-full">
-              <span className="font-medium">{roomType.name}</span>
-              <span className="text-sm text-text-secondary dark:text-slate-300">
-                Rs {parseFloat(roomType.daily_rate).toFixed(2)}/night
-              </span>
-            </div>
-          )}
+          renderSelected={(roomType) => `${roomType.name} Rs ${parseFloat(roomType.daily_rate).toFixed(2)}/night`}
           emptyMessage="No room types found"
         />
       </div>
-      <div>
-        <label className="block text-sm font-medium text-text-secondary dark:text-slate-200 mb-2">Branch</label>
+      <div className="relative z-20">
+        <label className="block text-sm font-medium text-slate-300 dark:text-slate-200 mb-2">Branch</label>
         <SearchableDropdown
           options={branches}
           value={form.branch_id}
           onChange={(value) => setForm({...form, branch_id: value})}
           placeholder="Select Branch"
           searchPlaceholder="Search branches..."
-          className="input-field"
+          className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
           required
           displayKey="branch_name"
           valueKey="branch_id"
@@ -560,24 +553,19 @@ const CreateRoomForm = ({ branches, roomTypes, loading, onCancel, onCreated }) =
           renderOption={(branch) => (
             <div className="flex justify-between items-center w-full">
               <div>
-                <div className="font-medium">{branch.branch_name}</div>
-                <div className="text-sm text-text-secondary dark:text-slate-300">
+                <div className="font-semibold text-white">{branch.branch_name}</div>
+                <div className="text-sm text-slate-200">
                   {branch.branch_code} | {branch.address}
                 </div>
               </div>
             </div>
           )}
-          renderSelected={(branch) => (
-            <div className="flex justify-between items-center w-full">
-              <span className="font-medium">{branch.branch_name}</span>
-              <span className="text-sm text-text-secondary dark:text-slate-300">{branch.branch_code}</span>
-            </div>
-          )}
+          renderSelected={(branch) => `${branch.branch_name} ${branch.branch_code}`}
           emptyMessage="No branches found"
         />
       </div>
-      <div>
-        <label className="block text-sm font-medium text-text-secondary dark:text-slate-200 mb-2">Status</label>
+      <div className="relative z-10">
+        <label className="block text-sm font-medium text-slate-300 dark:text-slate-200 mb-2">Status</label>
         <SearchableDropdown
           options={[
             { value: 'Available', label: 'Available' },
@@ -589,14 +577,14 @@ const CreateRoomForm = ({ branches, roomTypes, loading, onCancel, onCreated }) =
           onChange={(value) => setForm({...form, status: value})}
           placeholder="Select Status"
           searchPlaceholder="Search status..."
-          className="input-field"
+          className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
           displayKey="label"
           valueKey="value"
           searchKeys={['label']}
           renderOption={(status) => (
             <div className="flex justify-between items-center w-full">
               <div>
-                <div className="font-medium">{status.label}</div>
+                <div className="font-semibold text-white">{status.label}</div>
               </div>
             </div>
           )}
@@ -655,86 +643,74 @@ const EditRoomModal = ({ room, branches, roomTypes, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-surface-secondary rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-border dark:border-slate-700 flex justify-between items-center sticky top-0 bg-surface-secondary">
-          <h2 className="text-2xl font-display font-bold text-text-primary dark:text-slate-100">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 'var(--z-modal)' }}>
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-slate-700/50" style={{minWidth: '600px'}}>
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 flex justify-between items-center" style={{ zIndex: 'var(--z-sticky)' }}>
+          <h2 className="text-2xl font-display font-bold text-white">
             Edit Room
           </h2>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary dark:text-slate-300">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-300 dark:text-slate-300">
             <X className="w-6 h-6" />
           </button>
         </div>
         <form onSubmit={submit} className="p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-text-secondary dark:text-slate-200 mb-2">Room Type *</label>
+          <div className="relative z-30">
+            <label className="block text-sm font-medium text-slate-300 dark:text-slate-200 mb-2">Room Type *</label>
             <SearchableDropdown
               options={roomTypes}
               value={form.room_type_id}
               onChange={(value) => setForm({...form, room_type_id: value})}
               placeholder="Select Room Type"
               searchPlaceholder="Search room types..."
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               displayKey="name"
               valueKey="room_type_id"
               renderOption={(roomType) => (
                 <div className="flex justify-between items-center w-full">
                   <div>
-                    <div className="font-medium">{roomType.name}</div>
-                    <div className="text-sm text-text-secondary dark:text-slate-300">
+                    <div className="font-semibold text-white">{roomType.name}</div>
+                    <div className="text-sm text-slate-200">
                       Capacity: {roomType.capacity} | Rs {parseFloat(roomType.daily_rate).toFixed(2)}/night
                     </div>
                   </div>
                 </div>
               )}
-              renderSelected={(roomType) => (
-                <div className="flex justify-between items-center w-full">
-                  <span className="font-medium">{roomType.name}</span>
-                  <span className="text-sm text-text-secondary dark:text-slate-300">
-                    Rs {parseFloat(roomType.daily_rate).toFixed(2)}/night
-                  </span>
-                </div>
-              )}
+              renderSelected={(roomType) => `${roomType.name} Rs ${parseFloat(roomType.daily_rate).toFixed(2)}/night`}
               emptyMessage="No room types found"
             />
           </div>
           
-          <div>
-            <label className="block text-sm font-medium text-text-secondary dark:text-slate-200 mb-2">Branch *</label>
+          <div className="relative z-20">
+            <label className="block text-sm font-medium text-slate-300 dark:text-slate-200 mb-2">Branch *</label>
             <SearchableDropdown
               options={branches}
               value={form.branch_id}
               onChange={(value) => setForm({...form, branch_id: value})}
               placeholder="Select Branch"
               searchPlaceholder="Search branches..."
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               displayKey="branch_name"
               valueKey="branch_id"
               renderOption={(branch) => (
                 <div className="flex justify-between items-center w-full">
                   <div>
-                    <div className="font-medium">{branch.branch_name}</div>
-                    <div className="text-sm text-text-secondary dark:text-slate-300">{branch.address}</div>
+                    <div className="font-semibold text-white">{branch.branch_name}</div>
+                    <div className="text-sm text-slate-200">{branch.address}</div>
                   </div>
                   {branch.branch_code && (
-                    <div className="text-xs text-text-tertiary dark:text-slate-400">
+                    <div className="text-xs text-slate-300">
                       {branch.branch_code}
                     </div>
                   )}
                 </div>
               )}
-              renderSelected={(branch) => (
-                <div className="flex justify-between items-center w-full">
-                  <span className="font-medium">{branch.branch_name}</span>
-                  <span className="text-sm text-text-secondary dark:text-slate-300">{branch.branch_code}</span>
-                </div>
-              )}
+              renderSelected={(branch) => `${branch.branch_name} ${branch.branch_code}`}
               emptyMessage="No branches found"
             />
           </div>
           
-          <div>
-            <label className="block text-sm font-medium text-text-secondary dark:text-slate-200 mb-2">Status</label>
+          <div className="relative z-10">
+            <label className="block text-sm font-medium text-slate-300 dark:text-slate-200 mb-2">Status</label>
             <SearchableDropdown
               options={[
                 { value: 'Available', label: 'Available' },
@@ -746,14 +722,14 @@ const EditRoomModal = ({ room, branches, roomTypes, onClose, onSuccess }) => {
               onChange={(value) => setForm({...form, status: value})}
               placeholder="Select Status"
               searchPlaceholder="Search status..."
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               displayKey="label"
               valueKey="value"
               searchKeys={['label']}
               renderOption={(status) => (
                 <div className="flex justify-between items-center w-full">
                   <div>
-                    <div className="font-medium">{status.label}</div>
+                    <div className="font-semibold text-white">{status.label}</div>
                   </div>
                 </div>
               )}

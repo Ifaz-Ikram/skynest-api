@@ -34,8 +34,8 @@ const EmptyState = forwardRef(
           <Icon className="h-7 w-7 text-accent-secondary" strokeWidth={1.4} />
         </div>
         <div className={`${horizontal ? 'sm:ml-6 sm:flex-1' : 'mt-5 w-full space-y-2'}`}>
-          <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
-          <p className="text-sm text-text-secondary">{message}</p>
+          <h3 className="text-lg font-semibold text-white">{title}</h3>
+          <p className="text-sm text-slate-300">{message}</p>
           {children}
           {action && <div className="mt-6 flex justify-center sm:justify-start">{action}</div>}
         </div>

@@ -83,28 +83,28 @@ const UserManagementPage = () => {
       case 'Manager': return <Shield className="w-4 h-4 text-blue-600" />;
       case 'Receptionist': return <UserCheck className="w-4 h-4 text-green-600" />;
       case 'Accountant': return <CreditCard className="w-4 h-4 text-orange-600" />;
-      case 'Customer': return <Users className="w-4 h-4 text-text-secondary" />;
-      default: return <UserCog className="w-4 h-4 text-text-tertiary" />;
+      case 'Customer': return <Users className="w-4 h-4 text-slate-300" />;
+      default: return <UserCog className="w-4 h-4 text-slate-400" />;
     }
   };
 
   const getRoleBadgeColor = (role) => {
     switch (role) {
-      case 'Admin': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300';
-      case 'Manager': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
-      case 'Receptionist': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-      case 'Accountant': return 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300';
-      case 'Customer': return 'bg-gray-100 text-gray-700';
-      default: return 'bg-gray-100 text-gray-700';
+      case 'Admin': return 'bg-purple-800/30 text-purple-200 dark:bg-purple-900/30 dark:text-purple-300';
+      case 'Manager': return 'bg-blue-800/30 text-blue-200 dark:bg-blue-900/30 dark:text-blue-300';
+      case 'Receptionist': return 'bg-green-800/30 text-green-200 dark:bg-green-900/30 dark:text-green-300';
+      case 'Accountant': return 'bg-orange-800/30 text-orange-200 dark:bg-orange-900/30 dark:text-orange-300';
+      case 'Customer': return 'bg-slate-800 text-slate-100';
+      default: return 'bg-slate-800 text-slate-100';
     }
   };
 
   const getStatusBadgeColor = (status) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-      case 'inactive': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
-      case 'suspended': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
-      default: return 'bg-gray-100 text-gray-700';
+      case 'active': return 'bg-green-800/30 text-green-200 dark:bg-green-900/30 dark:text-green-300';
+      case 'inactive': return 'bg-red-800/30 text-red-200 dark:bg-red-900/30 dark:text-red-300';
+      case 'suspended': return 'bg-yellow-800/30 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+      default: return 'bg-slate-800 text-slate-100';
     }
   };
 
@@ -153,9 +153,9 @@ const UserManagementPage = () => {
     if (filteredUsers.length === 0) {
       return (
         <div className="text-center py-12">
-          <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-text-primary mb-2">No users found</h3>
-          <p className="text-text-tertiary">No users match your current filters.</p>
+          <Users className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-white mb-2">No users found</h3>
+          <p className="text-slate-400">No users match your current filters.</p>
         </div>
       );
     }
@@ -171,24 +171,24 @@ const UserManagementPage = () => {
           <table className="min-w-full divide-y divide-border dark:divide-slate-700">
             <thead className="bg-surface-tertiary dark:bg-slate-800/60">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   Role
                 </th>
                 {hasContactInfo && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                     Contact
                   </th>
                 )}
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   User ID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -202,15 +202,15 @@ const UserManagementPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          <div className="h-10 w-10 rounded-full bg-slate-700 flex items-center justify-center">
                             {getRoleIcon(user.role)}
                           </div>
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-text-primary">
+                          <div className="text-sm font-medium text-white">
                             {user.employee_name || user.guest_name || user.username}
                           </div>
-                          <div className="text-sm text-text-tertiary">
+                          <div className="text-sm text-slate-400">
                             @{user.username}
                           </div>
                         </div>
@@ -221,13 +221,13 @@ const UserManagementPage = () => {
                         {user.role}
                       </span>
                       {branch && (
-                        <div className="text-xs text-text-tertiary mt-1">
+                        <div className="text-xs text-slate-400 mt-1">
                           {branch.branch_name}
                         </div>
                       )}
                     </td>
                     {hasContactInfo && (
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-tertiary">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">
                         <div className="space-y-1">
                           {user.employee_email && (
                             <div className="flex items-center">
@@ -261,7 +261,7 @@ const UserManagementPage = () => {
                         Active
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-tertiary">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">
                       <div className="flex items-center">
                         <Calendar className="w-3 h-3 mr-1" />
                         User ID: {user.user_id}
@@ -300,35 +300,35 @@ const UserManagementPage = () => {
         value: users.length,
         icon: Users,
         color: 'text-blue-600',
-        bgColor: 'bg-blue-100'
+        bgColor: 'bg-blue-800/30'
       },
       {
         label: 'Admins',
         value: users.filter(u => u.role === 'Admin').length,
         icon: Crown,
         color: 'text-purple-600',
-        bgColor: 'bg-purple-100'
+        bgColor: 'bg-purple-800/30'
       },
       {
         label: 'Managers',
         value: users.filter(u => u.role === 'Manager').length,
         icon: Shield,
         color: 'text-blue-600',
-        bgColor: 'bg-blue-100'
+        bgColor: 'bg-blue-800/30'
       },
       {
         label: 'Staff',
         value: users.filter(u => ['Receptionist', 'Accountant'].includes(u.role)).length,
         icon: UserCheck,
         color: 'text-green-600',
-        bgColor: 'bg-green-100'
+        bgColor: 'bg-green-800/30'
       },
       {
         label: 'Customers',
         value: users.filter(u => u.role === 'Customer').length,
         icon: Users,
-        color: 'text-gray-600',
-        bgColor: 'bg-gray-100'
+        color: 'text-slate-200',
+        bgColor: 'bg-slate-800'
       }
     ];
 
@@ -341,8 +341,8 @@ const UserManagementPage = () => {
                 <stat.icon className={`w-6 h-6 ${stat.color}`} />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-text-tertiary">{stat.label}</p>
-                <p className="text-2xl font-bold text-text-primary">{stat.value}</p>
+                <p className="text-sm font-medium text-slate-400">{stat.label}</p>
+                <p className="text-2xl font-bold text-white">{stat.value}</p>
               </div>
             </div>
           </div>
@@ -371,13 +371,13 @@ const UserManagementPage = () => {
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'employees'
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-border dark:border-slate-600'
+                  : 'border-transparent text-slate-300 hover:text-slate-100 hover:border-border dark:border-slate-600'
               }`}
             >
               <div className="flex items-center space-x-2">
                 <Shield className="w-4 h-4" />
                 <span>Employees</span>
-                <span className="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">
+                <span className="bg-blue-800/30 text-blue-600 text-xs px-2 py-1 rounded-full">
                   {users.filter(u => ['Admin', 'Manager', 'Receptionist', 'Accountant'].includes(u.role)).length}
                 </span>
               </div>
@@ -387,13 +387,13 @@ const UserManagementPage = () => {
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'customers'
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-border dark:border-slate-600'
+                  : 'border-transparent text-slate-300 hover:text-slate-100 hover:border-border dark:border-slate-600'
               }`}
             >
               <div className="flex items-center space-x-2">
                 <Users className="w-4 h-4" />
                 <span>Customers</span>
-                <span className="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">
+                <span className="bg-green-800/30 text-green-600 text-xs px-2 py-1 rounded-full">
                   {users.filter(u => u.role === 'Customer').length}
                 </span>
               </div>
@@ -407,7 +407,7 @@ const UserManagementPage = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 mb-6">
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                 <input
                   type="text"
                   placeholder={`Search ${activeTab}...`}
@@ -578,12 +578,12 @@ const UserModal = ({ user, branches, users, activeTab, onClose, onSuccess }) => 
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-surface-secondary rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-border flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-text-primary">
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-700/50" style={{minWidth: '600px'}}>
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 z-10 flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-white">
             {user ? 'Edit User' : 'Add New User'}
           </h2>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-300">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -591,31 +591,31 @@ const UserModal = ({ user, branches, users, activeTab, onClose, onSuccess }) => 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Username *</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Username *</label>
               <input
                 type="text"
                 value={formData.username}
                 onChange={(e) => setFormData({...formData, username: e.target.value})}
-                className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Password {user ? '(leave blank to keep current)' : '*'}
               </label>
               <input
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({...formData, password: e.target.value})}
-                className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required={!user}
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Role *</label>
+            <div className="relative z-30">
+              <label className="block text-sm font-medium text-slate-300 mb-2">Role *</label>
               <SearchableDropdown
                 options={activeTab === 'employees' ? [
                   { value: 'Admin', label: 'Admin' },
@@ -629,7 +629,7 @@ const UserModal = ({ user, branches, users, activeTab, onClose, onSuccess }) => 
                 onChange={(value) => setFormData({...formData, role: value})}
                 placeholder="Select role"
                 searchPlaceholder="Search roles..."
-                className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
                 displayKey="label"
                 valueKey="value"
@@ -640,7 +640,7 @@ const UserModal = ({ user, branches, users, activeTab, onClose, onSuccess }) => 
                     {role.value === 'Manager' && <Shield className="w-4 h-4 text-blue-600" />}
                     {role.value === 'Receptionist' && <UserCheck className="w-4 h-4 text-green-600" />}
                     {role.value === 'Accountant' && <CreditCard className="w-4 h-4 text-orange-600" />}
-                    {role.value === 'Customer' && <Users className="w-4 h-4 text-text-secondary" />}
+                    {role.value === 'Customer' && <Users className="w-4 h-4 text-slate-300" />}
                     <span>{role.label}</span>
                   </div>
                 )}
@@ -650,7 +650,7 @@ const UserModal = ({ user, branches, users, activeTab, onClose, onSuccess }) => 
                     {role.value === 'Manager' && <Shield className="w-4 h-4 text-blue-600" />}
                     {role.value === 'Receptionist' && <UserCheck className="w-4 h-4 text-green-600" />}
                     {role.value === 'Accountant' && <CreditCard className="w-4 h-4 text-orange-600" />}
-                    {role.value === 'Customer' && <Users className="w-4 h-4 text-text-secondary" />}
+                    {role.value === 'Customer' && <Users className="w-4 h-4 text-slate-300" />}
                     <span>{role.label}</span>
                   </div>
                 )}
@@ -659,15 +659,15 @@ const UserModal = ({ user, branches, users, activeTab, onClose, onSuccess }) => 
             </div>
 
             {formData.role !== 'Customer' && (
-              <div>
-                <label className="block text-sm font-medium text-text-secondary mb-2">Branch</label>
+              <div className="relative z-20">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Branch</label>
                 <SearchableDropdown
                   options={branches}
                   value={formData.branch_id}
                   onChange={(value) => setFormData({...formData, branch_id: value})}
                   placeholder="Select branch"
                   searchPlaceholder="Search branches..."
-                  className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   displayKey="branch_name"
                   valueKey="branch_id"
                   searchKeys={['branch_name', 'branch_code']}
@@ -675,14 +675,14 @@ const UserModal = ({ user, branches, users, activeTab, onClose, onSuccess }) => 
                     <div className="flex justify-between items-center w-full">
                       <div>
                         <div className="font-medium">{branch.branch_name}</div>
-                        <div className="text-sm text-text-secondary">{branch.branch_code}</div>
+                        <div className="text-sm text-slate-300">{branch.branch_code}</div>
                       </div>
                     </div>
                   )}
                   renderSelected={(branch) => (
                     <div className="flex justify-between items-center w-full">
                       <span className="font-medium">{branch.branch_name}</span>
-                      <span className="text-sm text-text-secondary">{branch.branch_code}</span>
+                      <span className="text-sm text-slate-300">{branch.branch_code}</span>
                     </div>
                   )}
                   emptyMessage="No branches found"
@@ -691,34 +691,34 @@ const UserModal = ({ user, branches, users, activeTab, onClose, onSuccess }) => 
             )}
 
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Full Name *</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Full Name *</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Email *</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Email *</label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
-                className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Contact Number *</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Contact Number *</label>
               <input
                 type="tel"
                 value={formData.contact_no}
                 onChange={(e) => setFormData({...formData, contact_no: e.target.value})}
-                className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>

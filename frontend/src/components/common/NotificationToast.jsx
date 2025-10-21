@@ -65,13 +65,13 @@ const NotificationToast = ({ toast, onDismiss }) => {
         <Icon className="h-4 w-4" />
       </span>
       <div className="flex-1">
-        <p className="text-sm font-semibold text-text-primary">{title}</p>
-        {message && <p className="mt-1 text-sm text-text-secondary">{message}</p>}
+        <p className="text-sm font-semibold text-white">{title}</p>
+        {message && <p className="mt-1 text-sm text-slate-300">{message}</p>}
       </div>
       <button
         type="button"
         onClick={() => onDismiss(id)}
-        className="rounded-full p-1 text-text-tertiary transition-colors duration-150 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-secondary"
+        className="rounded-full p-1 text-slate-400 transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-secondary"
         aria-label="Dismiss notification"
       >
         <X className="h-4 w-4" />

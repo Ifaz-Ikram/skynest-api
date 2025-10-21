@@ -93,15 +93,15 @@ export const Sidebar = ({ user, currentPage, onNavigate, isOpen }) => {
   }
 
   return (
-    <aside className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-surface-secondary/95 dark:bg-slate-900/95 backdrop-blur-sm border-r border-border dark:border-slate-800 shadow-lg transition-all duration-300 z-40 ${
+    <aside className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-surface-secondary/95 dark:bg-slate-900/95 backdrop-blur-sm border-r border-border dark:border-slate-800 shadow-lg transition-all duration-300 ${
       isOpen ? 'w-64' : 'w-0 -translate-x-full'
-    }`}>
+    }`} style={{ zIndex: 'var(--z-sidebar)' }}>
       <nav className="h-full overflow-y-auto py-4">
         {menuSections.map((section, sectionIndex) => (
           <div key={section.title} className="mb-6">
             {/* Section Header */}
             <div className="px-6 mb-2">
-              <h3 className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+              <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 {section.title}
               </h3>
             </div>
@@ -119,7 +119,7 @@ export const Sidebar = ({ user, currentPage, onNavigate, isOpen }) => {
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group ${
                       isActive 
                         ? 'bg-luxury-gold text-white shadow-md scale-[1.02]' 
-                        : 'text-text-secondary dark:text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-800 hover:shadow-sm'
+                        : 'text-slate-300 dark:text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-800 hover:shadow-sm'
                     }`}
                   >
                     <Icon className={`w-5 h-5 transition-transform ${

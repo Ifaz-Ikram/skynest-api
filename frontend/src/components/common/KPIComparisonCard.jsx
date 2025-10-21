@@ -35,17 +35,17 @@ const KPIComparisonCard = ({
   const { percentage, trend } = calculateChange();
 
   const colorClasses = {
-    blue: 'bg-blue-100 text-blue-600',
-    green: 'bg-green-100 text-green-600',
-    purple: 'bg-purple-100 text-purple-600',
-    orange: 'bg-orange-100 text-orange-600',
+    blue: 'bg-blue-800/30 text-blue-600',
+    green: 'bg-green-800/30 text-green-600',
+    purple: 'bg-purple-800/30 text-purple-600',
+    orange: 'bg-orange-800/30 text-orange-600',
     indigo: 'bg-indigo-100 text-indigo-600',
   };
 
   const getTrendColor = (trend) => {
-    if (trend === 'up') return 'text-green-600 bg-green-50';
-    if (trend === 'down') return 'text-red-600 bg-red-50';
-    return 'text-gray-600 bg-gray-50';
+    if (trend === 'up') return 'text-green-600 bg-green-900/20';
+    if (trend === 'down') return 'text-red-600 bg-red-900/20';
+    return 'text-slate-200 bg-slate-900';
   };
 
   const getTrendIcon = (trend) => {
@@ -66,34 +66,34 @@ const KPIComparisonCard = ({
         </div>
       </div>
 
-      <h3 className="text-sm font-medium text-text-secondary mb-2">{title}</h3>
+      <h3 className="text-sm font-medium text-slate-300 mb-2">{title}</h3>
 
       <div className="space-y-3">
         {/* Current Period */}
         <div>
-          <p className="text-xs text-text-tertiary mb-1">Current Period</p>
-          <p className="text-2xl font-bold text-text-primary">{formatValue(currentValue)}</p>
+          <p className="text-xs text-slate-400 mb-1">Current Period</p>
+          <p className="text-2xl font-bold text-white">{formatValue(currentValue)}</p>
         </div>
 
         {/* Previous Period */}
         <div className="pt-3 border-t border-border">
-          <p className="text-xs text-text-tertiary mb-1">Previous Period</p>
-          <p className="text-lg font-semibold text-text-secondary">{formatValue(previousValue)}</p>
+          <p className="text-xs text-slate-400 mb-1">Previous Period</p>
+          <p className="text-lg font-semibold text-slate-300">{formatValue(previousValue)}</p>
         </div>
       </div>
 
       {/* Comparison Bar */}
       <div className="mt-4">
-        <div className="flex items-center justify-between text-xs text-text-tertiary mb-1">
+        <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
           <span>Comparison</span>
-          <span className={trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-gray-600'}>
+          <span className={trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-slate-200'}>
             {trend === 'up' ? '+' : trend === 'down' ? '-' : ''}{formatValue(Math.abs(currentValue - previousValue))}
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-slate-700 rounded-full h-2">
           <div
             className={`h-2 rounded-full transition-all ${
-              trend === 'up' ? 'bg-green-500' : trend === 'down' ? 'bg-red-500' : 'bg-gray-400'
+              trend === 'up' ? 'bg-green-900/200' : trend === 'down' ? 'bg-red-900/200' : 'bg-slate-500'
             }`}
             style={{ width: `${Math.min(Math.abs(percentage), 100)}%` }}
           />

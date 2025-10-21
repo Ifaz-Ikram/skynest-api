@@ -93,11 +93,11 @@ export const RoomAvailabilityModal = ({
 
   const getAvailabilityColor = (status) => {
     switch (status) {
-      case 'Available': return 'bg-green-100 text-green-800 border-green-200';
-      case 'Occupied': return 'bg-red-100 text-red-800 border-red-200';
-      case 'Reserved': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'Unavailable': return 'bg-gray-100 text-gray-800 border-border';
-      default: return 'bg-gray-100 text-gray-800 border-border';
+      case 'Available': return 'bg-green-800/30 text-green-200 border-green-700';
+      case 'Occupied': return 'bg-red-800/30 text-red-200 border-red-700';
+      case 'Reserved': return 'bg-blue-800/30 text-blue-200 border-blue-700';
+      case 'Unavailable': return 'bg-slate-800 text-white border-border';
+      default: return 'bg-slate-800 text-white border-border';
     }
   };
 
@@ -138,15 +138,15 @@ export const RoomAvailabilityModal = ({
 
   if (showRoomTimeline && roomTimeline) {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex justify-center items-center">
-        <div className="bg-surface-secondary rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="p-6 border-b border-border flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-text-primary">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center" style={{ zIndex: 'var(--z-modal)' }}>
+        <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto border border-slate-700/50">
+          <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 flex items-center justify-between" style={{ zIndex: 'var(--z-sticky)' }}>
+            <h2 className="text-2xl font-bold text-white">
               Room Timeline - {roomTimeline.room.room_number}
             </h2>
             <button 
               onClick={() => setShowRoomTimeline(false)} 
-              className="text-text-tertiary hover:text-text-secondary"
+              className="text-slate-400 hover:text-slate-300"
             >
               <X className="w-6 h-6" />
             </button>
@@ -175,17 +175,17 @@ export const RoomAvailabilityModal = ({
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Bookings</h3>
               {roomTimeline.bookings.map((booking, index) => (
-                <div key={index} className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div key={index} className="bg-blue-900/20 border border-blue-700 rounded-lg p-4">
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-medium">{booking.guest_name}</h4>
-                      <p className="text-sm text-text-secondary">
+                      <p className="text-sm text-slate-300">
                         {format(new Date(booking.check_in_date), 'dd/MM/yyyy')} - {format(new Date(booking.check_out_date), 'dd/MM/yyyy')}
                       </p>
-                      <p className="text-sm text-text-secondary">Rate: Rs {booking.booked_rate}</p>
+                      <p className="text-sm text-slate-300">Rate: Rs {booking.booked_rate}</p>
                     </div>
                     <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      booking.status === 'Checked-In' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                      booking.status === 'Checked-In' ? 'bg-green-800/30 text-green-200' : 'bg-blue-800/30 text-blue-200'
                     }`}>
                       {booking.status}
                     </span>
@@ -195,18 +195,18 @@ export const RoomAvailabilityModal = ({
               
               <h3 className="text-lg font-semibold">Maintenance Tasks</h3>
               {roomTimeline.maintenance_tasks.map((task, index) => (
-                <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div key={index} className="bg-yellow-900/20 border border-yellow-200 rounded-lg p-4">
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-medium">{task.task_type}</h4>
-                      <p className="text-sm text-text-secondary">
+                      <p className="text-sm text-slate-300">
                         {format(new Date(task.scheduled_date), 'dd/MM/yyyy')}
                       </p>
-                      {task.notes && <p className="text-sm text-text-secondary">{task.notes}</p>}
+                      {task.notes && <p className="text-sm text-slate-300">{task.notes}</p>}
                     </div>
                     <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      task.priority === 'High' ? 'bg-red-100 text-red-800' : 
-                      task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'
+                      task.priority === 'High' ? 'bg-red-800/30 text-red-200' : 
+                      task.priority === 'Medium' ? 'bg-yellow-800/30 text-yellow-800' : 'bg-slate-800 text-white'
                     }`}>
                       {task.priority}
                     </span>
@@ -221,21 +221,24 @@ export const RoomAvailabilityModal = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex justify-center items-center">
-      <div className="bg-surface-secondary rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-border flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-text-primary">Room Availability</h2>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center" style={{ zIndex: 'var(--z-modal)' }}>
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto border border-slate-700/50">
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 flex items-center justify-between" style={{ zIndex: 'var(--z-sticky)' }}>
+          <h2 className="text-2xl font-bold text-white">Room Availability</h2>
+          <button 
+            onClick={onClose} 
+            className="text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg p-2 transition-all duration-200"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>
         
         <div className="p-6 space-y-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="bg-red-900/20 border border-red-700 rounded-lg p-4">
               <div className="flex items-center">
                 <AlertTriangle className="w-5 h-5 text-red-600 mr-2" />
-                <p className="text-red-800">{error}</p>
+                <p className="text-red-200">{error}</p>
               </div>
             </div>
           )}
@@ -249,7 +252,7 @@ export const RoomAvailabilityModal = ({
                   type="date"
                   value={checkInDate}
                   onChange={(e) => setCheckInDate(e.target.value)}
-                  className="input-field"
+                  className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                 />
               </div>
               <div>
@@ -258,7 +261,7 @@ export const RoomAvailabilityModal = ({
                   type="date"
                   value={checkOutDate}
                   onChange={(e) => setCheckOutDate(e.target.value)}
-                  className="input-field"
+                  className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                 />
               </div>
               <div>
@@ -289,24 +292,24 @@ export const RoomAvailabilityModal = ({
 
           {/* Summary */}
           {availability?.summary && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-4">
               <h3 className="text-lg font-semibold mb-3">Availability Summary</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600">{availability.summary.total_rooms}</div>
-                  <div className="text-sm text-text-secondary">Total Rooms</div>
+                  <div className="text-sm text-slate-300">Total Rooms</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">{availability.summary.available_rooms}</div>
-                  <div className="text-sm text-text-secondary">Available</div>
+                  <div className="text-sm text-slate-300">Available</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-red-600">{availability.summary.occupied_rooms}</div>
-                  <div className="text-sm text-text-secondary">Occupied</div>
+                  <div className="text-sm text-slate-300">Occupied</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-text-secondary">{availability.summary.occupancy_rate}%</div>
-                  <div className="text-sm text-text-secondary">Occupancy Rate</div>
+                  <div className="text-2xl font-bold text-slate-300">{availability.summary.occupancy_rate}%</div>
+                  <div className="text-sm text-slate-300">Occupancy Rate</div>
                 </div>
               </div>
             </div>
@@ -327,7 +330,7 @@ export const RoomAvailabilityModal = ({
                   <div className="bg-surface-tertiary px-4 py-3 border-b">
                     <div className="flex justify-between items-center">
                       <h3 className="text-lg font-semibold">{typeName}</h3>
-                      <div className="text-sm text-text-secondary">
+                      <div className="text-sm text-slate-300">
                         Rs {typeData.base_rate}/night • Max {typeData.capacity} guests
                       </div>
                     </div>
@@ -349,8 +352,8 @@ export const RoomAvailabilityModal = ({
                                 key={room.room_id}
                                 className={`border rounded-lg p-3 cursor-pointer transition-all ${
                                   selectedRoom?.room_id === room.room_id 
-                                    ? 'ring-2 ring-blue-500 bg-blue-50' 
-                                    : 'hover:bg-gray-50'
+                                    ? 'ring-2 ring-blue-500 bg-blue-900/20' 
+                                    : 'hover:bg-slate-900'
                                 } ${
                                   room.availability_status === 'Available' 
                                     ? 'hover:ring-1 hover:ring-green-500' 
@@ -361,7 +364,7 @@ export const RoomAvailabilityModal = ({
                                 <div className="flex justify-between items-start">
                                   <div>
                                     <div className="font-medium">Room {room.room_number}</div>
-                                    <div className="text-sm text-text-secondary">
+                                    <div className="text-sm text-slate-300">
                                       Rs {room.base_rate}/night
                                     </div>
                                     {room.conflicting_booking && (
@@ -403,7 +406,7 @@ export const RoomAvailabilityModal = ({
 
           {/* Selected Room Summary */}
           {selectedRoom && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="bg-green-900/20 border border-green-700 rounded-lg p-4">
               <h3 className="text-lg font-semibold mb-2">Selected Room</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
@@ -430,7 +433,7 @@ export const RoomAvailabilityModal = ({
             <button
               onClick={handleConfirmSelection}
               disabled={!selectedRoom}
-              className="btn-primary flex items-center gap-2 disabled:bg-gray-400"
+              className="btn-primary flex items-center gap-2 disabled:bg-slate-500"
             >
               <Bed className="w-4 h-4" />
               Select Room

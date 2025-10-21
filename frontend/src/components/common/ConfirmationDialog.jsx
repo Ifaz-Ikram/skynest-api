@@ -76,7 +76,8 @@ const ConfirmationDialog = ({
 
   return (
     <div
-      className="fixed inset-0 z-[120] flex items-center justify-center bg-[rgba(15,23,42,0.55)] backdrop-blur"
+      className="fixed inset-0 flex items-center justify-center bg-[rgba(15,23,42,0.55)] backdrop-blur"
+      style={{ zIndex: 'var(--z-confirmation)' }}
       role="presentation"
     >
       <div
@@ -85,12 +86,12 @@ const ConfirmationDialog = ({
         aria-modal="true"
         aria-labelledby="confirmation-dialog-title"
         aria-describedby="confirmation-dialog-message"
-        style={{ backgroundColor: panelBackground }}
+        style={{ backgroundColor: panelBackground, minWidth: '600px' }}
       >
         <button
           type="button"
           onClick={onCancel}
-          className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full border border-transparent text-text-tertiary transition-colors duration-150 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-secondary"
+          className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full border border-transparent text-slate-400 transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-secondary"
           aria-label="Close dialog"
         >
           X
@@ -101,17 +102,17 @@ const ConfirmationDialog = ({
         >
           <Icon className="h-6 w-6" />
         </div>
-        <h3 id="confirmation-dialog-title" className="text-lg font-semibold text-text-primary">
+        <h3 id="confirmation-dialog-title" className="text-lg font-semibold text-white">
           {title}
         </h3>
-        <p id="confirmation-dialog-message" className="mt-2 text-sm text-text-secondary">
+        <p id="confirmation-dialog-message" className="mt-2 text-sm text-slate-300">
           {message}
         </p>
         <div className="mt-6 flex justify-end gap-3">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-secondary transition-colors duration-150 hover:bg-surface-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-secondary"
+            className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-slate-300 transition-colors duration-150 hover:bg-surface-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-secondary"
           >
             {cancelLabel}
           </button>
@@ -120,7 +121,7 @@ const ConfirmationDialog = ({
             ref={confirmButtonRef}
             onClick={onConfirm}
             disabled={loading}
-            className="inline-flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-semibold text-text-primary shadow-md transition-transform duration-150 hover:translate-y-[-1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-primary disabled:cursor-not-allowed disabled:opacity-75"
+            className="inline-flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-md transition-transform duration-150 hover:translate-y-[-1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-primary disabled:cursor-not-allowed disabled:opacity-75"
             style={{
               color: theme === 'dark' ? '#0F172A' : '#1F2937',
               backgroundColor: highlightColor,

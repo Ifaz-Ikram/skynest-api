@@ -47,14 +47,14 @@ const LoadingSpinner = ({
       
       {/* Loading Text */}
       {message && (
-        <span className={`mt-4 ${classes.text} font-medium text-gray-700`}>
+        <span className={`mt-4 ${classes.text} font-medium text-slate-100`}>
           {message}
         </span>
       )}
       
       {/* Submessage */}
       {submessage && (
-        <span className={`${classes.subtext} text-gray-500 mt-1`}>
+        <span className={`${classes.subtext} text-slate-300 mt-1`}>
           {submessage}
         </span>
       )}

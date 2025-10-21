@@ -104,18 +104,18 @@ const QuickCheckInWidget = ({ onCheckInComplete }) => {
   return (
     <div className="bg-surface-secondary rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-text-primary flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
           <UserCheck className="w-5 h-5 text-luxury-gold" />
           Quick Check-In
         </h3>
-        <span className="text-sm text-text-tertiary">
+        <span className="text-sm text-slate-400">
           {pendingCheckIns.length} pending today
         </span>
       </div>
 
       {/* Search Bar */}
       <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text-tertiary" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
         <input
           type="text"
           placeholder="Search by name, booking ID, or guest ID..."
@@ -127,7 +127,7 @@ const QuickCheckInWidget = ({ onCheckInComplete }) => {
 
       {/* Success Message */}
       {success && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 text-green-700">
+        <div className="mb-4 p-3 bg-green-900/20 border border-green-700 rounded-lg flex items-center gap-2 text-green-300">
           <CheckCircle className="w-4 h-4" />
           <span className="text-sm">{success}</span>
         </div>
@@ -135,7 +135,7 @@ const QuickCheckInWidget = ({ onCheckInComplete }) => {
 
       {/* Error Message */}
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
+        <div className="mb-4 p-3 bg-red-900/20 border border-red-700 rounded-lg flex items-center gap-2 text-red-300">
           <AlertCircle className="w-4 h-4" />
           <span className="text-sm">{error}</span>
         </div>
@@ -144,8 +144,8 @@ const QuickCheckInWidget = ({ onCheckInComplete }) => {
       {/* Pending Check-Ins List */}
       <div className="space-y-3 max-h-96 overflow-y-auto">
         {filteredCheckIns.length === 0 ? (
-          <div className="text-center py-8 text-text-tertiary">
-            <Clock className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+          <div className="text-center py-8 text-slate-400">
+            <Clock className="w-12 h-12 mx-auto mb-2 text-slate-500" />
             <p className="text-sm">No pending check-ins for today</p>
           </div>
         ) : (
@@ -154,23 +154,23 @@ const QuickCheckInWidget = ({ onCheckInComplete }) => {
               key={booking.booking_id}
               className={`p-4 border rounded-lg transition-all ${
                 selectedBooking?.booking_id === booking.booking_id
-                  ? 'border-luxury-gold bg-yellow-50'
+                  ? 'border-luxury-gold bg-yellow-900/20'
                   : 'border-border hover:border-border dark:border-slate-600'
               }`}
             >
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <h4 className="font-semibold text-text-primary">{booking.guest_name}</h4>
-                  <p className="text-sm text-text-tertiary">
+                  <h4 className="font-semibold text-white">{booking.guest_name}</h4>
+                  <p className="text-sm text-slate-400">
                     Booking #{booking.booking_id} • Guest #{booking.guest_id}
                   </p>
                 </div>
-                <span className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-1 rounded">
+                <span className="text-xs bg-blue-800/30 text-blue-200 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-1 rounded">
                   {booking.room_type}
                 </span>
               </div>
 
-              <div className="text-sm text-text-secondary mb-3">
+              <div className="text-sm text-slate-300 mb-3">
                 <p>Check-in: {format(new Date(booking.check_in_date), 'MMM dd, yyyy')}</p>
                 <p>Nights: {booking.number_of_nights} • Adults: {booking.number_of_adults}</p>
               </div>
@@ -178,7 +178,7 @@ const QuickCheckInWidget = ({ onCheckInComplete }) => {
               {/* Room Assignment */}
               {selectedBooking?.booking_id === booking.booking_id && (
                 <div className="mb-3">
-                  <label className="block text-sm font-medium text-text-secondary mb-2">
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
                     Assign Room
                   </label>
                   <SearchableDropdown
@@ -205,7 +205,7 @@ const QuickCheckInWidget = ({ onCheckInComplete }) => {
                     <button
                       onClick={() => handleQuickCheckIn(booking)}
                       disabled={loading || !selectedRoom}
-                      className="flex-1 bg-luxury-gold text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 bg-luxury-gold text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors disabled:bg-slate-600 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       <DoorOpen className="w-4 h-4" />
                       {loading ? 'Processing...' : 'Confirm Check-In'}

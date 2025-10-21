@@ -163,7 +163,7 @@ const GuestsPage = () => {
         {/* Action Bar - White Card Style */}
         <div className="bg-surface-secondary rounded-xl shadow-md p-6 border border-border">
         <div className="flex justify-between items-center">
-          <div className="text-lg font-semibold text-text-secondary">
+          <div className="text-lg font-semibold text-slate-300">
             Guest Records
           </div>
           <div className="flex gap-2">
@@ -191,31 +191,31 @@ const GuestsPage = () => {
           <table className="min-w-full divide-y divide-border dark:divide-slate-700">
             <thead>
               <tr className="bg-surface-tertiary">
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   Guest ID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   Email
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   Phone
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   ID Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   ID Number
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   Nationality
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   Total Bookings
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -223,45 +223,45 @@ const GuestsPage = () => {
             <tbody className="bg-surface-secondary dark:bg-slate-800 divide-y divide-border dark:divide-slate-700">
               {guests.map((guest) => (
                 <tr key={guest.guest_id} className="hover:bg-surface-tertiary dark:hover:bg-slate-700/40 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-primary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                     #{guest.guest_id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <UserCircle className="w-5 h-5 text-text-tertiary mr-2" />
-                      <span className="text-sm font-medium text-text-primary">{guest.full_name}</span>
+                      <UserCircle className="w-5 h-5 text-slate-400 mr-2" />
+                      <span className="text-sm font-medium text-white">{guest.full_name}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                     {guest.email || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                     {guest.phone || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                     {guest.id_proof_type || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                     {guest.id_proof_number || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                     {guest.nationality || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                     {guest.total_bookings || 0}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleEdit(guest)}
-                        className="text-blue-500 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-200 p-1 rounded transition-colors hover:bg-blue-50 dark:hover:bg-blue-500/20"
+                        className="text-blue-500 dark:text-blue-300 hover:text-blue-300 dark:hover:text-blue-200 p-1 rounded transition-colors hover:bg-blue-900/20 dark:hover:bg-blue-900/200/20"
                         title="Edit Guest"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(guest.guest_id)}
-                        className="text-red-500 dark:text-red-300 hover:text-red-700 dark:hover:text-red-200 p-1 rounded transition-colors hover:bg-red-50 dark:hover:bg-red-500/20"
+                        className="text-red-500 dark:text-red-300 hover:text-red-300 dark:hover:text-red-200 p-1 rounded transition-colors hover:bg-red-900/20 dark:hover:bg-red-900/200/20"
                         title="Delete Guest"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -272,7 +272,7 @@ const GuestsPage = () => {
               ))}
               {guests.length === 0 && (
                 <tr>
-                  <td colSpan="9" className="px-6 py-12 text-center text-text-tertiary">
+                  <td colSpan="9" className="px-6 py-12 text-center text-slate-400">
                     No guests found. Add your first guest to get started.
                   </td>
                 </tr>
@@ -284,14 +284,14 @@ const GuestsPage = () => {
         {/* Pagination Controls & Info */}
         <div className="mt-6 border-t pt-6 px-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="text-sm text-text-secondary">
+            <div className="text-sm text-slate-300">
               Showing <span className="font-semibold">{((pagination.page - 1) * pagination.limit) + 1}</span> to{' '}
               <span className="font-semibold">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of{' '}
               <span className="font-semibold">{pagination.total}</span> guests
             </div>
             
             {/* Items per page selector */}
-            <div className="flex items-center gap-2 text-sm text-text-secondary">
+            <div className="flex items-center gap-2 text-sm text-slate-300">
               <label htmlFor="pageSize">Per page:</label>
               <SearchableDropdown
                 id="pageSize"
@@ -400,6 +400,20 @@ const CreateGuestModal = ({ onClose, onSuccess }) => {
   });
   const [loading, setLoading] = useState(false);
 
+  const idProofOptions = [
+    { id: 'NIC', name: 'NIC (National Identity Card)' },
+    { id: 'Passport', name: 'Passport' },
+    { id: 'Driving License', name: 'Driving License' },
+    { id: 'Other', name: 'Other' },
+  ];
+
+  const genderOptions = [
+    { id: '', name: 'Select gender' },
+    { id: 'Male', name: 'Male' },
+    { id: 'Female', name: 'Female' },
+    { id: 'Other', name: 'Other' },
+  ];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -417,68 +431,68 @@ const CreateGuestModal = ({ onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-surface-secondary rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-surface-secondary border-b border-border px-6 py-4 flex justify-between items-center">
-          <h2 className="text-2xl font-display font-bold text-text-primary">Add New Guest</h2>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary">
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-700/50" style={{minWidth: '600px'}}>
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 z-10 flex justify-between items-center">
+          <h2 className="text-2xl font-display font-bold text-white">Add New Guest</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-300">
             <X className="w-6 h-6" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Full Name *
             </label>
             <input
               type="text"
               value={formData.full_name}
               onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Email
               </label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="input-field"
+                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Phone
               </label>
               <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="input-field"
+                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Address
             </label>
             <textarea
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               rows="3"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+            <div className="relative z-30">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 ID Proof Type <span className="text-red-500">*</span>
               </label>
               <SearchableDropdown
@@ -491,15 +505,15 @@ const CreateGuestModal = ({ onClose, onSuccess }) => {
                 hideSearch
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+            <div className="relative z-20">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 ID Proof Number <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={formData.id_proof_number}
                 onChange={(e) => setFormData({ ...formData, id_proof_number: e.target.value })}
-                className="input-field"
+                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                 placeholder="Enter ID number"
                 required
               />
@@ -507,20 +521,20 @@ const CreateGuestModal = ({ onClose, onSuccess }) => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+            <div className="relative z-20">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Nationality
               </label>
               <input
                 type="text"
                 value={formData.nationality}
                 onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
-                className="input-field"
+                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                 placeholder="e.g., Sri Lankan, American"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+            <div className="relative z-10">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Gender
               </label>
               <SearchableDropdown
@@ -535,15 +549,15 @@ const CreateGuestModal = ({ onClose, onSuccess }) => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+            <div className="relative z-10">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Date of Birth
               </label>
               <input
                 type="date"
                 value={formData.date_of_birth}
                 onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
-                className="input-field"
+                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               />
             </div>
           </div>
@@ -582,6 +596,20 @@ const EditGuestModal = ({ guest, onClose, onSuccess }) => {
   });
   const [loading, setLoading] = useState(false);
 
+  const idProofOptions = [
+    { id: 'NIC', name: 'NIC (National Identity Card)' },
+    { id: 'Passport', name: 'Passport' },
+    { id: 'Driving License', name: 'Driving License' },
+    { id: 'Other', name: 'Other' },
+  ];
+
+  const genderOptions = [
+    { id: '', name: 'Select gender' },
+    { id: 'Male', name: 'Male' },
+    { id: 'Female', name: 'Female' },
+    { id: 'Other', name: 'Other' },
+  ];
+
   useEffect(() => {
     if (guest) {
       setFormData({
@@ -615,25 +643,25 @@ const EditGuestModal = ({ guest, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-surface-secondary rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-border flex justify-between items-center sticky top-0 bg-white">
-          <h2 className="text-2xl font-display font-bold text-text-primary">
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-700/50" style={{minWidth: '600px'}}>
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 z-10 flex justify-between items-center">
+          <h2 className="text-2xl font-display font-bold text-white">
             Edit Guest
           </h2>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-300">
             <X className="w-6 h-6" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Full Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={formData.full_name}
               onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               placeholder="Enter full name"
               required
             />
@@ -641,34 +669,34 @@ const EditGuestModal = ({ guest, onClose, onSuccess }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Email
               </label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="input-field"
+                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                 placeholder="Enter email address"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Phone
               </label>
               <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="input-field"
+                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                 placeholder="Enter phone number"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+            <div className="relative z-30">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 ID Type <span className="text-red-500">*</span>
               </label>
               <SearchableDropdown
@@ -681,15 +709,15 @@ const EditGuestModal = ({ guest, onClose, onSuccess }) => {
                 clearable={false}
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+            <div className="relative z-20">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 ID Number <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={formData.id_proof_number}
                 onChange={(e) => setFormData({ ...formData, id_proof_number: e.target.value })}
-                className="input-field"
+                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                 placeholder="Enter ID number"
                 required
               />
@@ -697,20 +725,20 @@ const EditGuestModal = ({ guest, onClose, onSuccess }) => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+            <div className="relative z-20">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Nationality
               </label>
               <input
                 type="text"
                 value={formData.nationality}
                 onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
-                className="input-field"
+                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                 placeholder="e.g., Sri Lankan, American"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
+            <div className="relative z-10">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Gender
               </label>
               <SearchableDropdown
@@ -724,26 +752,26 @@ const EditGuestModal = ({ guest, onClose, onSuccess }) => {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+          <div className="relative z-10">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Date of Birth
             </label>
             <input
               type="date"
               value={formData.date_of_birth}
               onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Address
             </label>
             <textarea
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               rows="3"
               placeholder="Enter address"
             />

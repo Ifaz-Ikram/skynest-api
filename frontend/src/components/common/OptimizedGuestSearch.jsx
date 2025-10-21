@@ -94,9 +94,9 @@ const OptimizedGuestSearch = ({ onGuestSelect, placeholder = "Search guests by e
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           {loading ? (
-            <Loader2 className="h-4 w-4 text-text-tertiary animate-spin" />
+            <Loader2 className="h-4 w-4 text-slate-400 animate-spin" />
           ) : (
-            <Search className="h-4 w-4 text-text-tertiary" />
+            <Search className="h-4 w-4 text-slate-400" />
           )}
         </div>
         <input
@@ -106,7 +106,7 @@ const OptimizedGuestSearch = ({ onGuestSelect, placeholder = "Search guests by e
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           placeholder={placeholder}
-          className="block w-full pl-10 pr-3 py-2 border border-border dark:border-slate-600 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          className="block w-full pl-10 pr-3 py-2 border border-border dark:border-slate-600 rounded-md leading-5 bg-slate-800 placeholder-slate-400 focus:outline-none focus:placeholder-slate-500 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         />
       </div>
 
@@ -119,7 +119,7 @@ const OptimizedGuestSearch = ({ onGuestSelect, placeholder = "Search guests by e
               {error}
             </div>
           ) : guests.length === 0 && searchTerm.length >= 2 ? (
-            <div className="px-4 py-2 text-sm text-text-tertiary">
+            <div className="px-4 py-2 text-sm text-slate-400">
               No guests found matching "{searchTerm}"
             </div>
           ) : (
@@ -127,15 +127,15 @@ const OptimizedGuestSearch = ({ onGuestSelect, placeholder = "Search guests by e
               <div
                 key={guest.guest_id}
                 onClick={() => handleGuestSelect(guest)}
-                className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 hover:text-blue-900"
+                className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-900/20 hover:text-blue-900"
               >
                 <div className="flex items-center">
-                  <User className="h-4 w-4 text-text-tertiary mr-3 flex-shrink-0" />
+                  <User className="h-4 w-4 text-slate-400 mr-3 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-text-primary truncate">
+                    <div className="text-sm font-medium text-white truncate">
                       {guest.full_name}
                     </div>
-                    <div className="flex items-center text-sm text-text-tertiary">
+                    <div className="flex items-center text-sm text-slate-400">
                       {guest.email && (
                         <>
                           <Mail className="h-3 w-3 mr-1" />
@@ -159,8 +159,8 @@ const OptimizedGuestSearch = ({ onGuestSelect, placeholder = "Search guests by e
 
       {/* Selected Guest Display */}
       {selectedGuest && (
-        <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
-          <div className="flex items-center text-sm text-green-800">
+        <div className="mt-2 p-2 bg-green-900/20 border border-green-700 rounded-md">
+          <div className="flex items-center text-sm text-green-200">
             <User className="h-4 w-4 mr-2" />
             <span className="font-medium">Selected:</span>
             <span className="ml-1">{selectedGuest.full_name}</span>

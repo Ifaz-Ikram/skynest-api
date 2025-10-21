@@ -78,10 +78,10 @@ const OptimizedBookingStatusFilter = ({ onStatusChange, onDateRangeChange, class
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border border-border p-4 ${className}`}>
+    <div className={`bg-slate-800 rounded-lg shadow-sm border border-border p-4 ${className}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-text-primary flex items-center">
-          <Filter className="w-5 h-5 mr-2 text-text-secondary" />
+        <h3 className="text-lg font-semibold text-white flex items-center">
+          <Filter className="w-5 h-5 mr-2 text-slate-300" />
           Filter Bookings
         </h3>
         {loading && (
@@ -91,7 +91,7 @@ const OptimizedBookingStatusFilter = ({ onStatusChange, onDateRangeChange, class
 
       {/* Status Filter */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-text-secondary mb-2">
+        <label className="block text-sm font-medium text-slate-300 mb-2">
           Booking Status
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
@@ -107,20 +107,20 @@ const OptimizedBookingStatusFilter = ({ onStatusChange, onDateRangeChange, class
                 className={`p-3 rounded-lg border-2 transition-all duration-200 ${
                   isSelected
                     ? `border-${option.color}-500 bg-${option.color}-50`
-                    : 'border-border bg-white hover:border-border dark:border-slate-600'
+                    : 'border-border bg-slate-800 hover:border-border dark:border-slate-600'
                 }`}
               >
                 <div className="flex flex-col items-center">
                   <Icon className={`w-5 h-5 mb-1 ${
-                    isSelected ? `text-${option.color}-600` : 'text-gray-400'
+                    isSelected ? `text-${option.color}-600` : 'text-slate-400'
                   }`} />
                   <span className={`text-xs font-medium ${
-                    isSelected ? `text-${option.color}-700` : 'text-gray-600'
+                    isSelected ? `text-${option.color}-700` : 'text-slate-200'
                   }`}>
                     {option.label}
                   </span>
                   <span className={`text-xs ${
-                    isSelected ? `text-${option.color}-600` : 'text-gray-500'
+                    isSelected ? `text-${option.color}-600` : 'text-slate-300'
                   }`}>
                     ({count})
                   </span>
@@ -133,7 +133,7 @@ const OptimizedBookingStatusFilter = ({ onStatusChange, onDateRangeChange, class
 
       {/* Date Range Filter */}
       <div>
-        <label className="block text-sm font-medium text-text-secondary mb-2">
+        <label className="block text-sm font-medium text-slate-300 mb-2">
           Date Range
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -142,7 +142,7 @@ const OptimizedBookingStatusFilter = ({ onStatusChange, onDateRangeChange, class
               type="date"
               value={dateRange.startDate}
               onChange={(e) => handleDateRangeChange('startDate', e.target.value)}
-              className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Start date"
             />
           </div>
@@ -151,7 +151,7 @@ const OptimizedBookingStatusFilter = ({ onStatusChange, onDateRangeChange, class
               type="date"
               value={dateRange.endDate}
               onChange={(e) => handleDateRangeChange('endDate', e.target.value)}
-              className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="End date"
             />
           </div>

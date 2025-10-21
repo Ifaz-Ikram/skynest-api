@@ -140,24 +140,24 @@ const HousekeepingManagement = () => {
       case 'Dirty': return <XCircle className="w-5 h-5 text-red-600" />;
       case 'Inspected': return <Shield className="w-5 h-5 text-blue-600" />;
       case 'Maintenance': return <Settings className="w-5 h-5 text-purple-600" />;
-      default: return <Clock className="w-5 h-5 text-text-secondary" />;
+      default: return <Clock className="w-5 h-5 text-slate-300" />;
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Clean': return 'bg-green-100 text-green-800';
-      case 'Dirty': return 'bg-red-100 text-red-800';
-      case 'Inspected': return 'bg-blue-100 text-blue-800';
-      case 'Maintenance': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Clean': return 'bg-green-800/30 text-green-200';
+      case 'Dirty': return 'bg-red-800/30 text-red-200';
+      case 'Inspected': return 'bg-blue-800/30 text-blue-200';
+      case 'Maintenance': return 'bg-purple-800/30 text-purple-200';
+      default: return 'bg-slate-800 text-white';
     }
   };
 
   const renderRoomGrid = () => (
     <div className="bg-surface-secondary border border-border rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-text-primary">Room Status Grid</h3>
+        <h3 className="text-lg font-semibold text-white">Room Status Grid</h3>
         <div className="flex space-x-2">
           <button
             onClick={() => setShowTaskModal(true)}
@@ -181,15 +181,15 @@ const HousekeepingManagement = () => {
           <div key={index} className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
-                <Bed className="w-5 h-5 text-text-secondary" />
-                <span className="font-medium text-text-primary">Room {room.room_number}</span>
+                <Bed className="w-5 h-5 text-slate-300" />
+                <span className="font-medium text-white">Room {room.room_number}</span>
               </div>
               <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(room.status)}`}>
                 {room.status}
               </span>
             </div>
 
-            <div className="space-y-2 text-sm text-text-secondary mb-4">
+            <div className="space-y-2 text-sm text-slate-300 mb-4">
               <div className="flex justify-between">
                 <span>Type:</span>
                 <span>{room.room_type}</span>
@@ -224,7 +224,7 @@ const HousekeepingManagement = () => {
                 className={`flex-1 px-2 py-1 text-xs rounded ${
                   room.status === 'Clean' 
                     ? 'bg-green-600 text-white' 
-                    : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 hover:bg-green-200'
+                    : 'bg-green-800/30 text-green-200 dark:bg-green-900/30 dark:text-green-300 hover:bg-green-200'
                 }`}
               >
                 Clean
@@ -234,7 +234,7 @@ const HousekeepingManagement = () => {
                 className={`flex-1 px-2 py-1 text-xs rounded ${
                   room.status === 'Dirty' 
                     ? 'bg-red-600 text-white' 
-                    : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 hover:bg-red-200'
+                    : 'bg-red-800/30 text-red-200 dark:bg-red-900/30 dark:text-red-300 hover:bg-red-200'
                 }`}
               >
                 Dirty
@@ -244,7 +244,7 @@ const HousekeepingManagement = () => {
                 className={`flex-1 px-2 py-1 text-xs rounded ${
                   room.status === 'Inspected' 
                     ? 'bg-blue-600 text-white' 
-                    : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200'
+                    : 'bg-blue-800/30 text-blue-200 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200'
                 }`}
               >
                 Inspected
@@ -259,7 +259,7 @@ const HousekeepingManagement = () => {
   const renderTasksList = () => (
     <div className="bg-surface-secondary border border-border rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-text-primary">Housekeeping Tasks</h3>
+        <h3 className="text-lg font-semibold text-white">Housekeeping Tasks</h3>
         <div className="flex space-x-2">
           <SearchableDropdown
             options={[
@@ -307,20 +307,20 @@ const HousekeepingManagement = () => {
               <div className="flex items-center space-x-3">
                 {getStatusIcon(task.status)}
                 <div>
-                  <div className="font-medium text-text-primary">Room {task.room_number}</div>
-                  <div className="text-sm text-text-tertiary">{task.task_type}</div>
+                  <div className="font-medium text-white">Room {task.room_number}</div>
+                  <div className="text-sm text-slate-400">{task.task_type}</div>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
                 <span className={`px-2 py-1 text-xs rounded-full ${
-                  task.status === 'completed' ? 'bg-green-100 text-green-800' :
-                  task.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
-                  task.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                  'bg-yellow-100 text-yellow-800'
+                  task.status === 'completed' ? 'bg-green-800/30 text-green-200' :
+                  task.status === 'in_progress' ? 'bg-blue-800/30 text-blue-200' :
+                  task.status === 'cancelled' ? 'bg-red-800/30 text-red-200' :
+                  'bg-yellow-800/30 text-yellow-800'
                 }`}>
                   {task.status}
                 </span>
-                <span className="text-xs text-text-tertiary">
+                <span className="text-xs text-slate-400">
                   {task.created_at ? (() => {
                     try {
                       return format(new Date(task.created_at), 'dd/MM HH:mm');
@@ -334,15 +334,15 @@ const HousekeepingManagement = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
               <div>
-                <div className="text-sm text-text-secondary">Priority</div>
+                <div className="text-sm text-slate-300">Priority</div>
                 <div className="font-medium">{task.priority}</div>
               </div>
               <div>
-                <div className="text-sm text-text-secondary">Assigned To</div>
+                <div className="text-sm text-slate-300">Assigned To</div>
                 <div className="font-medium">{task.assigned_to || 'Unassigned'}</div>
               </div>
               <div>
-                <div className="text-sm text-text-secondary">Due Time</div>
+                <div className="text-sm text-slate-300">Due Time</div>
                 <div className="font-medium">
                   {task.due_time ? (() => {
                     try {
@@ -357,8 +357,8 @@ const HousekeepingManagement = () => {
 
             {task.description && (
               <div className="mb-3">
-                <div className="text-sm text-text-secondary">Description</div>
-                <div className="text-sm text-text-primary">{task.description}</div>
+                <div className="text-sm text-slate-300">Description</div>
+                <div className="text-sm text-white">{task.description}</div>
               </div>
             )}
 
@@ -366,21 +366,21 @@ const HousekeepingManagement = () => {
               <button
                 onClick={() => updateTaskStatus(task.task_id, 'in_progress')}
                 disabled={task.status === 'completed'}
-                className="px-3 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1 text-xs bg-blue-800/30 text-blue-200 dark:bg-blue-900/30 dark:text-blue-300 rounded hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Start
               </button>
               <button
                 onClick={() => updateTaskStatus(task.task_id, 'completed')}
                 disabled={task.status === 'completed'}
-                className="px-3 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 rounded hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1 text-xs bg-green-800/30 text-green-200 dark:bg-green-900/30 dark:text-green-300 rounded hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Complete
               </button>
               <button
                 onClick={() => updateTaskStatus(task.task_id, 'cancelled')}
                 disabled={task.status === 'completed'}
-                className="px-3 py-1 text-xs bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1 text-xs bg-red-800/30 text-red-200 dark:bg-red-900/30 dark:text-red-300 rounded hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
@@ -392,11 +392,11 @@ const HousekeepingManagement = () => {
   );
 
   const renderTaskModal = () => (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex justify-center items-center">
-      <div className="bg-surface-secondary rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-border flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-text-primary">Create Housekeeping Task</h2>
-          <button onClick={() => setShowTaskModal(false)} className="text-text-tertiary hover:text-text-secondary">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center" style={{ zIndex: 'var(--z-modal)' }}>
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-700/50">
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 flex items-center justify-between" style={{ zIndex: 'var(--z-sticky)' }}>
+          <h2 className="text-2xl font-bold text-white">Create Housekeeping Task</h2>
+          <button onClick={() => setShowTaskModal(false)} className="text-slate-400 hover:text-slate-300">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -415,14 +415,14 @@ const HousekeepingManagement = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-text-primary">Housekeeping Management</h1>
-            <p className="text-text-secondary">Manage room status and housekeeping tasks</p>
+            <h1 className="text-2xl font-bold text-white">Housekeeping Management</h1>
+            <p className="text-slate-300">Manage room status and housekeeping tasks</p>
           </div>
         </div>
         <div className="flex items-center justify-center py-12">
           <div className="flex items-center space-x-3">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-luxury-gold"></div>
-            <span className="text-text-secondary">Loading housekeeping data...</span>
+            <span className="text-slate-300">Loading housekeeping data...</span>
           </div>
         </div>
       </div>
@@ -434,8 +434,8 @@ const HousekeepingManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Housekeeping Management</h1>
-          <p className="text-text-secondary">Manage room status and housekeeping tasks</p>
+          <h1 className="text-2xl font-bold text-white">Housekeeping Management</h1>
+          <p className="text-slate-300">Manage room status and housekeeping tasks</p>
         </div>
         <div className="flex items-center space-x-3">
           <button
@@ -449,11 +449,11 @@ const HousekeepingManagement = () => {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="bg-red-900/20 border border-red-700 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
-              <span className="text-red-700">{error}</span>
+              <span className="text-red-300">{error}</span>
             </div>
             {error.includes('log in') && (
               <button
@@ -507,14 +507,14 @@ const HousekeepingTaskForm = ({ rooms, onSave, onCancel }) => {
     <form onSubmit={handleSubmit} className="p-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-text-secondary mb-2">Room</label>
+          <label className="block text-sm font-medium text-slate-300 mb-2">Room</label>
           <SearchableDropdown
             options={rooms || []}
             value={formData.room_id}
             onChange={(value) => setFormData(prev => ({ ...prev, room_id: value }))}
             placeholder="Select Room"
             searchPlaceholder="Search rooms..."
-            className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             displayKey="room_display"
             valueKey="room_id"
             searchKeys={['room_number', 'room_type']}
@@ -522,9 +522,9 @@ const HousekeepingTaskForm = ({ rooms, onSave, onCancel }) => {
               <div className="flex justify-between items-center w-full">
                 <div>
                   <div className="font-medium">Room {room.room_number}</div>
-                  <div className="text-sm text-text-secondary">{room.room_type}</div>
+                  <div className="text-sm text-slate-300">{room.room_type}</div>
                 </div>
-                <div className="text-xs text-text-tertiary">
+                <div className="text-xs text-slate-400">
                   {room.status}
                 </div>
               </div>
@@ -532,7 +532,7 @@ const HousekeepingTaskForm = ({ rooms, onSave, onCancel }) => {
             renderSelected={(room) => (
               <div className="flex justify-between items-center w-full">
                 <span className="font-medium">Room {room.room_number}</span>
-                <span className="text-sm text-text-secondary">{room.room_type}</span>
+                <span className="text-sm text-slate-300">{room.room_type}</span>
               </div>
             )}
             emptyMessage="No rooms found"
@@ -540,7 +540,7 @@ const HousekeepingTaskForm = ({ rooms, onSave, onCancel }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-text-secondary mb-2">Task Type</label>
+          <label className="block text-sm font-medium text-slate-300 mb-2">Task Type</label>
           <SearchableDropdown
             options={[
               { value: 'Cleaning', label: 'Cleaning' },
@@ -553,7 +553,7 @@ const HousekeepingTaskForm = ({ rooms, onSave, onCancel }) => {
             onChange={(value) => setFormData(prev => ({ ...prev, task_type: value }))}
             placeholder="Select Task Type"
             searchPlaceholder="Search task types..."
-            className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             displayKey="label"
             valueKey="value"
             searchKeys={['label']}
@@ -582,7 +582,7 @@ const HousekeepingTaskForm = ({ rooms, onSave, onCancel }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-text-secondary mb-2">Priority</label>
+          <label className="block text-sm font-medium text-slate-300 mb-2">Priority</label>
           <SearchableDropdown
             options={[
               { value: 'low', label: 'Low' },
@@ -594,7 +594,7 @@ const HousekeepingTaskForm = ({ rooms, onSave, onCancel }) => {
             onChange={(value) => setFormData(prev => ({ ...prev, priority: value }))}
             placeholder="Select Priority"
             searchPlaceholder="Search priorities..."
-            className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             displayKey="label"
             valueKey="value"
             searchKeys={['label']}
@@ -621,26 +621,26 @@ const HousekeepingTaskForm = ({ rooms, onSave, onCancel }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-text-secondary mb-2">Due Time</label>
+          <label className="block text-sm font-medium text-slate-300 mb-2">Due Time</label>
           <input
             type="time"
             name="due_time"
             value={formData.due_time}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-surface-secondary text-text-primary placeholder:text-text-tertiary dark:bg-slate-700 dark:text-slate-100"
+            className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-surface-secondary text-white placeholder:text-slate-400 dark:bg-slate-700 dark:text-slate-100"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-text-secondary mb-2">Description</label>
+        <label className="block text-sm font-medium text-slate-300 mb-2">Description</label>
         <textarea
           name="description"
           value={formData.description}
           onChange={handleInputChange}
           rows={3}
           placeholder="Task description and special instructions..."
-          className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-surface-secondary text-text-primary placeholder:text-text-tertiary dark:bg-slate-700 dark:text-slate-100 bg-surface-secondary text-text-primary dark:bg-slate-700 dark:text-slate-100 placeholder:text-text-tertiary"
+          className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 border-border dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-surface-secondary text-white placeholder:text-slate-400 dark:bg-slate-700 dark:text-slate-100 bg-surface-secondary text-white dark:bg-slate-700 dark:text-slate-100 placeholder:text-slate-400"
         />
       </div>
 
@@ -648,7 +648,7 @@ const HousekeepingTaskForm = ({ rooms, onSave, onCancel }) => {
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 px-4 py-2 border border-border dark:border-slate-600 rounded-md text-text-secondary hover:bg-surface-tertiary focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-4 py-2 border border-border dark:border-slate-600 rounded-md text-slate-300 hover:bg-surface-tertiary focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Cancel
         </button>

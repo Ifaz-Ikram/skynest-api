@@ -8,21 +8,21 @@ import { TrendingUp, TrendingDown } from 'lucide-react';
 const StatsGrid = ({ stats }) => {
   const getIconBgColor = (color) => {
     const colors = {
-      blue: 'bg-blue-500',
-      green: 'bg-emerald-500',
-      purple: 'bg-purple-500',
-      orange: 'bg-orange-500',
-      yellow: 'bg-yellow-500',
-      red: 'bg-red-500',
+      blue: 'bg-blue-900/200',
+      green: 'bg-emerald-900/200',
+      purple: 'bg-purple-900/200',
+      orange: 'bg-orange-900/200',
+      yellow: 'bg-yellow-900/200',
+      red: 'bg-red-900/200',
       pink: 'bg-pink-500',
       indigo: 'bg-indigo-500',
       teal: 'bg-teal-500',
     };
-    return colors[color] || 'bg-blue-500';
+    return colors[color] || 'bg-blue-900/200';
   };
 
   const getTrendColor = (trend) => {
-    if (!trend) return 'text-gray-500';
+    if (!trend) return 'text-slate-300';
     const trendLower = trend.toLowerCase();
     if (trendLower.includes('+') || trendLower.includes('increase') || trendLower.includes('up')) {
       return 'text-green-600';
@@ -30,7 +30,7 @@ const StatsGrid = ({ stats }) => {
     if (trendLower.includes('-') || trendLower.includes('decrease') || trendLower.includes('down')) {
       return 'text-red-600';
     }
-    return 'text-gray-600';
+    return 'text-slate-200';
   };
 
   const getTrendIcon = (trend) => {
@@ -54,10 +54,10 @@ const StatsGrid = ({ stats }) => {
         >
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-sm font-medium text-text-secondary mb-2">
+              <p className="text-sm font-medium text-slate-300 mb-2">
                 {stat.label}
               </p>
-              <p className="text-3xl font-bold text-text-primary mb-2">
+              <p className="text-3xl font-bold text-white mb-2">
                 {stat.value}
               </p>
               {stat.trend && (

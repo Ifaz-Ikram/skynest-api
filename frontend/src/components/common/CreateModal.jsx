@@ -41,13 +41,13 @@ const CreateModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-surface-secondary rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center" style={{ zIndex: 'var(--z-modal)' }}>
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto border border-slate-700/50" style={{minWidth: '600px'}}>
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-text-primary">{title}</h2>
+          <h2 className="text-xl font-semibold text-white">{title}</h2>
           <button
             onClick={onClose}
-            className="text-text-tertiary hover:text-text-secondary transition-colors"
+            className="text-slate-400 hover:text-slate-300 transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -55,7 +55,7 @@ const CreateModal = ({
 
         <form onSubmit={handleSubmit} className="p-6">
           {errors.general && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <div className="mb-4 p-3 bg-red-900/20 border border-red-700 rounded-md">
               <p className="text-red-600 text-sm">{errors.general}</p>
             </div>
           )}
@@ -63,7 +63,7 @@ const CreateModal = ({
           <div className="space-y-4">
             {fields.map((field) => (
               <div key={field.name}>
-                <label className="block text-sm font-medium text-text-secondary mb-1">
+                <label className="block text-sm font-medium text-slate-300 mb-1">
                   {field.label}
                   {field.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
@@ -82,14 +82,14 @@ const CreateModal = ({
                     required={field.required}
                     buttonClassName={`!px-3 !py-2 !rounded-md ${
                       errors[field.name]
-                        ? '!border-red-300 focus-visible:!ring-red-500'
+                        ? '!border-red-600 focus-visible:!ring-red-500'
                         : '!border-border dark:border-slate-600'
                     }`}
                   />
                 ) : field.type === 'textarea' ? (
                   <textarea
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors[field.name] ? 'border-red-300' : 'border-border dark:border-slate-600'
+                      errors[field.name] ? 'border-red-600' : 'border-border dark:border-slate-600'
                     }`}
                     value={formData[field.name] || ''}
                     onChange={(e) => handleChange(field.name, e.target.value)}
@@ -101,7 +101,7 @@ const CreateModal = ({
                   <input
                     type={field.type || 'text'}
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors[field.name] ? 'border-red-300' : 'border-border dark:border-slate-600'
+                      errors[field.name] ? 'border-red-600' : 'border-border dark:border-slate-600'
                     }`}
                     value={formData[field.name] || ''}
                     onChange={(e) => handleChange(field.name, e.target.value)}
@@ -124,7 +124,7 @@ const CreateModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-text-secondary bg-surface-tertiary rounded-md hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 text-slate-300 bg-surface-tertiary rounded-md hover:bg-slate-700 transition-colors"
               disabled={loading}
             >
               Cancel

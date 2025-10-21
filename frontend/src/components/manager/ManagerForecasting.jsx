@@ -77,6 +77,7 @@ const ManagerForecasting = () => {
   };
 
   const handleDateRangeChange = (field, value) => {
+    console.log(`${field} changed to:`, value);
     setDateRange(prev => ({
       ...prev,
       [field]: value
@@ -113,7 +114,7 @@ const ManagerForecasting = () => {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+      <div className="bg-red-900/20 border border-red-700 rounded-lg p-6">
         <div className="flex">
           <div className="flex-shrink-0">
             <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -121,8 +122,8 @@ const ManagerForecasting = () => {
             </svg>
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800">Error</h3>
-            <div className="mt-2 text-sm text-red-700">
+            <h3 className="text-sm font-medium text-red-200">Error</h3>
+            <div className="mt-2 text-sm text-red-300">
               <p>{error}</p>
             </div>
           </div>
@@ -137,29 +138,50 @@ const ManagerForecasting = () => {
       <div className="bg-surface-secondary shadow rounded-lg p-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-text-primary">Manager Forecasting</h1>
-            <p className="text-text-secondary mt-2">Analyze booking trends, pace, pickup, and budget performance</p>
+            <h1 className="text-2xl font-bold text-white">Manager Forecasting</h1>
+            <p className="text-slate-300 mt-2">Analyze booking trends, pace, pickup, and budget performance</p>
           </div>
           <div className="flex space-x-4">
             <div>
-              <label className="block text-sm font-medium text-text-secondary">Start Date</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Start Date
+                <span className="block text-xs font-normal text-slate-400 mt-0.5">
+                  {dateRange.end_date ? 'Forecasts from this date...' : 'Forecasts from this date onwards'}
+                </span>
+              </label>
               <input
                 type="date"
                 value={dateRange.start_date}
                 onChange={(e) => handleDateRangeChange('start_date', e.target.value)}
-                className="mt-1 block w-full border-border dark:border-slate-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                className="mt-1 block w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 rounded-xl focus:ring-2 focus:ring-luxury-gold focus:border-luxury-gold transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary">End Date</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                End Date
+                <span className="block text-xs font-normal text-slate-400 mt-0.5">
+                  {dateRange.start_date ? '...to this date' : 'Forecasts up to this date'}
+                </span>
+              </label>
               <input
                 type="date"
                 value={dateRange.end_date}
                 onChange={(e) => handleDateRangeChange('end_date', e.target.value)}
-                className="mt-1 block w-full border-border dark:border-slate-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                className="mt-1 block w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400 rounded-xl focus:ring-2 focus:ring-luxury-gold focus:border-luxury-gold transition-all"
               />
             </div>
           </div>
+          {/* Clear Date Filters Button */}
+          {(dateRange.start_date || dateRange.end_date) && (
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setDateRange({start_date: '', end_date: ''})}
+                className="px-4 py-2 bg-red-900/20 hover:bg-red-600 text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+              >
+                Clear Date Filters
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -178,7 +200,7 @@ const ManagerForecasting = () => {
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === tab.id
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-border dark:border-slate-600'
+                  : 'border-transparent text-slate-300 hover:text-slate-100 hover:border-border dark:border-slate-600'
               }`}
             >
               {tab.name}
@@ -209,7 +231,7 @@ const ManagerForecasting = () => {
 
       {/* Budget Tracking Tab - Feature Not Implemented */}
       {activeTab === 'budgets' && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+        <div className="bg-yellow-900/20 border border-yellow-200 rounded-lg p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
@@ -240,15 +262,15 @@ const ForecastingDashboard = ({ dashboard }) => {
         <div className="bg-surface-secondary shadow rounded-lg p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+              <div className="w-8 h-8 bg-blue-900/200 rounded-md flex items-center justify-center">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-text-tertiary">Total Bookings</p>
-              <p className="text-2xl font-semibold text-text-primary">
+              <p className="text-sm font-medium text-slate-400">Total Bookings</p>
+              <p className="text-2xl font-semibold text-white">
                 {dashboard.trends.reduce((sum, trend) => sum + trend.bookings, 0)}
               </p>
             </div>
@@ -258,15 +280,15 @@ const ForecastingDashboard = ({ dashboard }) => {
         <div className="bg-surface-secondary shadow rounded-lg p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+              <div className="w-8 h-8 bg-green-900/200 rounded-md flex items-center justify-center">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                 </svg>
               </div>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-text-tertiary">Total Revenue</p>
-              <p className="text-2xl font-semibold text-text-primary">
+              <p className="text-sm font-medium text-slate-400">Total Revenue</p>
+              <p className="text-2xl font-semibold text-white">
                 Rs {dashboard.trends.reduce((sum, trend) => sum + trend.revenue, 0).toLocaleString()}
               </p>
             </div>
@@ -276,15 +298,15 @@ const ForecastingDashboard = ({ dashboard }) => {
         <div className="bg-surface-secondary shadow rounded-lg p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+              <div className="w-8 h-8 bg-purple-900/200 rounded-md flex items-center justify-center">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-text-tertiary">Average Rate</p>
-              <p className="text-2xl font-semibold text-text-primary">
+              <p className="text-sm font-medium text-slate-400">Average Rate</p>
+              <p className="text-2xl font-semibold text-white">
                 ${dashboard.trends.length > 0 ? (dashboard.trends.reduce((sum, trend) => sum + trend.avg_rate, 0) / dashboard.trends.length).toFixed(2) : 0}
               </p>
             </div>
@@ -294,15 +316,15 @@ const ForecastingDashboard = ({ dashboard }) => {
         <div className="bg-surface-secondary shadow rounded-lg p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
+              <div className="w-8 h-8 bg-yellow-900/200 rounded-md flex items-center justify-center">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-text-tertiary">Room Types</p>
-              <p className="text-2xl font-semibold text-text-primary">
+              <p className="text-sm font-medium text-slate-400">Room Types</p>
+              <p className="text-2xl font-semibold text-white">
                 {dashboard.room_type_performance.length}
               </p>
             </div>
@@ -314,28 +336,28 @@ const ForecastingDashboard = ({ dashboard }) => {
       <div className="bg-surface-secondary shadow rounded-lg p-6">
         <h3 className="text-lg font-medium mb-4">Room Type Performance</h3>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-slate-700">
             <thead className="bg-surface-tertiary">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">Room Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">Bookings</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">Revenue</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">Avg Rate</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Room Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Bookings</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Revenue</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Avg Rate</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-slate-800 divide-y divide-slate-700">
               {dashboard.room_type_performance.map((roomType) => (
                 <tr key={roomType.room_type}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-primary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                     {roomType.room_type}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                     {roomType.bookings}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                     Rs {roomType.revenue.toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                     Rs {roomType.avg_rate.toFixed(2)}
                   </td>
                 </tr>
@@ -355,17 +377,17 @@ const PaceAnalysis = ({ paceData }) => {
       <div className="bg-surface-secondary shadow rounded-lg p-6">
         <h3 className="text-lg font-medium mb-4">Booking Pace Analysis</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="text-sm font-medium text-blue-800">Total Bookings</h4>
-            <p className="text-2xl font-semibold text-text-primary">{paceData.summary.total_bookings}</p>
+          <div className="bg-blue-900/20 p-4 rounded-lg">
+            <h4 className="text-sm font-medium text-blue-200">Total Bookings</h4>
+            <p className="text-2xl font-semibold text-white">{paceData.summary.total_bookings}</p>
           </div>
-          <div className="bg-green-50 p-4 rounded-lg">
-            <h4 className="text-sm font-medium text-green-800">Total Revenue</h4>
-            <p className="text-2xl font-semibold text-text-primary">Rs {paceData.summary.total_revenue.toLocaleString()}</p>
+          <div className="bg-green-900/20 p-4 rounded-lg">
+            <h4 className="text-sm font-medium text-green-200">Total Revenue</h4>
+            <p className="text-2xl font-semibold text-white">Rs {paceData.summary.total_revenue.toLocaleString()}</p>
           </div>
-          <div className="bg-purple-50 p-4 rounded-lg">
-            <h4 className="text-sm font-medium text-purple-800">Avg Daily Bookings</h4>
-            <p className="text-2xl font-semibold text-text-primary">{paceData.summary.avg_daily_bookings}</p>
+          <div className="bg-purple-900/20 p-4 rounded-lg">
+            <h4 className="text-sm font-medium text-purple-200">Avg Daily Bookings</h4>
+            <p className="text-2xl font-semibold text-white">{paceData.summary.avg_daily_bookings}</p>
           </div>
         </div>
       </div>
@@ -382,9 +404,9 @@ const PickupAnalysis = ({ pickupData }) => {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {Object.entries(pickupData.pickup_ranges).map(([range, data]) => (
             <div key={range} className="bg-surface-tertiary p-4 rounded-lg">
-              <h4 className="text-sm font-medium text-text-primary">{range} days</h4>
-              <p className="text-xl font-semibold text-text-primary">{data.bookings}</p>
-              <p className="text-sm text-text-secondary">Rs {data.revenue.toLocaleString()}</p>
+              <h4 className="text-sm font-medium text-white">{range} days</h4>
+              <p className="text-xl font-semibold text-white">{data.bookings}</p>
+              <p className="text-sm text-slate-300">Rs {data.revenue.toLocaleString()}</p>
             </div>
           ))}
         </div>
@@ -400,32 +422,32 @@ const SegmentationAnalysis = ({ segmentationData }) => {
       <div className="bg-surface-secondary shadow rounded-lg p-6">
         <h3 className="text-lg font-medium mb-4">Segmentation Analysis</h3>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-slate-700">
             <thead className="bg-surface-tertiary">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">Segment</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">Bookings</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">Revenue</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">Avg Rate</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">Avg LOS</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Segment</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Bookings</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Revenue</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Avg Rate</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Avg LOS</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-slate-800 divide-y divide-slate-700">
               {segmentationData.segments.map((segment) => (
                 <tr key={segment.segment}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-primary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                     {segment.segment}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                     {segment.bookings_count}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                     Rs {segment.revenue.toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                     Rs {segment.avg_rate.toFixed(2)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                     {segment.avg_length_of_stay.toFixed(1)} days
                   </td>
                 </tr>

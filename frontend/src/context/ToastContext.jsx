@@ -72,7 +72,7 @@ export const ToastProvider = ({ children, maxToasts = 5 }) => {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="pointer-events-none fixed inset-x-0 top-4 z-[120] flex justify-end px-4 sm:top-6 sm:px-6 lg:px-8">
+      <div className="pointer-events-none fixed inset-x-0 top-4 flex justify-end px-4 sm:top-6 sm:px-6 lg:px-8" style={{ zIndex: 'var(--z-toast)' }}>
         <div className="flex w-full max-w-sm flex-col gap-3">
           {toasts.map((toast) => (
             <NotificationToast key={toast.id} toast={toast} onDismiss={removeToast} />

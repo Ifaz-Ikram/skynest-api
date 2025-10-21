@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, DollarSign, CheckCircle, TrendingUp, Users, Bed, CreditCard, AlertCircle, Home, LogOut, Star, ShoppingBag, Clock, Building2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calendar, DollarSign, CheckCircle, TrendingUp, Users, Bed, CreditCard, AlertCircle, Home, LogOut, Star, ShoppingBag, Clock } from 'lucide-react';
 import { format, subDays, isAfter, isBefore, startOfDay, startOfMonth, endOfMonth, eachDayOfInterval, getDate } from 'date-fns';
 import api from '../../utils/api';
 import {
@@ -37,10 +37,6 @@ const Dashboard = ({ user, onNavigate }) => {
     occupancy: []
   });
   const [alerts, setAlerts] = useState([]);
-  const [selectedBranch, setSelectedBranch] = useState('all');
-  const [branches, setBranches] = useState([]);
-  const [autoRefresh, setAutoRefresh] = useState(false);
-  const [refreshInterval, setRefreshInterval] = useState(30);
   const [todaysRevenue, setTodaysRevenue] = useState(0);
   const [todaysCheckIns, setTodaysCheckIns] = useState(0);
   const [todaysPayments, setTodaysPayments] = useState(0);
@@ -53,65 +49,7 @@ const Dashboard = ({ user, onNavigate }) => {
 
   useEffect(() => {
     loadDashboardData();
-    loadBranches();
   }, []);
-
-  // Auto-refresh functionality
-  useEffect(() => {
-    if (!autoRefresh) return;
-    
-    const intervalId = setInterval(() => {
-      loadDashboardData();
-    }, refreshInterval * 1000);
-    
-    return () => clearInterval(intervalId);
-  }, [autoRefresh, refreshInterval]);
-
-  const loadBranches = async () => {
-    try {
-      const branchesData = await api.getBranches();
-      const branchesList = Array.isArray(branchesData) ? branchesData : branchesData?.branches || [];
-      setBranches(branchesList);
-    } catch (error) {
-      console.error('Failed to load branches:', error);
-    }
-  };
-
-  const branchOptions = useMemo(() => {
-    const baseOptions = [
-      {
-        id: 'all',
-        name: 'All branches',
-      },
-    ];
-    if (!Array.isArray(branches) || branches.length === 0) {
-      return baseOptions;
-    }
-    const mapped = branches.map((branch) => ({
-      id: String(branch.branch_id),
-      name: branch.branch_name || `Branch ${branch.branch_id}`,
-      address: branch.address,
-    }));
-    return [...baseOptions, ...mapped];
-  }, [branches]);
-
-  const refreshIntervalOptions = useMemo(
-    () => [
-      { id: '30', name: 'Every 30 seconds' },
-      { id: '60', name: 'Every 60 seconds' },
-      { id: '120', name: 'Every 2 minutes' },
-    ],
-    [],
-  );
-
-  const handleBranchChange = (selectedId) => {
-    setSelectedBranch(selectedId || 'all');
-  };
-
-  const handleRefreshIntervalChange = (selectedId) => {
-    const parsed = Number.parseInt(selectedId, 10);
-    setRefreshInterval(Number.isNaN(parsed) ? 30 : parsed);
-  };
 
   const loadDashboardData = async () => {
     try {
@@ -130,11 +68,6 @@ const Dashboard = ({ user, onNavigate }) => {
       const roomsList = roomsData?.rooms || roomsData || [];
       const guestsList = guestsData?.guests || guestsData || [];
       const paymentsList = paymentsData || [];
-
-      // Filter by selected branch if not 'all'
-      if (selectedBranch !== 'all') {
-        bookingsList = bookingsList.filter(b => b.branch_id === parseInt(selectedBranch));
-      }
 
       // Calculate active bookings (Confirmed or Checked-In)
       const activeBookings = bookingsList.filter(b => 
@@ -552,12 +485,12 @@ const Dashboard = ({ user, onNavigate }) => {
 
   const getStatusBadge = (status) => {
     const styles = {
-      'Booked': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-      'Checked-In': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-      'Checked-Out': 'bg-surface-tertiary text-text-secondary',
-      'Cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+      'Booked': 'bg-blue-800/30 text-blue-200 dark:bg-blue-900/30 dark:text-blue-300',
+      'Checked-In': 'bg-green-800/30 text-green-200 dark:bg-green-900/30 dark:text-green-300',
+      'Checked-Out': 'bg-surface-tertiary text-slate-300',
+      'Cancelled': 'bg-red-800/30 text-red-200 dark:bg-red-900/30 dark:text-red-300',
     };
-    return styles[status] || 'bg-surface-tertiary text-text-secondary';
+    return styles[status] || 'bg-surface-tertiary text-slate-300';
   };
 
   if (loading) {
@@ -590,50 +523,6 @@ const Dashboard = ({ user, onNavigate }) => {
                 </p>
               </div>
               
-              {/* Controls */}
-              <div className="flex flex-wrap items-center gap-3 mt-4 lg:mt-0">
-                {/* Branch Filter */}
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2">
-                  <Building2 className="w-4 h-4 text-white" />
-                  <SearchableDropdown
-                    value={selectedBranch}
-                    onChange={handleBranchChange}
-                    options={branchOptions}
-                    placeholder="Select branch"
-                    className="min-w-[180px]"
-                    buttonClassName="!bg-transparent !border-transparent !text-white !px-0 focus-visible:!ring-white/40 focus-visible:!ring-offset-0"
-                    dropdownClassName="!border-white/10 !bg-surface-primary/95 dark:!bg-surface-secondary/95"
-                    optionClassName="!text-text-primary"
-                    searchPlaceholder="Search branches..."
-                  />
-                </div>
-
-                {/* Auto-Refresh */}
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2">
-                  <input
-                    type="checkbox"
-                    id="autoRefresh"
-                    checked={autoRefresh}
-                    onChange={(e) => setAutoRefresh(e.target.checked)}
-                    className="w-4 h-4 rounded"
-                  />
-                  <label htmlFor="autoRefresh" className="text-sm text-white cursor-pointer">
-                    Auto-refresh
-                  </label>
-                  {autoRefresh && (
-                    <SearchableDropdown
-                      value={String(refreshInterval)}
-                      onChange={handleRefreshIntervalChange}
-                      options={refreshIntervalOptions}
-                      hideSearch
-                      className="min-w-[140px]"
-                      buttonClassName="!bg-transparent !border-transparent !text-white !px-0 focus-visible:!ring-white/40 focus-visible:!ring-offset-0"
-                      dropdownClassName="!border-white/10 !bg-surface-primary/95 dark:!bg-surface-secondary/95"
-                      clearable={false}
-                    />
-                  )}
-                </div>
-              </div>
             </div>
 
             {/* Hero Stats Grid */}
@@ -662,57 +551,6 @@ const Dashboard = ({ user, onNavigate }) => {
           </div>
         </div>
 
-        {/* Header with Branch Filter & Auto-Refresh (OLD - kept for fallback) */}
-        <div className="hidden flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-4">
-          <div className="flex-1">
-            <LuxuryPageHeader
-              title={`Welcome back, ${user.username}! 👋`}
-              description="Here's what's happening with your hotel today"
-              icon={Home}
-            />
-          </div>
-          
-          {/* Controls: Branch Filter & Auto-Refresh */}
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Branch Filter */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-text-secondary">Branch:</label>
-              <SearchableDropdown
-                value={selectedBranch}
-                onChange={handleBranchChange}
-                options={branchOptions}
-                className="min-w-[190px]"
-                placeholder="All branches"
-                searchPlaceholder="Search branches..."
-              />
-            </div>
-
-            {/* Auto-Refresh Toggle */}
-            <div className="flex items-center gap-2 px-3 py-2 bg-surface-secondary rounded-lg border border-border">
-              <input
-                type="checkbox"
-                id="autoRefresh"
-                checked={autoRefresh}
-                onChange={(e) => setAutoRefresh(e.target.checked)}
-                className="w-4 h-4 text-luxury-gold rounded focus:ring-luxury-gold"
-              />
-              <label htmlFor="autoRefresh" className="text-sm font-medium text-text-secondary cursor-pointer">
-                Auto-refresh
-              </label>
-              {autoRefresh && (
-                <SearchableDropdown
-                  value={String(refreshInterval)}
-                  onChange={handleRefreshIntervalChange}
-                  options={refreshIntervalOptions}
-                  hideSearch
-                  className="ml-2 min-w-[120px]"
-                  clearable={false}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* 🎯 PHASE 2: Quick Stats Grid (Enhanced - 6 cards) */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <QuickStat icon={Bed} label="Available" value={stats.availableRooms} color="blue" />
@@ -728,7 +566,7 @@ const Dashboard = ({ user, onNavigate }) => {
           <div className="card bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-l-4 border-green-500">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-green-700 dark:text-green-400 font-medium">Today's Revenue</p>
+                <p className="text-sm text-green-300 dark:text-green-400 font-medium">Today's Revenue</p>
                 <p className="text-3xl font-bold text-green-900 dark:text-green-100">
                   Rs {paymentStats.collected.toLocaleString()}
                 </p>
@@ -760,7 +598,7 @@ const Dashboard = ({ user, onNavigate }) => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Revenue Trend Chart (2/3 width) */}
           <div className="lg:col-span-2 card">
-            <h3 className="text-lg font-semibold text-text-primary dark:text-slate-100 mb-4">Revenue Trends (Last 7 Days)</h3>
+            <h3 className="text-lg font-semibold text-white dark:text-slate-100 mb-4">Revenue Trends (Last 7 Days)</h3>
             <LineChart 
               data={sparklineData.revenue}
               labels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
@@ -774,7 +612,7 @@ const Dashboard = ({ user, onNavigate }) => {
 
           {/* Alerts & Action Items Panel (1/3 width) */}
           <div className="card border-l-4 border-orange-500">
-            <h3 className="text-lg font-semibold text-text-primary dark:text-slate-100 mb-4 flex items-center">
+            <h3 className="text-lg font-semibold text-white dark:text-slate-100 mb-4 flex items-center">
               <AlertCircle className="w-5 h-5 mr-2 text-orange-500" />
               Attention Needed
             </h3>
@@ -824,7 +662,7 @@ const Dashboard = ({ user, onNavigate }) => {
           {/* Total Bookings */}
           <div className="card hover:shadow-xl transition-all">
             <div className="flex items-start justify-between mb-3">
-              <div className="bg-blue-100 p-3 rounded-full">
+              <div className="bg-blue-800/30 p-3 rounded-full">
                 <Calendar className="w-6 h-6 text-blue-600" />
               </div>
               <TrendIndicator 
@@ -833,32 +671,32 @@ const Dashboard = ({ user, onNavigate }) => {
               />
             </div>
             <div>
-              <p className="text-sm font-medium text-text-secondary mb-1">Total Bookings</p>
-              <p className="text-3xl font-bold text-text-primary mb-2">{stats.totalBookings}</p>
+              <p className="text-sm font-medium text-slate-300 mb-1">Total Bookings</p>
+              <p className="text-3xl font-bold text-white mb-2">{stats.totalBookings}</p>
               <div className="mt-2">
                 <Sparkline data={sparklineData.bookings} color="#3B82F6" width={120} height={24} />
               </div>
-              <p className="text-xs text-text-tertiary mt-2">Last 7 days trend</p>
+              <p className="text-xs text-slate-400 mt-2">Last 7 days trend</p>
             </div>
           </div>
 
           {/* Active Bookings */}
           <div className="card hover:shadow-xl transition-all">
             <div className="flex items-start justify-between mb-3">
-              <div className="bg-green-100 p-3 rounded-full">
+              <div className="bg-green-800/30 p-3 rounded-full">
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
-              <div className="text-sm font-medium text-text-secondary">
+              <div className="text-sm font-medium text-slate-300">
                 {stats.activeBookings}/{stats.totalRooms} rooms
               </div>
             </div>
             <div>
-              <p className="text-sm font-medium text-text-secondary mb-1">Active Bookings</p>
-              <p className="text-3xl font-bold text-text-primary mb-2">{stats.activeBookings}</p>
+              <p className="text-sm font-medium text-slate-300 mb-1">Active Bookings</p>
+              <p className="text-3xl font-bold text-white mb-2">{stats.activeBookings}</p>
               <div className="mt-2">
                 <Sparkline data={sparklineData.occupancy} color="#10B981" width={120} height={24} />
               </div>
-              <p className="text-xs text-text-tertiary mt-2">Rooms occupied</p>
+              <p className="text-xs text-slate-400 mt-2">Rooms occupied</p>
             </div>
           </div>
 
@@ -874,8 +712,8 @@ const Dashboard = ({ user, onNavigate }) => {
               />
             </div>
             <div>
-              <p className="text-sm font-medium text-text-secondary mb-1">Total Revenue</p>
-              <p className="text-3xl font-bold text-text-primary mb-2">Rs {stats.revenue.toLocaleString()}</p>
+              <p className="text-sm font-medium text-slate-300 mb-1">Total Revenue</p>
+              <p className="text-3xl font-bold text-white mb-2">Rs {stats.revenue.toLocaleString()}</p>
               <div className="mt-2">
                 <Sparkline 
                   data={sparklineData.revenue.map(v => v / 1000)} 
@@ -884,22 +722,22 @@ const Dashboard = ({ user, onNavigate }) => {
                   height={24} 
                 />
               </div>
-              <p className="text-xs text-text-tertiary mt-2">Revenue trend (7 days)</p>
+              <p className="text-xs text-slate-400 mt-2">Revenue trend (7 days)</p>
             </div>
           </div>
 
           {/* Occupancy Rate */}
           <div className="card hover:shadow-xl transition-all">
             <div className="flex items-start justify-between mb-3">
-              <div className="bg-purple-100 p-3 rounded-full">
+              <div className="bg-purple-800/30 p-3 rounded-full">
                 <TrendingUp className="w-6 h-6 text-purple-600" />
               </div>
               <MiniGauge value={stats.occupancyRate} max={100} color="#8B5CF6" size={48} />
             </div>
             <div>
-              <p className="text-sm font-medium text-text-secondary mb-1">Occupancy Rate</p>
-              <p className="text-3xl font-bold text-text-primary mb-2">{stats.occupancyRate}%</p>
-              <p className="text-xs text-text-tertiary mt-2">
+              <p className="text-sm font-medium text-slate-300 mb-1">Occupancy Rate</p>
+              <p className="text-3xl font-bold text-white mb-2">{stats.occupancyRate}%</p>
+              <p className="text-xs text-slate-400 mt-2">
                 {stats.availableRooms} rooms available
               </p>
             </div>
@@ -911,13 +749,13 @@ const Dashboard = ({ user, onNavigate }) => {
         <div className="card hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-sm font-medium text-text-secondary dark:text-slate-300 mb-1">Total Guests</p>
-              <p className="text-3xl font-bold text-text-primary dark:text-slate-100">{stats.totalGuests}</p>
+              <p className="text-sm font-medium text-slate-300 dark:text-slate-300 mb-1">Total Guests</p>
+              <p className="text-3xl font-bold text-white dark:text-slate-100">{stats.totalGuests}</p>
               <div className="mt-2">
                 <Sparkline data={sparklineData.bookings} color="#3B82F6" width={80} height={20} />
               </div>
             </div>
-            <div className="bg-blue-100 dark:bg-blue-500/20 p-3 rounded-full">
+            <div className="bg-blue-800/30 dark:bg-blue-900/200/20 p-3 rounded-full">
               <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
@@ -926,12 +764,12 @@ const Dashboard = ({ user, onNavigate }) => {
         <div className="card hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-sm font-medium text-text-secondary dark:text-slate-300 mb-1">Occupancy Rate</p>
+              <p className="text-sm font-medium text-slate-300 dark:text-slate-300 mb-1">Occupancy Rate</p>
               <div className="flex items-center gap-4">
                 <MiniGauge value={stats.occupancyRate} max={100} color="#8B5CF6" size={60} />
                 <div>
-                  <p className="text-2xl font-bold text-text-primary dark:text-slate-100">{stats.activeBookings}/{stats.totalRooms}</p>
-                  <p className="text-xs text-text-tertiary dark:text-slate-400">rooms occupied</p>
+                  <p className="text-2xl font-bold text-white dark:text-slate-100">{stats.activeBookings}/{stats.totalRooms}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-400">rooms occupied</p>
                 </div>
               </div>
             </div>
@@ -941,8 +779,8 @@ const Dashboard = ({ user, onNavigate }) => {
         <div className="card hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-sm font-medium text-text-secondary dark:text-slate-300 mb-1">Pending Check-Ins</p>
-              <p className="text-3xl font-bold text-text-primary dark:text-slate-100">{stats.pendingCheckIns}</p>
+              <p className="text-sm font-medium text-slate-300 dark:text-slate-300 mb-1">Pending Check-Ins</p>
+              <p className="text-3xl font-bold text-white dark:text-slate-100">{stats.pendingCheckIns}</p>
               {stats.pendingCheckIns > 5 && (
                 <div className="mt-2 flex items-center text-yellow-600 dark:text-yellow-400 text-sm">
                   <AlertCircle className="w-4 h-4 mr-1" />
@@ -950,7 +788,7 @@ const Dashboard = ({ user, onNavigate }) => {
                 </div>
               )}
             </div>
-            <div className="bg-yellow-100 dark:bg-yellow-500/20 p-3 rounded-full">
+            <div className="bg-yellow-800/30 dark:bg-yellow-900/200/20 p-3 rounded-full">
               <AlertCircle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
             </div>
           </div>
@@ -961,22 +799,22 @@ const Dashboard = ({ user, onNavigate }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="card flex items-center justify-between">
           <div>
-            <div className="text-sm text-text-secondary dark:text-slate-300">Operations</div>
-            <div className="text-xl font-bold text-text-primary dark:text-slate-100">Housekeeping</div>
+            <div className="text-sm text-slate-300 dark:text-slate-300">Operations</div>
+            <div className="text-xl font-bold text-white dark:text-slate-100">Housekeeping</div>
           </div>
           <button className="btn-primary" onClick={()=>onNavigate && onNavigate('housekeeping')}>Open</button>
         </div>
         <div className="card flex items-center justify-between">
           <div>
-            <div className="text-sm text-text-secondary dark:text-slate-300">Reports</div>
-            <div className="text-xl font-bold text-text-primary dark:text-slate-100">Arrivals/Departures</div>
+            <div className="text-sm text-slate-300 dark:text-slate-300">Reports</div>
+            <div className="text-xl font-bold text-white dark:text-slate-100">Arrivals/Departures</div>
           </div>
           <button className="btn-secondary" onClick={()=>onNavigate && onNavigate('reports')}>View</button>
         </div>
         <div className="card flex items-center justify-between">
           <div>
-            <div className="text-sm text-text-secondary dark:text-slate-300">Rates</div>
-            <div className="text-xl font-bold text-text-primary dark:text-slate-100">Get Quote</div>
+            <div className="text-sm text-slate-300 dark:text-slate-300">Rates</div>
+            <div className="text-xl font-bold text-white dark:text-slate-100">Get Quote</div>
           </div>
           <button className="btn-secondary" onClick={()=>setShowQuote(true)}>Quote</button>
         </div>
@@ -985,7 +823,7 @@ const Dashboard = ({ user, onNavigate }) => {
       {/* Recent Bookings */}
       <div className="card shadow-lg">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-text-primary dark:text-slate-100">Recent Bookings</h2>
+          <h2 className="text-xl font-bold text-white dark:text-slate-100">Recent Bookings</h2>
           <button 
             onClick={() => onNavigate && onNavigate('bookings')}
             className="text-luxury-gold hover:text-luxury-darkGold font-medium text-sm transition-colors flex items-center"
@@ -996,33 +834,33 @@ const Dashboard = ({ user, onNavigate }) => {
 
         {recentBookings.length === 0 ? (
           <div className="text-center py-12">
-            <Calendar className="w-16 h-16 text-gray-300 dark:text-slate-500 mx-auto mb-4" />
-            <p className="text-text-secondary dark:text-slate-300">No bookings found</p>
+            <Calendar className="w-16 h-16 text-slate-500 dark:text-slate-500 mx-auto mb-4" />
+            <p className="text-slate-300 dark:text-slate-300">No bookings found</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border dark:border-slate-700">
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary dark:text-slate-200">Guest</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary dark:text-slate-200">Room</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary dark:text-slate-200">Check In</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary dark:text-slate-200">Check Out</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary dark:text-slate-200">Status</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-text-secondary dark:text-slate-200">Amount</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300 dark:text-slate-200">Guest</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300 dark:text-slate-200">Room</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300 dark:text-slate-200">Check In</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300 dark:text-slate-200">Check Out</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300 dark:text-slate-200">Status</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300 dark:text-slate-200">Amount</th>
                 </tr>
               </thead>
               <tbody>
                 {recentBookings.map((booking) => (
                   <tr key={booking.booking_id} className="border-b border-border dark:border-slate-700 hover:bg-surface-tertiary dark:hover:bg-slate-700/30 transition-colors">
                     <td className="py-4 px-4">
-                      <div className="font-medium text-text-primary dark:text-slate-100">{booking.guest_name || 'Guest'}</div>
+                      <div className="font-medium text-white dark:text-slate-100">{booking.guest_name || 'Guest'}</div>
                     </td>
-                    <td className="py-4 px-4 text-text-secondary dark:text-slate-300 font-medium">{booking.room_number || 'N/A'}</td>
-                    <td className="py-4 px-4 text-text-secondary dark:text-slate-300">
+                    <td className="py-4 px-4 text-slate-300 dark:text-slate-300 font-medium">{booking.room_number || 'N/A'}</td>
+                    <td className="py-4 px-4 text-slate-300 dark:text-slate-300">
                       {booking.check_in_date ? format(new Date(booking.check_in_date), 'dd/MM/yyyy') : 'N/A'}
                     </td>
-                    <td className="py-4 px-4 text-text-secondary dark:text-slate-300">
+                    <td className="py-4 px-4 text-slate-300 dark:text-slate-300">
                       {booking.check_out_date ? format(new Date(booking.check_out_date), 'dd/MM/yyyy') : 'N/A'}
                     </td>
                     <td className="py-4 px-4">
@@ -1073,30 +911,30 @@ function MiniTable({ title, rows, onOpen }) {
   return (
     <div className="card">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-semibold text-text-primary dark:text-slate-100">{title}</h3>
+        <h3 className="text-lg font-semibold text-white dark:text-slate-100">{title}</h3>
         <div className="flex gap-2">
           <button className="btn-secondary" onClick={exportCsv}>Export</button>
           <button className="btn-secondary" onClick={onOpen}>View</button>
         </div>
       </div>
       {(!rows || rows.length === 0) ? (
-        <div className="text-sm text-text-secondary dark:text-slate-300">No records</div>
+        <div className="text-sm text-slate-300 dark:text-slate-300">No records</div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border dark:border-slate-700">
-                <th className="text-left py-2 px-2 text-text-secondary dark:text-slate-200">Guest</th>
-                <th className="text-left py-2 px-2 text-text-secondary dark:text-slate-200">Room</th>
-                <th className="text-left py-2 px-2 text-text-secondary dark:text-slate-200">Branch</th>
+                <th className="text-left py-2 px-2 text-slate-300 dark:text-slate-200">Guest</th>
+                <th className="text-left py-2 px-2 text-slate-300 dark:text-slate-200">Room</th>
+                <th className="text-left py-2 px-2 text-slate-300 dark:text-slate-200">Branch</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((r) => (
                 <tr key={r.booking_id} className="border-b border-border dark:border-slate-700">
-                  <td className="py-2 px-2 text-text-primary dark:text-slate-100">{r.guest_name || 'N/A'}</td>
-                  <td className="py-2 px-2 text-text-primary dark:text-slate-100">{r.room_number || 'N/A'}</td>
-                  <td className="py-2 px-2 text-text-primary dark:text-slate-100">{r.branch_name || 'N/A'}</td>
+                  <td className="py-2 px-2 text-white dark:text-slate-100">{r.guest_name || 'N/A'}</td>
+                  <td className="py-2 px-2 text-white dark:text-slate-100">{r.room_number || 'N/A'}</td>
+                  <td className="py-2 px-2 text-white dark:text-slate-100">{r.branch_name || 'N/A'}</td>
                 </tr>
               ))}
             </tbody>
@@ -1150,14 +988,19 @@ function QuickQuoteModal({ onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-surface-secondary rounded-2xl shadow-2xl max-w-lg w-full" onClick={(e)=>e.stopPropagation()}>
-        <div className="p-6 border-b border-border flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-text-primary">Quick Rate Quote</h2>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary">×</button>
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-lg w-full border border-slate-700/50" onClick={(e)=>e.stopPropagation()} style={{minWidth: '600px'}}>
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 z-10 flex items-center justify-between">
+          <h2 className="text-2xl font-display font-bold text-white">Quick Rate Quote</h2>
+          <button 
+            onClick={onClose} 
+            className="text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg p-2 transition-all duration-200"
+          >
+            ×
+          </button>
         </div>
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">Room Type</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Room Type</label>
             <SearchableDropdown
               value={form.room_type_id}
               onChange={(selectedId) => setForm((prev) => ({ ...prev, room_type_id: selectedId }))}
@@ -1167,8 +1010,8 @@ function QuickQuoteModal({ onClose }) {
               className="w-full"
               renderOption={(option) => (
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-text-primary">{option.name}</span>
-                  <span className="text-xs text-text-tertiary">{option.formattedRate}</span>
+                  <span className="font-medium text-white">{option.name}</span>
+                  <span className="text-xs text-slate-400">{option.formattedRate}</span>
                 </div>
               )}
               renderSelected={(option) =>
@@ -1178,36 +1021,36 @@ function QuickQuoteModal({ onClose }) {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Check In</label>
-              <input type="date" className="input-field" value={form.check_in} onChange={(e)=>setForm({...form, check_in:e.target.value})} />
+              <label className="block text-sm font-medium text-slate-300 mb-2">Check In</label>
+              <input type="date" className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400" value={form.check_in} onChange={(e)=>setForm({...form, check_in:e.target.value})} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Check Out</label>
-              <input type="date" className="input-field" value={form.check_out} onChange={(e)=>setForm({...form, check_out:e.target.value})} />
+              <label className="block text-sm font-medium text-slate-300 mb-2">Check Out</label>
+              <input type="date" className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400" value={form.check_out} onChange={(e)=>setForm({...form, check_out:e.target.value})} />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">Promo Code</label>
-            <input type="text" className="input-field" placeholder="Optional" value={form.promo} onChange={(e)=>setForm({...form, promo:e.target.value})} />
+            <label className="block text-sm font-medium text-slate-300 mb-2">Promo Code</label>
+            <input type="text" className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400" placeholder="Optional" value={form.promo} onChange={(e)=>setForm({...form, promo:e.target.value})} />
           </div>
           <div className="flex items-center gap-3">
             <button className="btn-primary" onClick={getQuote} disabled={loading || !form.room_type_id || !form.check_in || !form.check_out}>
               {loading ? 'Calculating...' : 'Get Quote'}
             </button>
             {quote && (
-              <div className="text-sm text-text-secondary">
+              <div className="text-sm text-slate-300">
                 {quote.nights} night{quote.nights>1?'s':''} · Total Rs {parseFloat(quote.total).toFixed(2)}
               </div>
             )}
           </div>
           {quote?.nightly?.length ? (
             <div className="bg-surface-tertiary border border-border rounded-lg p-3">
-              <div className="text-sm font-medium text-text-primary mb-2">Nightly Rates</div>
+              <div className="text-sm font-medium text-white mb-2">Nightly Rates</div>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 {quote.nightly.map(n => (
                   <div key={n.date} className="flex justify-between">
-                    <span className="text-text-secondary">{new Date(n.date).toLocaleDateString()}</span>
-                    <span className="text-text-primary">Rs {parseFloat(n.rate).toFixed(2)}</span>
+                    <span className="text-slate-300">{new Date(n.date).toLocaleDateString()}</span>
+                    <span className="text-white">Rs {parseFloat(n.rate).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
@@ -1237,20 +1080,20 @@ function HeroStat({ label, value, icon: Icon }) {
 // Quick Stat Component (for 6-card grid)
 function QuickStat({ icon: Icon, label, value, color }) {
   const colorStyles = {
-    blue: 'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
-    purple: 'bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400',
-    green: 'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400',
-    orange: 'bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400',
+    blue: 'bg-blue-800/30 dark:bg-blue-900/200/20 text-blue-600 dark:text-blue-400',
+    purple: 'bg-purple-800/30 dark:bg-purple-900/200/20 text-purple-600 dark:text-purple-400',
+    green: 'bg-green-800/30 dark:bg-green-900/200/20 text-green-600 dark:text-green-400',
+    orange: 'bg-orange-800/30 dark:bg-orange-900/200/20 text-orange-600 dark:text-orange-400',
     indigo: 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400',
-    gold: 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400',
+    gold: 'bg-yellow-800/30 dark:bg-yellow-900/200/20 text-yellow-600 dark:text-yellow-400',
   };
 
   return (
     <div className="card hover:shadow-lg transition-all">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs text-text-secondary dark:text-slate-300 mb-1">{label}</p>
-          <p className="text-2xl font-bold text-text-primary dark:text-slate-100">{value}</p>
+          <p className="text-xs text-slate-300 dark:text-slate-300 mb-1">{label}</p>
+          <p className="text-2xl font-bold text-white dark:text-slate-100">{value}</p>
         </div>
         <div className={`p-3 rounded-full ${colorStyles[color] || colorStyles.blue}`}>
           <Icon className="w-5 h-5" />
@@ -1263,10 +1106,10 @@ function QuickStat({ icon: Icon, label, value, color }) {
 // Stat Card Component (for payment status)
 function StatCard({ label, value, icon: Icon, color, subtitle }) {
   const colorStyles = {
-    green: { bg: 'bg-green-50 dark:bg-green-500/10', icon: 'bg-green-100 dark:bg-green-500/20', text: 'text-green-600 dark:text-green-400', value: 'text-green-900 dark:text-green-100' },
-    yellow: { bg: 'bg-yellow-50 dark:bg-yellow-500/10', icon: 'bg-yellow-100 dark:bg-yellow-500/20', text: 'text-yellow-600 dark:text-yellow-400', value: 'text-yellow-900 dark:text-yellow-100' },
-    red: { bg: 'bg-red-50 dark:bg-red-500/10', icon: 'bg-red-100 dark:bg-red-500/20', text: 'text-red-600 dark:text-red-400', value: 'text-red-900 dark:text-red-100' },
-    blue: { bg: 'bg-blue-50 dark:bg-blue-500/10', icon: 'bg-blue-100 dark:bg-blue-500/20', text: 'text-blue-600 dark:text-blue-400', value: 'text-blue-900 dark:text-blue-100' },
+    green: { bg: 'bg-green-900/20 dark:bg-green-900/200/10', icon: 'bg-green-800/30 dark:bg-green-900/200/20', text: 'text-green-600 dark:text-green-400', value: 'text-green-900 dark:text-green-100' },
+    yellow: { bg: 'bg-yellow-900/20 dark:bg-yellow-900/200/10', icon: 'bg-yellow-800/30 dark:bg-yellow-900/200/20', text: 'text-yellow-600 dark:text-yellow-400', value: 'text-yellow-900 dark:text-yellow-100' },
+    red: { bg: 'bg-red-900/20 dark:bg-red-900/200/10', icon: 'bg-red-800/30 dark:bg-red-900/200/20', text: 'text-red-600 dark:text-red-400', value: 'text-red-900 dark:text-red-100' },
+    blue: { bg: 'bg-blue-900/20 dark:bg-blue-900/200/10', icon: 'bg-blue-800/30 dark:bg-blue-900/200/20', text: 'text-blue-600 dark:text-blue-400', value: 'text-blue-900 dark:text-blue-100' },
   };
 
   const styles = colorStyles[color] || colorStyles.green;
@@ -1290,12 +1133,12 @@ function StatCard({ label, value, icon: Icon, color, subtitle }) {
 // Alert Item Component (for alerts panel)
 function AlertItem({ icon: Icon, color, title, action, onClick }) {
   const colorStyles = {
-    blue: 'bg-blue-50 text-blue-700 border-blue-200',
-    purple: 'bg-purple-50 text-purple-700 border-purple-200',
-    red: 'bg-red-50 text-red-700 border-red-200',
-    orange: 'bg-orange-50 text-orange-700 border-orange-200',
-    green: 'bg-green-50 text-green-700 border-green-200',
-    yellow: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    blue: 'bg-blue-900/20 text-blue-300 border-blue-700',
+    purple: 'bg-purple-900/20 text-purple-300 border-purple-700',
+    red: 'bg-red-900/20 text-red-300 border-red-700',
+    orange: 'bg-orange-900/20 text-orange-300 border-orange-700',
+    green: 'bg-green-900/20 text-green-300 border-green-700',
+    yellow: 'bg-yellow-900/20 text-yellow-700 border-yellow-200',
   };
 
   return (
@@ -1330,16 +1173,12 @@ function ActivityItem({ icon: Icon, color, text, time }) {
         <Icon className="w-4 h-4" />
       </div>
       <div className="flex-1">
-        <p className="text-sm font-medium text-text-primary">{text}</p>
-        <p className="text-xs text-text-tertiary">{time}</p>
+        <p className="text-sm font-medium text-white">{text}</p>
+        <p className="text-xs text-slate-400">{time}</p>
       </div>
     </div>
   );
 }
 
 export default Dashboard;
-
-
-
-
 

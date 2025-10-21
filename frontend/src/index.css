@@ -57,6 +57,24 @@
   --transition-fast: 150ms;
   --transition-medium: 250ms;
   --transition-slow: 400ms;
+
+  /* Z-Index Scale - Comprehensive stacking hierarchy */
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-sidebar: 1040;
+  --z-header: 1050;
+  --z-overlay: 1060;
+  --z-modal-backdrop: 1070;
+  --z-modal: 1080;
+  --z-modal-nested: 1090;
+  --z-popover: 1100;
+  --z-tooltip: 1110;
+  --z-notification: 1120;
+  --z-confirmation: 1130;
+  --z-toast: 1140;
+  --z-max: 2147483647;
 }
 
 .dark {
@@ -66,7 +84,7 @@
   --bg-secondary: #1E293B;
   --bg-tertiary: #334155;
 
-  --text-primary: #F1F5F9;
+  --text-primary: #FFFFFF;
   --text-secondary: #CBD5E1;
   --text-tertiary: #94A3B8;
 
@@ -81,7 +99,7 @@
   --info: #60A5FA;
   --muted: #94A3B8;
 
-  --border: #334155;
+  --border: #475569;
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.25);
   --shadow-md: 0 4px 6px rgba(15, 23, 42, 0.3);
   --shadow-lg: 0 10px 15px rgba(15, 23, 42, 0.35);
@@ -170,17 +188,32 @@ a:hover {
 .input-field {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: var(--radius-sm);
-  background-color: var(--bg-secondary);
+  background-color: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
   transition: border-color var(--transition-fast) ease, box-shadow var(--transition-fast) ease, background-color var(--transition-medium) ease;
+  backdrop-filter: blur(10px);
+}
+
+.dark .input-field {
+  background-color: rgba(255, 255, 255, 0.20) !important;
+  border-color: rgba(203, 213, 225, 0.7) !important;
+  color: rgb(255, 255, 255) !important;
+  font-weight: 500;
 }
 
 .input-field:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
   border-color: var(--accent-secondary);
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark .input-field:focus {
+  background-color: rgba(255, 255, 255, 0.28) !important;
+  border-color: rgb(96, 165, 250) !important;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3) !important;
 }
 
 .input-field.error {
@@ -386,3 +419,123 @@ a:hover {
     color: rgb(199 210 254) !important;
   }
 }
+
+/* ========================================
+   FORM ELEMENTS - UNIVERSAL FIX
+   Professional form styling with excellent contrast
+   ======================================== */
+
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="date"],
+.dark input[type="datetime-local"],
+.dark input[type="time"],
+.dark input[type="search"],
+.dark input[type="tel"],
+.dark input[type="url"],
+.dark select,
+.dark textarea {
+  /* Clean slate background with good contrast */
+  background-color: rgb(51, 65, 85) !important;
+  border: 2px solid rgb(100, 116, 139) !important;
+  color: rgb(248, 250, 252) !important;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.15s ease;
+  font-weight: 400;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.dark input[type="text"]:hover,
+.dark input[type="email"]:hover,
+.dark input[type="password"]:hover,
+.dark input[type="number"]:hover,
+.dark input[type="date"]:hover,
+.dark input[type="datetime-local"]:hover,
+.dark input[type="time"]:hover,
+.dark input[type="search"]:hover,
+.dark input[type="tel"]:hover,
+.dark input[type="url"]:hover,
+.dark select:hover,
+.dark textarea:hover {
+  border-color: rgb(148, 163, 184) !important;
+  background-color: rgb(71, 85, 105) !important;
+}
+
+.dark input[type="text"]:focus,
+.dark input[type="email"]:focus,
+.dark input[type="password"]:focus,
+.dark input[type="number"]:focus,
+.dark input[type="date"]:focus,
+.dark input[type="datetime-local"]:focus,
+.dark input[type="time"]:focus,
+.dark input[type="search"]:focus,
+.dark input[type="tel"]:focus,
+.dark input[type="url"]:focus,
+.dark select:focus,
+.dark textarea:focus {
+  background-color: rgb(71, 85, 105) !important;
+  border-color: rgb(59, 130, 246) !important;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25), 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgb(148, 163, 184) !important;
+  opacity: 1;
+}
+
+/* Select dropdowns - ensure visible arrow */
+.dark select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23F8FAFC' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+  appearance: none;
+}
+
+/* Ensure buttons in forms are visible */
+.dark button[type="button"],
+.dark button[type="submit"] {
+  min-height: 2.5rem;
+}
+
+/* Fix SearchableDropdown button visibility in dark modals */
+.dark [class*="bg-surface"] button {
+  background-color: rgb(51, 65, 85) !important;
+  border-color: rgb(100, 116, 139) !important;
+  color: rgb(248, 250, 252) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.dark [class*="bg-surface"] button:hover {
+  background-color: rgb(71, 85, 105) !important;
+  border-color: rgb(148, 163, 184) !important;
+}
+
+/* Ensure radio buttons and checkboxes are visible */
+.dark input[type="radio"],
+.dark input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: rgb(51, 65, 85) !important;
+  border: 2px solid rgb(100, 116, 139) !important;
+  cursor: pointer;
+}
+
+.dark input[type="radio"]:checked,
+.dark input[type="checkbox"]:checked {
+  background-color: rgb(59, 130, 246) !important;
+  border-color: rgb(59, 130, 246) !important;
+}
+
+/* Labels should be bright and readable */
+.dark label {
+  color: rgb(226, 232, 240) !important;
+  font-weight: 500;
+}
+

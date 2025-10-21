@@ -1,6 +1,4 @@
-﻿// =============================
-// 📦 Required Modules
-// =============================
+﻿// src/app.js
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
@@ -11,54 +9,45 @@ const createError = require("http-errors");
 require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 
 const app = express();
-
-// =============================
-// 🧰 Middlewares
-// =============================
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// =============================
-// 🩺 Health Check
-// =============================
+// health
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
-// =============================
-// 🧭 API Routes
-// =============================
+// routers - Comprehensive API routes with RBAC
 app.use("/api", require("./routes/api.routes"));
 
-// =============================
-// 🌐 Serve Frontend (React SPA)
-// =============================
+// serve frontend (static SPA)
 const publicDir = path.join(__dirname, "public");
-app.use(express.static(publicDir)); // fallback for simple static files
+app.use(express.static(publicDir));
 
+// Prefer React build if requested, otherwise serve the in-repo SPA
 const reactBuildDir = path.join(__dirname, "..", "frontend", "dist");
-
-// ✅ If React build exists, serve it at /app
-if (fs.existsSync(reactBuildDir)) {
+const preferReact = String(process.env.USE_REACT_BUILD || "").toLowerCase() === "true";
+if (preferReact && fs.existsSync(reactBuildDir)) {
   app.use("/app", express.static(reactBuildDir));
-  app.get("/app/*", (_req, res) => {
+  app.use("/app", (req, res, next) => {
+    if (req.method !== "GET" && req.method !== "HEAD") return next();
+    if (req.path.startsWith("/assets/") || req.path.includes(".")) return next();
+    const accept = String(req.headers.accept || "");
+    if (!accept.includes("text/html")) return next();
     res.sendFile(path.join(reactBuildDir, "index.html"));
   });
 } else {
-  // 🪄 Fallback to the simple in-repo SPA
-  app.use("/app", express.static(publicDir));
-  app.get("/app/*", (_req, res) => {
+  app.use("/app", (req, res, next) => {
+    if (req.method !== "GET" && req.method !== "HEAD") return next();
+    const accept = String(req.headers.accept || "");
+    if (!accept.includes("text/html")) return next();
     res.sendFile(path.join(publicDir, "index.html"));
   });
 }
 
-// =============================
-// ❌ 404 Handler
-// =============================
+// 404
 app.use((_req, _res, next) => next(createError(404, "Route not found")));
 
-// =============================
-// 🛑 Error Handler
-// =============================
+// error handler
 app.use((err, _req, res, _next) => {
   const status = err.status || err.statusCode || 500;
   const is404 = status === 404;

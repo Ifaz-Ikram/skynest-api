@@ -54,66 +54,99 @@ async function getGuestProfile(req, res) {
     
     const guest = guestRes.rows[0];
     
-    // Since we can't modify the database, return simulated data
-    const simulatedNotes = [
-      {
-        note_id: 1,
-        note_type: "VIP",
-        note_text: "VIP guest - provide complimentary upgrade if available",
-        is_private: false,
-        priority: "High",
-        created_at: "2024-01-15T10:00:00Z",
-        created_by: 1,
-        created_by_name: "System Admin"
-      },
-      {
-        note_id: 2,
-        note_type: "Preference",
-        note_text: "Prefers high floor rooms with city view",
-        is_private: false,
-        priority: "Medium",
-        created_at: "2024-01-10T14:30:00Z",
-        created_by: 1,
-        created_by_name: "System Admin"
-      }
-    ];
+    // Get guest notes from database (if table exists)
+    let notes = [];
+    try {
+      const notesQuery = `
+        SELECT 
+          note_id,
+          note_type,
+          note_text,
+          is_private,
+          priority,
+          created_at,
+          created_by,
+          created_by_name
+        FROM guest_notes 
+        WHERE guest_id = $1
+        ORDER BY created_at DESC
+      `;
+      const notesRes = await pool.query(notesQuery, [guestIdNum]);
+      notes = notesRes.rows;
+    } catch (error) {
+      console.log('Guest notes table not available, returning empty array');
+      notes = [];
+    }
     
-    const simulatedPreferences = [
-      {
-        preference_id: 1,
-        preference_type: "Room",
-        preference_value: "High floor, city view",
-        is_active: true,
-        created_at: "2024-01-10T14:30:00Z",
-        updated_at: "2024-01-10T14:30:00Z"
-      },
-      {
-        preference_id: 2,
-        preference_type: "Dining",
-        preference_value: "Vegetarian meals",
-        is_active: true,
-        created_at: "2024-01-12T09:15:00Z",
-        updated_at: "2024-01-12T09:15:00Z"
-      }
-    ];
+    // Get guest preferences from database (if table exists)
+    let preferences = [];
+    try {
+      const preferencesQuery = `
+        SELECT 
+          preference_id,
+          preference_type,
+          preference_value,
+          is_active,
+          created_at,
+          updated_at
+        FROM guest_preferences 
+        WHERE guest_id = $1 AND is_active = true
+        ORDER BY created_at DESC
+      `;
+      const preferencesRes = await pool.query(preferencesQuery, [guestIdNum]);
+      preferences = preferencesRes.rows;
+    } catch (error) {
+      console.log('Guest preferences table not available, returning empty array');
+      preferences = [];
+    }
     
-    const simulatedAlerts = [
-      {
-        alert_id: 1,
-        alert_type: "Check-in",
-        alert_title: "VIP Check-in",
-        alert_message: "VIP guest arriving - ensure room is ready and provide welcome amenities",
-        alert_date: "2024-01-20",
-        alert_time: "15:00",
-        is_recurring: false,
-        recurrence_type: "None",
-        priority: "High",
-        is_active: true,
-        created_at: "2024-01-15T10:00:00Z",
-        created_by: 1,
-        created_by_name: "System Admin"
-      }
-    ];
+    // Get guest alerts from database (if table exists)
+    let alerts = [];
+    try {
+      const alertsQuery = `
+        SELECT 
+          alert_id,
+          alert_type,
+          alert_title,
+          alert_message,
+          alert_date,
+          alert_time,
+          is_recurring,
+          recurrence_type,
+          priority,
+          is_active,
+          created_at,
+          created_by,
+          created_by_name
+        FROM guest_alerts 
+        WHERE guest_id = $1 AND is_active = true
+        ORDER BY alert_date ASC, alert_time ASC
+      `;
+      const alertsRes = await pool.query(alertsQuery, [guestIdNum]);
+      alerts = alertsRes.rows;
+    } catch (error) {
+      console.log('Guest alerts table not available, returning empty array');
+      alerts = [];
+    }
+    
+    // Get recent bookings
+    const recentBookingsQuery = `
+      SELECT 
+        b.booking_id,
+        b.check_in_date,
+        b.check_out_date,
+        b.status,
+        b.booked_rate,
+        r.room_number,
+        rt.name as room_type_name
+      FROM booking b
+      LEFT JOIN room r ON b.room_id = r.room_id
+      LEFT JOIN room_type rt ON r.room_type_id = rt.room_type_id
+      WHERE b.guest_id = $1
+      ORDER BY b.check_in_date DESC
+      LIMIT 5
+    `;
+    const recentBookingsRes = await pool.query(recentBookingsQuery, [guestIdNum]);
     
     res.json({
       guest: {
@@ -121,11 +154,11 @@ async function getGuestProfile(req, res) {
         total_stays: parseInt(guest.total_stays || 0),
         total_spent: parseFloat(guest.total_spent || 0)
       },
-      notes: simulatedNotes,
-      preferences: simulatedPreferences,
-      alerts: simulatedAlerts,
+      notes: notes,
+      preferences: preferences,
+      alerts: alerts,
       loyalty: [],
-      recent_bookings: []
+      recent_bookings: recentBookingsRes.rows
     });
     
   } catch (error) {

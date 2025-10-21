@@ -837,6 +837,7 @@ router.get('/reports/service-monthly-trend', requireAuth, requireStaff, reportCo
 router.get('/reports/arrivals-today', requireAuth, requireStaff, reportController.arrivalsToday);
 router.get('/reports/departures-today', requireAuth, requireStaff, reportController.departuresToday);
 router.get('/reports/in-house', requireAuth, requireStaff, reportController.inHouse);
+router.get('/reports/detailed-bookings', requireAuth, requireStaff, reportController.detailedBookings);
 
 // Dashboard reports
 router.get('/reports/dashboard/kpis', requireAuth, requireStaff, reportingDashboardsController.getKPIsDashboard);

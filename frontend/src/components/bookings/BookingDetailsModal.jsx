@@ -60,64 +60,67 @@ export const BookingDetailsModal = ({ booking, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-surface-secondary rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-border flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-text-primary">Booking Details</h2>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 'var(--z-modal)' }}>
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-slate-700/50" style={{minWidth: '600px'}}>
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 flex items-center justify-between" style={{ zIndex: 'var(--z-sticky)' }}>
+          <h2 className="text-2xl font-bold text-white">Booking Details</h2>
+          <button 
+            onClick={onClose} 
+            className="text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg p-2 transition-all duration-200"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>
         <div className="p-6 space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-text-secondary">Booking ID</p>
-              <p className="font-medium text-text-primary">{booking.booking_id}</p>
+              <p className="text-sm text-slate-300">Booking ID</p>
+              <p className="font-medium text-white">{booking.booking_id}</p>
             </div>
             <div>
-              <p className="text-sm text-text-secondary">Status</p>
+              <p className="text-sm text-slate-300">Status</p>
               <span
                 className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
                   booking.status === 'Checked-In'
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                    ? 'bg-green-800/30 text-green-200 dark:bg-green-900/30 dark:text-green-300'
                     : booking.status === 'Booked'
-                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
-                    : 'bg-gray-100 text-gray-700'
+                    ? 'bg-blue-800/30 text-blue-200 dark:bg-blue-900/30 dark:text-blue-300'
+                    : 'bg-slate-800 text-slate-100'
                 }`}
               >
                 {booking.status}
               </span>
             </div>
             <div>
-              <p className="text-sm text-text-secondary">Guest Name</p>
-              <p className="font-medium text-text-primary">{booking.guest_name || 'N/A'}</p>
+              <p className="text-sm text-slate-300">Guest Name</p>
+              <p className="font-medium text-white">{booking.guest_name || 'N/A'}</p>
             </div>
             <div>
-              <p className="text-sm text-text-secondary">Room Number</p>
-              <p className="font-medium text-text-primary">{booking.room_number || 'N/A'}</p>
+              <p className="text-sm text-slate-300">Room Number</p>
+              <p className="font-medium text-white">{booking.room_number || 'N/A'}</p>
             </div>
             <div>
-              <p className="text-sm text-text-secondary">Check In Date</p>
-              <p className="font-medium text-text-primary">
+              <p className="text-sm text-slate-300">Check In Date</p>
+              <p className="font-medium text-white">
                 {booking.check_in_date
                   ? format(new Date(booking.check_in_date), 'dd/MM/yyyy')
                   : 'N/A'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-text-secondary">Check Out Date</p>
-              <p className="font-medium text-text-primary">
+              <p className="text-sm text-slate-300">Check Out Date</p>
+              <p className="font-medium text-white">
                 {booking.check_out_date
                   ? format(new Date(booking.check_out_date), 'dd/MM/yyyy')
                   : 'N/A'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-text-secondary">Number of Guests</p>
-              <p className="font-medium text-text-primary">{booking.number_of_guests || 'N/A'}</p>
+              <p className="text-sm text-slate-300">Number of Guests</p>
+              <p className="font-medium text-white">{booking.number_of_guests || 'N/A'}</p>
             </div>
             <div>
-              <p className="text-sm text-text-secondary">Total Amount</p>
+              <p className="text-sm text-slate-300">Total Amount</p>
               <p className="font-bold text-luxury-gold text-lg">
                 Rs {parseFloat(booking.total_amount || 0).toFixed(2)}
               </p>
@@ -146,7 +149,7 @@ export const BookingDetailsModal = ({ booking, onClose }) => {
             )}
             
             {booking.status === 'Checked-In' && checkInRecord && (
-              <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg">
+              <div className="flex items-center gap-2 text-sm text-green-300 bg-green-900/20 px-3 py-2 rounded-lg">
                 <UserCheck className="w-4 h-4" />
                 <span>Checked in on {format(new Date(checkInRecord.check_in_time), 'dd/MM/yyyy HH:mm')}</span>
               </div>

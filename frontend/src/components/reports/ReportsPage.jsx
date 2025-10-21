@@ -50,10 +50,35 @@ export const ReportsPage = () => {
   const loadReport = async (reportId) => {
     setLoading(true);
     try {
-      const data = await api.request(`/api/reports/${reportId}`, {
-        method: 'POST',
-        body: JSON.stringify(dateRange)
-      });
+      // Map report IDs to actual API endpoints
+      const reportEndpoints = {
+        'occupancy': '/api/reports/occupancy-by-day',
+        'revenue': '/api/reports/billing-summary', 
+        'bookings': '/api/reports/billing-summary', // Using billing summary for bookings
+        'payments': '/api/reports/payments-ledger',
+        'customers': '/api/reports/billing-summary', // Using billing summary for customers
+        'services': '/api/reports/service-usage-detail'
+      };
+      
+      const endpoint = reportEndpoints[reportId];
+      if (!endpoint) {
+        throw new Error('Report not found');
+      }
+      
+      // Build query parameters for date range - backend expects 'from' and 'to'
+      const params = new URLSearchParams();
+      if (dateRange.start_date) {
+        params.append('from', dateRange.start_date);
+        console.log('Adding start date filter (from):', dateRange.start_date);
+      }
+      if (dateRange.end_date) {
+        params.append('to', dateRange.end_date);
+        console.log('Adding end date filter (to):', dateRange.end_date);
+      }
+      
+      const url = `${endpoint}${params.toString() ? `?${params.toString()}` : ''}`;
+      console.log('Loading report from:', url);
+      const data = await api.request(url);
       setReportData(data);
       setSelectedReport(reportId);
     } catch (error) {
@@ -107,9 +132,9 @@ export const ReportsPage = () => {
               </p>
             </div>
             {reportData && (
-              <button 
-                onClick={exportReportToCSV} 
-                className="bg-surface-secondary dark:bg-slate-800 text-luxury-navy dark:text-slate-100 px-6 py-3 rounded-xl font-semibold hover:bg-surface-tertiary dark:hover:bg-slate-700/40 transition-all flex items-center gap-2 shadow-lg border border-border dark:border-slate-700"
+              <button
+                onClick={exportReportToCSV}
+                className="bg-slate-800/90 backdrop-blur-xl text-white px-6 py-3 rounded-xl font-semibold hover:bg-slate-700 transition-all flex items-center gap-2 shadow-lg border border-slate-700/50"
               >
                 <Download className="w-5 h-5" />
                 Export CSV
@@ -120,7 +145,7 @@ export const ReportsPage = () => {
 
         {/* Today's Operations - Premium Cards */}
         <div>
-          <h2 className="text-2xl font-bold text-text-primary mb-4 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
             <TrendingUp className="w-7 h-7 text-luxury-gold" />
             Today's Operations
           </h2>
@@ -153,42 +178,65 @@ export const ReportsPage = () => {
         </div>
 
         {/* Date Range Filter - Beautiful Card */}
-        <div className="bg-surface-secondary rounded-2xl shadow-lg p-6 border border-border">
+        <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50">
           <div className="flex items-center gap-2 mb-6">
             <Filter className="w-6 h-6 text-luxury-gold" />
-            <h3 className="text-xl font-bold text-text-primary">Date Range Filter</h3>
+            <h3 className="text-xl font-bold text-white">Date Range Filter</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-semibold text-text-secondary mb-2 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-text-tertiary" />
+              <label className="block text-sm font-semibold text-slate-300 mb-2 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-slate-400" />
                 Start Date
+                <span className="block text-xs font-normal text-slate-400 mt-0.5">
+                  {dateRange.end_date ? 'Reports from this date...' : 'Reports from this date onwards'}
+                </span>
               </label>
               <input
                 type="date"
                 value={dateRange.start_date}
-                onChange={(e) => setDateRange({...dateRange, start_date: e.target.value})}
-                className="w-full px-4 py-3 border-2 border-border rounded-xl focus:border-luxury-gold focus:ring-2 focus:ring-luxury-gold/20 transition-all"
+                onChange={(e) => {
+                  console.log('Start date changed to:', e.target.value);
+                  setDateRange({...dateRange, start_date: e.target.value});
+                }}
+                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400-2 border-border rounded-xl focus:border-luxury-gold focus:ring-2 focus:ring-luxury-gold/20 transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-text-secondary mb-2 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-text-tertiary" />
+              <label className="block text-sm font-semibold text-slate-300 mb-2 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-slate-400" />
                 End Date
+                <span className="block text-xs font-normal text-slate-400 mt-0.5">
+                  {dateRange.start_date ? '...to this date' : 'Reports up to this date'}
+                </span>
               </label>
               <input
                 type="date"
                 value={dateRange.end_date}
-                onChange={(e) => setDateRange({...dateRange, end_date: e.target.value})}
-                className="w-full px-4 py-3 border-2 border-border rounded-xl focus:border-luxury-gold focus:ring-2 focus:ring-luxury-gold/20 transition-all"
+                onChange={(e) => {
+                  console.log('End date changed to:', e.target.value);
+                  setDateRange({...dateRange, end_date: e.target.value});
+                }}
+                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400-2 border-border rounded-xl focus:border-luxury-gold focus:ring-2 focus:ring-luxury-gold/20 transition-all"
               />
             </div>
           </div>
+          {/* Clear Date Filters Button */}
+          {(dateRange.start_date || dateRange.end_date) && (
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setDateRange({start_date: '', end_date: ''})}
+                className="px-4 py-2 bg-red-900/20 hover:bg-red-600 text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+              >
+                Clear Date Filters
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Report Types - Premium Grid */}
         <div>
-          <h2 className="text-2xl font-bold text-text-primary mb-4 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
             <FileText className="w-7 h-7 text-luxury-gold" />
             Available Reports
           </h2>
@@ -208,15 +256,15 @@ export const ReportsPage = () => {
                   key={report.id}
                   onClick={() => loadReport(report.id)}
                   disabled={loading}
-                  className="group bg-surface-secondary rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 text-left disabled:opacity-50 border border-border hover:scale-105 transform"
+                  className="group bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 text-left disabled:opacity-50 border border-slate-700/50 hover:scale-105 transform"
                 >
                   <div className="flex items-center gap-4 mb-4">
                     <div className={`bg-gradient-to-br ${colors[report.id]} p-4 rounded-xl group-hover:scale-110 transition-transform shadow-lg`}>
                       <Icon className="w-8 h-8 text-white" />
                     </div>
                   </div>
-                  <h3 className="font-bold text-xl text-text-primary mb-2">{report.name}</h3>
-                  <p className="text-sm text-text-tertiary">Click to generate detailed report</p>
+                  <h3 className="font-bold text-xl text-white mb-2">{report.name}</h3>
+                  <p className="text-sm text-slate-400">Click to generate detailed report</p>
                   <div className="mt-4 text-luxury-gold text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                     Generate Report →
                   </div>
@@ -228,21 +276,21 @@ export const ReportsPage = () => {
 
         {/* Loading State - Premium */}
         {loading && (
-          <div className="bg-surface-secondary rounded-2xl shadow-xl p-12 text-center border border-border">
+          <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl p-12 text-center border border-slate-700/50">
             <div className="relative">
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-border border-t-luxury-gold mx-auto"></div>
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-700/50 border-t-luxury-gold mx-auto"></div>
               <div className="absolute inset-0 flex items-center justify-center">
                 <FileText className="w-8 h-8 text-luxury-gold animate-pulse" />
               </div>
             </div>
-            <p className="text-text-secondary mt-6 text-lg font-medium">Generating your report...</p>
-            <p className="text-text-tertiary text-sm mt-2">Please wait while we compile the data</p>
+            <p className="text-slate-300 mt-6 text-lg font-medium">Generating your report...</p>
+            <p className="text-slate-400 text-sm mt-2">Please wait while we compile the data</p>
           </div>
         )}
 
         {/* Report Results - Premium Table */}
         {reportData && !loading && (
-          <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-hidden">
+          <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700/50 overflow-hidden">
             <div className="bg-gradient-to-r from-luxury-navy to-indigo-900 p-6">
               <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                 <FileText className="w-7 h-7" />
@@ -255,35 +303,35 @@ export const ReportsPage = () => {
             
             {reportData.length === 0 ? (
               <div className="p-12 text-center">
-                <div className="bg-surface-tertiary rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                  <FileText className="w-10 h-10 text-text-tertiary" />
+                <div className="bg-slate-700/50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                  <FileText className="w-10 h-10 text-slate-400" />
                 </div>
-                <p className="text-text-secondary text-lg font-medium">No data available</p>
-                <p className="text-text-tertiary text-sm mt-2">Try adjusting your date range or filters</p>
+                <p className="text-slate-300 text-lg font-medium">No data available</p>
+                <p className="text-slate-400 text-sm mt-2">Try adjusting your date range or filters</p>
               </div>
             ) : (
-              <div className="overflow-x-auto border border-border dark:border-slate-700 rounded-xl bg-surface-secondary dark:bg-slate-800">
+              <div className="overflow-x-auto border border-slate-700/50 rounded-xl bg-slate-800/90">
                 <table className="min-w-full">
-                  <thead className="bg-surface-tertiary dark:bg-slate-800/60 border-b-2 border-border dark:border-slate-700">
+                  <thead className="bg-slate-800/60 border-b-2 border-slate-700/50">
                     <tr>
                       {Object.keys(reportData[0]).map((key) => (
-                        <th key={key} className="px-6 py-4 text-left text-xs font-bold text-text-secondary uppercase tracking-wider">
+                        <th key={key} className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">
                           {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="bg-surface-secondary dark:bg-slate-800 divide-y divide-border dark:divide-slate-700">
+                  <tbody className="bg-slate-800/90 divide-y divide-slate-700/50">
                     {reportData.map((row, idx) => (
-                      <tr key={idx} className="hover:bg-surface-tertiary transition-colors">
+                      <tr key={idx} className="hover:bg-slate-700/40 transition-colors">
                         {Object.values(row).map((value, colIdx) => (
-                          <td key={colIdx} className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                          <td key={colIdx} className="px-6 py-4 whitespace-nowrap text-sm text-white">
                             {value === null || value === undefined ? (
-                              <span className="text-text-tertiary">-</span>
+                              <span className="text-slate-400">-</span>
                             ) : typeof value === 'number' ? (
                               <span className="font-medium">{value.toLocaleString()}</span>
                             ) : typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}/) ? (
-                              <span className="text-text-secondary">{new Date(value).toLocaleDateString()}</span>
+                              <span className="text-slate-300">{new Date(value).toLocaleDateString()}</span>
                             ) : (
                               String(value)
                             )}
@@ -325,27 +373,27 @@ function OpsCard({ title, count, icon: Icon, data, onView, color }) {
   };
 
   const bgColors = {
-    green: 'bg-green-50 dark:bg-green-500/15',
-    orange: 'bg-orange-50 dark:bg-orange-500/15',
-    blue: 'bg-blue-50 dark:bg-blue-500/15'
+    green: 'bg-green-900/30 border border-green-700/50',
+    orange: 'bg-orange-900/30 border border-orange-700/50',
+    blue: 'bg-blue-900/30 border border-blue-700/50'
   };
 
   return (
-    <div className={`${bgColors[color]} rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-border dark:border-slate-700 group hover:scale-105 transform`}>
+    <div className={`${bgColors[color]} backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 group hover:scale-105 transform`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
           <div className={`bg-gradient-to-br ${colorClasses[color]} p-4 rounded-xl shadow-md group-hover:scale-110 transition-transform`}>
             <Icon className="w-8 h-8 text-white" />
           </div>
           <div>
-            <div className="text-sm font-medium text-text-secondary mb-1">{title}</div>
-            <div className="text-4xl font-bold text-text-primary">{count}</div>
+            <div className="text-sm font-medium text-slate-300 mb-1">{title}</div>
+            <div className="text-4xl font-bold text-white">{count}</div>
           </div>
         </div>
       </div>
       <div className="flex gap-2">
-        <button 
-          className="flex-1 bg-surface-secondary dark:bg-slate-800 text-text-secondary dark:text-slate-200 px-4 py-2 rounded-xl font-medium hover:bg-surface-tertiary dark:hover:bg-slate-700/40 transition-all shadow-sm border border-border dark:border-slate-700"
+        <button
+          className="flex-1 bg-slate-800/80 text-slate-200 px-4 py-2 rounded-xl font-medium hover:bg-slate-700 transition-all shadow-sm border border-slate-600"
           onClick={exportCsv}
         >
           <Download className="w-4 h-4 inline mr-1" />

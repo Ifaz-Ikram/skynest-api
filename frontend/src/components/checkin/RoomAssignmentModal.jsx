@@ -144,33 +144,33 @@ const RoomAssignmentModal = ({ booking, onClose, onAssign }) => {
         onClick={() => handleRoomSelect(room)}
         className={`p-4 border rounded-lg cursor-pointer transition-all ${
           isSelected
-            ? 'border-blue-500 bg-blue-50'
+            ? 'border-blue-500 bg-blue-900/20'
             : hasConflicts
-            ? 'border-red-300 bg-red-50'
+            ? 'border-red-600 bg-red-900/20'
             : 'border-border hover:border-border dark:border-slate-600'
         }`}
       >
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-2">
-            <Bed className="w-5 h-5 text-text-secondary" />
-            <span className="font-medium text-text-primary">Room {room.room_number}</span>
+            <Bed className="w-5 h-5 text-slate-300" />
+            <span className="font-medium text-white">Room {room.room_number}</span>
             {isSelected && <CheckCircle className="w-5 h-5 text-blue-500" />}
           </div>
-          <div className="text-sm text-text-secondary">
+          <div className="text-sm text-slate-300">
             ${room.daily_rate}/night
           </div>
         </div>
         
-        <div className="text-sm text-text-secondary mb-2">
+        <div className="text-sm text-slate-300 mb-2">
           {room.room_type} • Capacity: {room.capacity}
         </div>
         
-        <div className="text-xs text-text-tertiary">
+        <div className="text-xs text-slate-400">
           {room.amenities}
         </div>
         
         {hasConflicts && (
-          <div className="mt-2 p-2 bg-red-100 rounded text-xs text-red-700">
+          <div className="mt-2 p-2 bg-red-800/30 rounded text-xs text-red-300">
             <div className="flex items-center space-x-1">
               {getConflictIcon('high')}
               <span>Conflicts detected</span>
@@ -188,19 +188,19 @@ const RoomAssignmentModal = ({ booking, onClose, onAssign }) => {
       <div className="mt-6">
         <div className="flex items-center space-x-2 mb-4">
           <ArrowUp className="w-5 h-5 text-green-600" />
-          <h3 className="text-lg font-semibold text-text-primary">Upgrade Options</h3>
+          <h3 className="text-lg font-semibold text-white">Upgrade Options</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {upgradeOptions.map(roomType => (
-            <div key={roomType.room_type_id} className="p-4 border border-green-200 rounded-lg bg-green-50">
+            <div key={roomType.room_type_id} className="p-4 border border-green-700 rounded-lg bg-green-900/20">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium text-green-900">{roomType.name}</span>
-                <span className="text-sm text-green-700">
+                <span className="text-sm text-green-300">
                   +${(roomType.daily_rate - booking.room_rate).toFixed(2)}/night
                 </span>
               </div>
-              <div className="text-sm text-green-700">
+              <div className="text-sm text-green-300">
                 Capacity: {roomType.capacity} • {roomType.amenities}
               </div>
               <button className="mt-2 text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
@@ -220,12 +220,12 @@ const RoomAssignmentModal = ({ booking, onClose, onAssign }) => {
       <div className="mt-6">
         <div className="flex items-center space-x-2 mb-4">
           <AlertTriangle className="w-5 h-5 text-red-600" />
-          <h3 className="text-lg font-semibold text-text-primary">Room Conflicts</h3>
+          <h3 className="text-lg font-semibold text-white">Room Conflicts</h3>
         </div>
         
         <div className="space-y-3">
           {roomConflicts.map((conflict, index) => (
-            <div key={index} className="p-3 border border-red-200 rounded-lg bg-red-50">
+            <div key={index} className="p-3 border border-red-700 rounded-lg bg-red-900/20">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   {getConflictIcon(getConflictSeverity(conflict))}
@@ -235,7 +235,7 @@ const RoomAssignmentModal = ({ booking, onClose, onAssign }) => {
                   {format(new Date(conflict.start_date), 'dd/MM')} - {format(new Date(conflict.end_date), 'dd/MM')}
                 </span>
               </div>
-              <div className="text-sm text-red-700 mt-1">
+              <div className="text-sm text-red-300 mt-1">
                 {conflict.description}
               </div>
             </div>
@@ -246,38 +246,38 @@ const RoomAssignmentModal = ({ booking, onClose, onAssign }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-surface-secondary rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-border flex items-center justify-between">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 'var(--z-modal)' }}>
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto border border-slate-700/50" style={{minWidth: '600px'}}>
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 flex items-center justify-between" style={{ zIndex: 'var(--z-sticky)' }}>
           <div>
-            <h2 className="text-2xl font-bold text-text-primary">Room Assignment</h2>
-            <p className="text-text-secondary">
+            <h2 className="text-2xl font-bold text-white">Room Assignment</h2>
+            <p className="text-slate-300">
               Booking #{booking.booking_id} • {booking.guest_name} • 
               {format(new Date(booking.check_in_date), 'dd/MM/yyyy')} - {format(new Date(booking.check_out_date), 'dd/MM/yyyy')}
             </p>
           </div>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-300">
             <X className="w-6 h-6" />
           </button>
         </div>
 
         <div className="p-6">
           {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="mb-6 bg-red-900/20 border border-red-700 rounded-lg p-4">
               <div className="flex items-center">
                 <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
-                <span className="text-red-700">{error}</span>
+                <span className="text-red-300">{error}</span>
               </div>
             </div>
           )}
 
           {/* Current Assignment */}
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="mb-6 p-4 bg-blue-900/20 border border-blue-700 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
               <Bed className="w-5 h-5 text-blue-600" />
               <span className="font-medium text-blue-900">Current Assignment</span>
             </div>
-            <div className="text-sm text-blue-700">
+            <div className="text-sm text-blue-300">
               Room {booking.room_number} - {booking.room_type} (${booking.room_rate}/night)
             </div>
           </div>
@@ -285,7 +285,7 @@ const RoomAssignmentModal = ({ booking, onClose, onAssign }) => {
           {/* Search */}
           <div className="mb-6">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search rooms by number or type..."
@@ -298,11 +298,11 @@ const RoomAssignmentModal = ({ booking, onClose, onAssign }) => {
 
           {/* Available Rooms */}
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-text-primary mb-4">Available Rooms</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">Available Rooms</h3>
             {loading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="mt-2 text-text-secondary">Loading rooms...</p>
+                <p className="mt-2 text-slate-300">Loading rooms...</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -318,7 +318,7 @@ const RoomAssignmentModal = ({ booking, onClose, onAssign }) => {
           <div className="flex justify-end space-x-3 mt-8 pt-6 border-t border-border">
             <button
               onClick={onClose}
-              className="px-6 py-2 border border-border dark:border-slate-600 rounded-lg text-text-secondary hover:bg-surface-tertiary"
+              className="px-6 py-2 border border-border dark:border-slate-600 rounded-lg text-slate-300 hover:bg-surface-tertiary"
             >
               Cancel
             </button>

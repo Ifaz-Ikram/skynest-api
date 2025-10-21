@@ -122,20 +122,20 @@ const BranchSelector = ({ onBranchSelect, selectedBranch }) => {
             <Building2 className="w-6 h-6 text-blue-600 animate-pulse" />
           </div>
         </div>
-        <span className="mt-4 text-lg font-medium text-text-secondary">Loading branch data...</span>
-        <span className="text-sm text-text-tertiary">Fetching real-time metrics</span>
+        <span className="mt-4 text-lg font-medium text-slate-300">Loading branch data...</span>
+        <span className="text-sm text-slate-400">Fetching real-time metrics</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200 rounded-xl p-8">
+      <div className="bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-700 rounded-xl p-8">
         <div className="text-center">
-          <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-red-900/200 rounded-full flex items-center justify-center mx-auto mb-4">
             <Building2 className="w-8 h-8 text-white" />
           </div>
-          <p className="text-lg font-semibold text-red-800">{error}</p>
+          <p className="text-lg font-semibold text-red-200">{error}</p>
           <button 
             onClick={loadBranches}
             className="mt-4 btn-primary"
@@ -150,11 +150,11 @@ const BranchSelector = ({ onBranchSelect, selectedBranch }) => {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-text-primary mb-3 flex items-center">
+        <h2 className="text-3xl font-bold text-white mb-3 flex items-center">
           <BarChart3 className="w-8 h-8 mr-3 text-blue-600" />
           Select Branch Location
         </h2>
-        <p className="text-text-secondary text-lg">Choose a branch to view detailed reports or select "All Locations" for overall analytics</p>
+        <p className="text-slate-300 text-lg">Choose a branch to view detailed reports or select "All Locations" for overall analytics</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -182,15 +182,15 @@ const BranchSelector = ({ onBranchSelect, selectedBranch }) => {
                       <Icon className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-text-primary text-lg">{branch.name}</h3>
-                      <div className="flex items-center text-sm text-text-tertiary mt-1">
+                      <h3 className="font-bold text-white text-lg">{branch.name}</h3>
+                      <div className="flex items-center text-sm text-slate-400 mt-1">
                         <MapPin className="w-4 h-4 mr-1" />
                         {branch.location}
                       </div>
                     </div>
                   </div>
                   {selectedBranch?.id === branch.id && (
-                    <div className="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full shadow-lg animate-pulse">
+                    <div className="flex items-center justify-center w-8 h-8 bg-blue-900/200 rounded-full shadow-lg animate-pulse">
                       <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                       </svg>
@@ -201,24 +201,24 @@ const BranchSelector = ({ onBranchSelect, selectedBranch }) => {
                 {/* Metrics */}
                 {!branch.isOverall ? (
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-700 rounded-lg group-hover:shadow-md transition-shadow border border-border/60 dark:border-slate-700">
+                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-slate-800 to-slate-700 dark:from-slate-800 dark:to-slate-700 rounded-lg group-hover:shadow-md transition-shadow border border-border/60 dark:border-slate-700">
                       <div className="flex items-center space-x-2">
-                        <Bed className="w-4 h-4 text-text-tertiary" />
-                        <span className="text-sm font-medium text-text-secondary">Rooms:</span>
+                        <Bed className="w-4 h-4 text-slate-400" />
+                        <span className="text-sm font-medium text-slate-300">Rooms:</span>
                       </div>
-                      <span className="font-bold text-text-primary text-lg">{branch.rooms}</span>
+                      <span className="font-bold text-white text-lg">{branch.rooms}</span>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-green-50 to-green-100 dark:from-emerald-500/15 dark:to-emerald-500/20 rounded-lg group-hover:shadow-md transition-shadow border border-emerald-200/70 dark:border-emerald-500/30">
+                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-green-50 to-green-100 dark:from-emerald-500/15 dark:to-emerald-500/20 rounded-lg group-hover:shadow-md transition-shadow border border-emerald-700/70 dark:border-emerald-500/30">
                       <div className="flex items-center space-x-2">
                         <TrendingUp className="w-4 h-4 text-green-600" />
-                        <span className="text-sm font-medium text-text-secondary">Occupancy:</span>
+                        <span className="text-sm font-medium text-slate-300">Occupancy:</span>
                       </div>
                       <span className="font-bold text-green-600 text-lg">{branch.occupancy.toFixed(1)}%</span>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-500/15 dark:to-blue-500/20 rounded-lg group-hover:shadow-md transition-shadow border border-blue-200/70 dark:border-blue-500/30">
+                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-500/15 dark:to-blue-500/20 rounded-lg group-hover:shadow-md transition-shadow border border-blue-700/70 dark:border-blue-500/30">
                       <div className="flex items-center space-x-2">
                         <DollarSign className="w-4 h-4 text-blue-600" />
-                        <span className="text-sm font-medium text-text-secondary">Revenue:</span>
+                        <span className="text-sm font-medium text-slate-300">Revenue:</span>
                       </div>
                       <span className="font-bold text-blue-600 text-lg">Rs {branch.revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
@@ -226,19 +226,19 @@ const BranchSelector = ({ onBranchSelect, selectedBranch }) => {
                 ) : (
                   <div className="text-center py-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-500/15 dark:to-purple-500/20 rounded-lg border border-border/60 dark:border-slate-700">
                     <Users className="w-12 h-12 text-blue-600 mx-auto mb-3" />
-                    <p className="text-sm font-medium text-text-secondary">Combined analytics from all branches</p>
+                    <p className="text-sm font-medium text-slate-300">Combined analytics from all branches</p>
                     <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
                       <div>
-                        <div className="font-bold text-text-primary text-base">{branch.rooms}</div>
-                        <div className="text-text-tertiary">Rooms</div>
+                        <div className="font-bold text-white text-base">{branch.rooms}</div>
+                        <div className="text-slate-400">Rooms</div>
                       </div>
                       <div>
                         <div className="font-bold text-green-600 text-base">{branch.occupancy.toFixed(1)}%</div>
-                        <div className="text-text-tertiary">Occupancy</div>
+                        <div className="text-slate-400">Occupancy</div>
                       </div>
                       <div>
                         <div className="font-bold text-blue-600 text-base">Rs {(branch.revenue / 1000).toFixed(1)}K</div>
-                        <div className="text-text-tertiary">Revenue</div>
+                        <div className="text-slate-400">Revenue</div>
                       </div>
                     </div>
                   </div>

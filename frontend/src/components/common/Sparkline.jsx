@@ -35,7 +35,7 @@ export const TrendIndicator = ({ value, previousValue, showPercentage = true }) 
 
   if (isNeutral) {
     return (
-      <div className="flex items-center text-text-tertiary text-sm">
+      <div className="flex items-center text-slate-400 text-sm">
         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14" />
         </svg>
@@ -93,7 +93,7 @@ export const MiniGauge = ({ value, max = 100, color = '#D4AF37', size = 80 }) =>
         />
       </svg>
       <div className="absolute text-center">
-        <span className="text-lg font-bold text-text-primary">{Math.round(percentage)}%</span>
+        <span className="text-lg font-bold text-white">{Math.round(percentage)}%</span>
       </div>
     </div>
   );

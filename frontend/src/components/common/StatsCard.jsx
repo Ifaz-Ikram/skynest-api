@@ -3,10 +3,10 @@ import { TrendingUp } from 'lucide-react';
 
 const StatsCard = ({ title, value, icon: Icon, trend, color = 'blue' }) => {
   const colorClasses = {
-    blue: 'bg-blue-500',
-    green: 'bg-green-500',
-    yellow: 'bg-yellow-500',
-    purple: 'bg-purple-500',
+    blue: 'bg-blue-900/200',
+    green: 'bg-green-900/200',
+    yellow: 'bg-yellow-900/200',
+    purple: 'bg-purple-900/200',
     gold: 'bg-luxury-gold',
   };
 
@@ -14,8 +14,8 @@ const StatsCard = ({ title, value, icon: Icon, trend, color = 'blue' }) => {
     <div className="card">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-text-secondary font-medium">{title}</p>
-          <p className="text-3xl font-bold text-text-primary mt-2">{value}</p>
+          <p className="text-sm text-slate-300 font-medium">{title}</p>
+          <p className="text-3xl font-bold text-white mt-2">{value}</p>
           {trend && (
             <div className="flex items-center mt-2 text-sm">
               <TrendingUp className="w-4 h-4 text-green-500 mr-1" />

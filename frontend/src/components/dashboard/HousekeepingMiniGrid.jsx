@@ -27,15 +27,15 @@ const HousekeepingMiniGrid = ({ onRoomClick }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'Clean':
-        return 'bg-green-500 border-green-600';
+        return 'bg-green-900/200 border-green-600';
       case 'Dirty':
-        return 'bg-red-500 border-red-600';
+        return 'bg-red-900/200 border-red-600';
       case 'Maintenance':
-        return 'bg-orange-500 border-orange-600';
+        return 'bg-orange-900/200 border-orange-600';
       case 'Available':
-        return 'bg-blue-500 border-blue-600';
+        return 'bg-blue-900/200 border-blue-600';
       default:
-        return 'bg-gray-400 border-gray-500';
+        return 'bg-slate-500 border-gray-500';
     }
   };
 
@@ -83,7 +83,7 @@ const HousekeepingMiniGrid = ({ onRoomClick }) => {
   return (
     <div className="bg-surface-secondary rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-text-primary flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-luxury-gold" />
           Housekeeping Status
         </h3>
@@ -93,7 +93,7 @@ const HousekeepingMiniGrid = ({ onRoomClick }) => {
           className="p-2 hover:bg-surface-tertiary rounded-lg transition-colors"
           title="Refresh"
         >
-          <RefreshCw className={`w-4 h-4 text-text-secondary ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-4 h-4 text-slate-300 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
@@ -104,7 +104,7 @@ const HousekeepingMiniGrid = ({ onRoomClick }) => {
           className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
             statusFilter === 'all'
               ? 'bg-luxury-navy text-white'
-              : 'bg-surface-tertiary text-text-secondary hover:bg-gray-200'
+              : 'bg-surface-tertiary text-slate-300 hover:bg-slate-700'
           }`}
         >
           All ({rooms.length})
@@ -113,8 +113,8 @@ const HousekeepingMiniGrid = ({ onRoomClick }) => {
           onClick={() => setStatusFilter('Clean')}
           className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
             statusFilter === 'Clean'
-              ? 'bg-green-500 text-white'
-              : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 hover:bg-green-200'
+              ? 'bg-green-900/200 text-white'
+              : 'bg-green-800/30 text-green-200 dark:bg-green-900/30 dark:text-green-300 hover:bg-green-200'
           }`}
         >
           Clean ({counts.clean})
@@ -123,8 +123,8 @@ const HousekeepingMiniGrid = ({ onRoomClick }) => {
           onClick={() => setStatusFilter('Dirty')}
           className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
             statusFilter === 'Dirty'
-              ? 'bg-red-500 text-white'
-              : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 hover:bg-red-200'
+              ? 'bg-red-900/200 text-white'
+              : 'bg-red-800/30 text-red-200 dark:bg-red-900/30 dark:text-red-300 hover:bg-red-200'
           }`}
         >
           Dirty ({counts.dirty})
@@ -133,8 +133,8 @@ const HousekeepingMiniGrid = ({ onRoomClick }) => {
           onClick={() => setStatusFilter('Maintenance')}
           className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
             statusFilter === 'Maintenance'
-              ? 'bg-orange-500 text-white'
-              : 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300 hover:bg-orange-200'
+              ? 'bg-orange-900/200 text-white'
+              : 'bg-orange-800/30 text-orange-200 dark:bg-orange-900/30 dark:text-orange-300 hover:bg-orange-200'
           }`}
         >
           Maintenance ({counts.maintenance})
@@ -143,8 +143,8 @@ const HousekeepingMiniGrid = ({ onRoomClick }) => {
           onClick={() => setStatusFilter('available')}
           className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
             statusFilter === 'available'
-              ? 'bg-blue-500 text-white'
-              : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200'
+              ? 'bg-blue-900/200 text-white'
+              : 'bg-blue-800/30 text-blue-200 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200'
           }`}
         >
           Available ({counts.available})
@@ -177,28 +177,28 @@ const HousekeepingMiniGrid = ({ onRoomClick }) => {
       {/* Selected Room Details */}
       {selectedRoom && (
         <div className="mt-4 p-4 bg-surface-tertiary rounded-lg border border-border">
-          <h4 className="font-semibold text-text-primary mb-2">
+          <h4 className="font-semibold text-white mb-2">
             Room {selectedRoom.room_number}
           </h4>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div>
-              <span className="text-text-secondary">Type:</span>
+              <span className="text-slate-300">Type:</span>
               <span className="ml-2 font-medium">{selectedRoom.room_type}</span>
             </div>
             <div>
-              <span className="text-text-secondary">Floor:</span>
+              <span className="text-slate-300">Floor:</span>
               <span className="ml-2 font-medium">{selectedRoom.floor_number}</span>
             </div>
             <div>
-              <span className="text-text-secondary">Status:</span>
+              <span className="text-slate-300">Status:</span>
               <span className="ml-2 font-medium">{selectedRoom.housekeeping_status}</span>
             </div>
             <div>
-              <span className="text-text-secondary">Available:</span>
+              <span className="text-slate-300">Available:</span>
               <span className="ml-2 font-medium">{selectedRoom.availability_status}</span>
             </div>
             <div className="col-span-2">
-              <span className="text-text-secondary">Rate:</span>
+              <span className="text-slate-300">Rate:</span>
               <span className="ml-2 font-medium">Rs {selectedRoom.base_rate?.toLocaleString()}</span>
             </div>
           </div>
@@ -213,23 +213,23 @@ const HousekeepingMiniGrid = ({ onRoomClick }) => {
 
       {/* Legend */}
       <div className="mt-4 pt-4 border-t border-border">
-        <p className="text-xs text-text-tertiary mb-2">Status Legend:</p>
+        <p className="text-xs text-slate-400 mb-2">Status Legend:</p>
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded bg-green-500"></div>
-            <span className="text-text-secondary">Clean</span>
+            <div className="w-3 h-3 rounded bg-green-900/200"></div>
+            <span className="text-slate-300">Clean</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded bg-red-500"></div>
-            <span className="text-text-secondary">Dirty</span>
+            <div className="w-3 h-3 rounded bg-red-900/200"></div>
+            <span className="text-slate-300">Dirty</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded bg-orange-500"></div>
-            <span className="text-text-secondary">Maintenance</span>
+            <div className="w-3 h-3 rounded bg-orange-900/200"></div>
+            <span className="text-slate-300">Maintenance</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded bg-blue-500"></div>
-            <span className="text-text-secondary">Available</span>
+            <div className="w-3 h-3 rounded bg-blue-900/200"></div>
+            <span className="text-slate-300">Available</span>
           </div>
         </div>
       </div>

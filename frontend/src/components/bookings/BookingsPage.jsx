@@ -65,6 +65,96 @@ export const BookingsPage = () => {
     [],
   );
 
+  // Create dropdown options from bookings data
+  const customerOptions = useMemo(() => {
+    const baseOptions = [{ id: '', name: 'All Customers' }];
+    if (!Array.isArray(allBookings) || allBookings.length === 0) {
+      return baseOptions;
+    }
+    const uniqueCustomers = new Map();
+    allBookings.forEach((booking) => {
+      const customerId = booking.customer_id || booking.guest_id;
+      const customerName = booking.customer_name || booking.guest_name || 'Unknown';
+      if (customerId && !uniqueCustomers.has(customerId)) {
+        uniqueCustomers.set(customerId, customerName);
+      }
+    });
+    return [
+      ...baseOptions,
+      ...Array.from(uniqueCustomers.entries()).map(([id, name]) => ({
+        id: String(id),
+        name,
+      })),
+    ];
+  }, [allBookings]);
+
+  const bookingIdOptions = useMemo(() => {
+    const baseOptions = [{ id: '', name: 'All Bookings' }];
+    if (!Array.isArray(allBookings) || allBookings.length === 0) {
+      return baseOptions;
+    }
+    return [
+      ...baseOptions,
+      ...allBookings.map((booking) => ({
+        id: String(booking.booking_id),
+        name: `Booking #${booking.booking_id}`,
+      })),
+    ];
+  }, [allBookings]);
+
+  const roomNumberOptions = useMemo(() => {
+    const baseOptions = [{ id: '', name: 'All Rooms' }];
+    if (!Array.isArray(allBookings) || allBookings.length === 0) {
+      return baseOptions;
+    }
+    const uniqueRooms = new Set();
+    allBookings.forEach((booking) => {
+      if (booking.room_number) {
+        uniqueRooms.add(booking.room_number);
+      }
+    });
+    return [
+      ...baseOptions,
+      ...Array.from(uniqueRooms)
+        .sort((a, b) => {
+          // Sort numerically if possible, otherwise alphabetically
+          const aNum = parseInt(a);
+          const bNum = parseInt(b);
+          if (!isNaN(aNum) && !isNaN(bNum)) {
+            return aNum - bNum;
+          }
+          return String(a).localeCompare(String(b));
+        })
+        .map((room) => ({
+          id: String(room),
+          name: `Room ${room}`,
+        })),
+    ];
+  }, [allBookings]);
+
+  // Helper function to get current filters
+  const getCurrentFilters = (additionalFilters = {}) => {
+    const filters = { ...additionalFilters };
+    
+    // Apply status filter
+    if (filter && filter !== 'All') {
+      filters.status = filter;
+    }
+    
+    // Apply date filters - backend expects 'from' and 'to'
+    if (advancedFilters.startDate) {
+      filters.from = advancedFilters.startDate;
+      console.log('Adding start date filter (from):', advancedFilters.startDate);
+    }
+    if (advancedFilters.endDate) {
+      filters.to = advancedFilters.endDate;
+      console.log('Adding end date filter (to):', advancedFilters.endDate);
+    }
+    
+    console.log('Current filters being applied:', filters);
+    return filters;
+  };
+
   const handleBranchChange = (branchId) => {
     setSelectedBranch(branchId || '');
   };
@@ -73,7 +163,7 @@ export const BookingsPage = () => {
     const size = Number(pageSizeId);
     const limit = Number.isNaN(size) ? pagination.limit : size;
     setPagination({ ...pagination, limit, page: 1 });
-    loadBookings(1, { limit });
+    loadBookings(1, getCurrentFilters({ limit }));
   };
 
   useEffect(() => {
@@ -94,7 +184,7 @@ export const BookingsPage = () => {
   useEffect(() => {
     if (branches.length > 0) {
       setPagination(prev => ({ ...prev, page: 1 }));
-      loadBookings(1);
+      loadBookings(1, getCurrentFilters());
     }
   }, [selectedBranch]);
 
@@ -113,24 +203,9 @@ export const BookingsPage = () => {
 
 
   const applyFilters = () => {
-    const filters = {};
-    
-    // Apply status filter
-    if (filter && filter !== 'All') {
-      filters.status = filter;
-    }
-    
-    // Apply date filters
-    if (advancedFilters.startDate) {
-      filters.start_date = advancedFilters.startDate;
-    }
-    if (advancedFilters.endDate) {
-      filters.end_date = advancedFilters.endDate;
-    }
-    
     // Reset to page 1 when filters change
     setPagination(prev => ({ ...prev, page: 1 }));
-    loadBookings(1, filters);
+    loadBookings(1, getCurrentFilters());
   };
 
   const loadBookings = async (page = 1, filters = {}, append = false) => {
@@ -211,9 +286,9 @@ export const BookingsPage = () => {
   if (error) {
     return (
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-text-primary">Bookings</h1>
-        <div className="card bg-red-50 border border-red-200">
-          <div className="flex items-center gap-3 text-red-800">
+        <h1 className="text-3xl font-bold text-white">Bookings</h1>
+        <div className="card bg-red-900/20 border border-red-700">
+          <div className="flex items-center gap-3 text-red-200">
             <AlertCircle className="w-6 h-6" />
             <div>
               <p className="font-semibold">Error loading bookings</p>
@@ -231,7 +306,7 @@ export const BookingsPage = () => {
   const handleCheckIn = async (bookingId) => {
     try {
       await api.request(`/api/bookings/${bookingId}/checkin`, { method: 'POST' });
-      loadBookings(pagination.page);
+      loadBookings(pagination.page, getCurrentFilters());
     } catch (error) {
       alert('Failed to check in: ' + error.message);
     }
@@ -246,7 +321,7 @@ export const BookingsPage = () => {
   const handleCheckoutSuccess = () => {
     setShowCheckoutModal(false);
     setCheckoutBooking(null);
-    loadBookings(pagination.page); // Refresh the bookings list
+    loadBookings(pagination.page, getCurrentFilters()); // Refresh the bookings list
   };
 
   const handleAutoCheckout = async () => {
@@ -260,7 +335,7 @@ export const BookingsPage = () => {
       
       if (result.success) {
         alert(`Successfully checked out ${result.processed_count} past bookings`);
-        loadBookings(pagination.page); // Refresh the bookings list
+        loadBookings(pagination.page, getCurrentFilters()); // Refresh the bookings list
       } else {
         alert('Auto checkout failed: ' + (result.error || 'Unknown error'));
       }
@@ -276,7 +351,7 @@ export const BookingsPage = () => {
     const note = prompt('Add a cancellation note (optional):');
     try {
       await api.updateBookingStatus(bookingId, 'Cancelled');
-      loadBookings(pagination.page);
+      loadBookings(pagination.page, getCurrentFilters());
       alert('Booking cancelled');
     } catch (error) {
       alert('Failed to cancel booking: ' + error.message);
@@ -365,28 +440,28 @@ export const BookingsPage = () => {
     }
   };
 
-  // Apply client-side filtering for text searches using all loaded bookings
+  // Apply client-side filtering for dropdown selections using all loaded bookings
   const filteredBookings = bookings.filter(booking => {
-    // Customer name search
+    // Customer/Guest filter
     if (advancedFilters.searchCustomer) {
-      const guestName = booking.guest_name || '';
-      if (!guestName.toLowerCase().includes(advancedFilters.searchCustomer.toLowerCase())) {
+      const customerId = String(booking.customer_id || booking.guest_id || '');
+      if (customerId !== advancedFilters.searchCustomer) {
         return false;
       }
     }
     
-    // Booking ID search
+    // Booking ID filter
     if (advancedFilters.searchBookingId) {
       const bookingId = String(booking.booking_id || '');
-      if (!bookingId.includes(advancedFilters.searchBookingId)) {
+      if (bookingId !== advancedFilters.searchBookingId) {
         return false;
       }
     }
     
-    // Room number search
+    // Room number filter
     if (advancedFilters.roomNumber) {
       const roomNumber = String(booking.room_number || '');
-      if (!roomNumber.includes(advancedFilters.roomNumber)) {
+      if (roomNumber !== advancedFilters.roomNumber) {
         return false;
       }
     }
@@ -461,72 +536,111 @@ export const BookingsPage = () => {
       </div>
 
       {/* Advanced Search Filters */}
-      <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-hidden">
-        <div className="bg-gradient-to-r from-luxury-navy to-indigo-900 p-6">
+      <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-visible">
+        <div className="bg-gradient-to-r from-luxury-navy to-indigo-900 p-6 rounded-t-2xl">
           <div className="flex items-center gap-3 text-white">
             <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
               <AlertCircle className="w-6 h-6" />
             </div>
-            <h3 className="text-2xl font-bold">Advanced Search Filters</h3>
+            <div>
+              <h3 className="text-2xl font-bold">Advanced Search Filters</h3>
+              <p className="text-sm text-indigo-200 mt-1">Select customer, booking, room, or date range (all filters are optional)</p>
+            </div>
           </div>
         </div>
-        <div className="p-6">
+        <div className="p-6 overflow-visible">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-text-secondary mb-2">Customer Name</label>
-              <input
-                type="text"
+            <div className="relative">
+              <label className="block text-sm font-semibold text-slate-300 mb-2">Customer Name</label>
+              <SearchableDropdown
                 value={advancedFilters.searchCustomer}
-                onChange={(e) => setAdvancedFilters({...advancedFilters, searchCustomer: e.target.value})}
-                className="w-full px-4 py-3 border-2 border-border dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-luxury-gold focus:border-luxury-gold transition-all"
+                onChange={(customerId) => setAdvancedFilters({...advancedFilters, searchCustomer: customerId || ''})}
+                options={customerOptions}
                 placeholder="Search customer..."
+                searchPlaceholder="Type to search customers..."
+                className="w-full"
+                buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-slate-600 !bg-slate-800/50 !text-white !placeholder-slate-400 focus-visible:!ring-2 focus-visible:!ring-luxury-gold focus-visible:!border-luxury-gold hover:!border-luxury-gold/50"
+                dropdownClassName="!border-slate-600"
               />
             </div>
-            <div>
-              <label className="block text-sm font-semibold text-text-secondary mb-2">Booking ID</label>
-              <input
-                type="text"
+            <div className="relative">
+              <label className="block text-sm font-semibold text-slate-300 mb-2">Booking ID</label>
+              <SearchableDropdown
                 value={advancedFilters.searchBookingId}
-                onChange={(e) => setAdvancedFilters({...advancedFilters, searchBookingId: e.target.value})}
-                className="w-full px-4 py-3 border-2 border-border dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-luxury-gold focus:border-luxury-gold transition-all"
+                onChange={(bookingId) => setAdvancedFilters({...advancedFilters, searchBookingId: bookingId || ''})}
+                options={bookingIdOptions}
                 placeholder="Booking ID..."
+                searchPlaceholder="Type to search bookings..."
+                className="w-full"
+                buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-slate-600 !bg-slate-800/50 !text-white !placeholder-slate-400 focus-visible:!ring-2 focus-visible:!ring-luxury-gold focus-visible:!border-luxury-gold hover:!border-luxury-gold/50"
+                dropdownClassName="!border-slate-600"
               />
             </div>
-            <div>
-              <label className="block text-sm font-semibold text-text-secondary mb-2">Room Number</label>
-              <input
-                type="text"
+            <div className="relative">
+              <label className="block text-sm font-semibold text-slate-300 mb-2">Room Number</label>
+              <SearchableDropdown
                 value={advancedFilters.roomNumber}
-                onChange={(e) => setAdvancedFilters({...advancedFilters, roomNumber: e.target.value})}
-                className="w-full px-4 py-3 border-2 border-border dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-luxury-gold focus:border-luxury-gold transition-all"
+                onChange={(roomNumber) => setAdvancedFilters({...advancedFilters, roomNumber: roomNumber || ''})}
+                options={roomNumberOptions}
                 placeholder="Room number..."
+                searchPlaceholder="Type to search rooms..."
+                className="w-full"
+                buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-slate-600 !bg-slate-800/50 !text-white !placeholder-slate-400 focus-visible:!ring-2 focus-visible:!ring-luxury-gold focus-visible:!border-luxury-gold hover:!border-luxury-gold/50"
+                dropdownClassName="!border-slate-600"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-text-secondary mb-2">Start Date</label>
+              <label className="block text-sm font-semibold text-slate-300 mb-2">
+                Start Date
+                <span className="block text-xs font-normal text-slate-400 mt-0.5">
+                  {advancedFilters.endDate ? 'Bookings from this date...' : 'Bookings from this date onwards'}
+                </span>
+              </label>
               <input
                 type="date"
                 value={advancedFilters.startDate}
-                onChange={(e) => setAdvancedFilters({...advancedFilters, startDate: e.target.value})}
-                className="w-full px-4 py-3 border-2 border-border dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-luxury-gold focus:border-luxury-gold transition-all"
+                onChange={(e) => {
+                  console.log('Start date changed to:', e.target.value);
+                  setAdvancedFilters({...advancedFilters, startDate: e.target.value});
+                }}
+                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400-2 border-border dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-luxury-gold focus:border-luxury-gold transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-text-secondary mb-2">End Date</label>
+              <label className="block text-sm font-semibold text-slate-300 mb-2">
+                End Date
+                <span className="block text-xs font-normal text-slate-400 mt-0.5">
+                  {advancedFilters.startDate ? '...to this date' : 'Bookings up to this date'}
+                </span>
+              </label>
               <input
                 type="date"
                 value={advancedFilters.endDate}
-                onChange={(e) => setAdvancedFilters({...advancedFilters, endDate: e.target.value})}
-                className="w-full px-4 py-3 border-2 border-border dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-luxury-gold focus:border-luxury-gold transition-all"
+                onChange={(e) => {
+                  console.log('End date changed to:', e.target.value);
+                  setAdvancedFilters({...advancedFilters, endDate: e.target.value});
+                }}
+                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400-2 border-border dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-luxury-gold focus:border-luxury-gold transition-all"
               />
             </div>
           </div>
+          {/* Clear Date Filters Button */}
+          {(advancedFilters.startDate || advancedFilters.endDate) && (
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setAdvancedFilters({...advancedFilters, startDate: '', endDate: ''})}
+                className="px-4 py-2 bg-red-900/20 hover:bg-red-600 text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+              >
+                Clear Date Filters
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Branch Filter */}
-      <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-hidden">
-        <div className="bg-gradient-to-r from-purple-600 to-purple-800 p-6">
+      <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-visible">
+        <div className="bg-gradient-to-r from-purple-600 to-purple-800 p-6 rounded-t-2xl">
           <div className="flex items-center justify-between text-white">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
@@ -539,8 +653,8 @@ export const BookingsPage = () => {
             </div>
           </div>
         </div>
-        <div className="p-6">
-          <div className="flex items-center gap-4">
+        <div className="p-6 overflow-visible">
+          <div className="flex items-center gap-4 relative">
             <SearchableDropdown
               value={selectedBranch}
               onChange={handleBranchChange}
@@ -548,13 +662,13 @@ export const BookingsPage = () => {
               placeholder="All branches"
               searchPlaceholder="Search branches..."
               className="flex-1"
-            buttonclassName="!px-4 !py-3 !rounded-xl !border-2 !border-border dark:border-slate-600 !bg-surface-secondary dark:!bg-slate-800 !font-medium !text-text-secondary dark:!text-slate-200 focus-visible:!ring-purple-500 focus-visible:!ring-offset-0 focus-visible:!border-purple-500 hover:!border-purple-400"
+            buttonclassName="!px-4 !py-3 !rounded-xl !border-2 !border-border dark:border-slate-600 !bg-surface-secondary dark:!bg-slate-800 !font-medium !text-slate-300 dark:!text-slate-200 focus-visible:!ring-purple-500 focus-visible:!ring-offset-0 focus-visible:!border-purple-500 hover:!border-purple-400"
               dropdownClassName="!border-border"
             />
             {selectedBranch && (
               <button
                 onClick={() => setSelectedBranch('')}
-                className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                className="px-6 py-3 bg-red-900/200 hover:bg-red-600 text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2"
               >
                 Clear
               </button>
@@ -572,7 +686,7 @@ export const BookingsPage = () => {
             className={`px-4 py-2 rounded-lg font-medium transition-all ${
               filter === status
                 ? 'bg-luxury-gold text-white'
-                : 'bg-surface-secondary dark:bg-slate-800 text-text-primary dark:text-slate-200 hover:bg-surface-tertiary dark:hover:bg-slate-700/30 border border-border dark:border-slate-600'
+                : 'bg-surface-secondary dark:bg-slate-800 text-white dark:text-slate-200 hover:bg-surface-tertiary dark:hover:bg-slate-700/30 border border-border dark:border-slate-600'
             }`}
           >
             {status}
@@ -587,12 +701,12 @@ export const BookingsPage = () => {
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-luxury-gold mx-auto"></div>
-            <p className="text-text-secondary mt-4">Loading bookings...</p>
+            <p className="text-slate-300 mt-4">Loading bookings...</p>
           </div>
         ) : filteredBookings.length === 0 ? (
           <div className="text-center py-12">
-            <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-text-secondary">No bookings found</p>
+            <Calendar className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+            <p className="text-slate-300">No bookings found</p>
           </div>
         ) : (
           <div className="grid gap-4">
@@ -601,15 +715,15 @@ export const BookingsPage = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-4 mb-3">
-                      <h3 className="text-lg font-semibold text-text-primary">
+                      <h3 className="text-lg font-semibold text-white">
                         {booking.guest_name || 'Guest'}
                       </h3>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                         booking.status === 'Checked-In'
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                          ? 'bg-green-800/30 text-green-200 dark:bg-green-900/30 dark:text-green-300'
                           : booking.status === 'Booked'
-                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
-                            : 'bg-gray-100 text-gray-700 dark:bg-slate-700/40 dark:text-slate-200'
+                            ? 'bg-blue-800/30 text-blue-200 dark:bg-blue-900/30 dark:text-blue-300'
+                            : 'bg-slate-800 text-slate-100 dark:bg-slate-700/40 dark:text-slate-200'
                       }`}>
                         {booking.status}
                       </span>
@@ -617,10 +731,10 @@ export const BookingsPage = () => {
                         const s = booking.payment_status;
                         const cls =
                           s === 'Paid'
-                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-500/25'
+                            ? 'bg-emerald-800/30 text-emerald-300 dark:bg-emerald-900/200/15 dark:text-emerald-200 border border-emerald-700 dark:border-emerald-500/25'
                             : s === 'Partial'
-                              ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-200 border border-amber-200 dark:border-amber-500/25'
-                              : 'bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-200 border border-rose-200 dark:border-rose-500/25';
+                              ? 'bg-amber-800/30 text-amber-300 dark:bg-amber-900/200/15 dark:text-amber-200 border border-amber-700 dark:border-amber-500/25'
+                              : 'bg-rose-800/30 text-rose-700 dark:bg-rose-900/200/15 dark:text-rose-200 border border-rose-200 dark:border-rose-500/25';
                         return (
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${cls}`}>
                             {s || 'Unpaid'}
@@ -631,30 +745,30 @@ export const BookingsPage = () => {
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
-                        <p className="text-text-secondary">Room</p>
-                        <p className="font-medium text-text-primary">{booking.room_number || 'N/A'}</p>
+                        <p className="text-slate-300">Room</p>
+                        <p className="font-medium text-white">{booking.room_number || 'N/A'}</p>
                       </div>
                       <div>
-                        <p className="text-text-secondary">Check In</p>
-                        <p className="font-medium text-text-primary">
+                        <p className="text-slate-300">Check In</p>
+                        <p className="font-medium text-white">
                           {booking.check_in_date ? format(new Date(booking.check_in_date), 'dd/MM/yyyy') : 'N/A'}
                         </p>
                       </div>
                       <div>
-                        <p className="text-text-secondary">Check Out</p>
-                        <p className="font-medium text-text-primary">
+                        <p className="text-slate-300">Check Out</p>
+                        <p className="font-medium text-white">
                           {booking.check_out_date ? format(new Date(booking.check_out_date), 'dd/MM/yyyy') : 'N/A'}
                         </p>
                       </div>
                       <div>
-                        <p className="text-text-secondary">Total Amount</p>
+                        <p className="text-slate-300">Total Amount</p>
                         <p className="font-bold text-luxury-gold">
                           Rs {parseFloat(booking.total_amount || 0).toFixed(2)}
                         </p>
                       </div>
                       <div>
-                        <p className="text-text-secondary">Paid</p>
-                        <p className="font-bold text-emerald-700">
+                        <p className="text-slate-300">Paid</p>
+                        <p className="font-bold text-emerald-300">
                           Rs {(
                             Number(booking.advance_payment||0) +
                             Number(booking.payments_total||0) +
@@ -663,9 +777,9 @@ export const BookingsPage = () => {
                         </p>
                       </div>
                       <div>
-                        <p className="text-text-secondary">Balance Due</p>
+                        <p className="text-slate-300">Balance Due</p>
                         <p
-                          className="font-bold text-text-primary"
+                          className="font-bold text-white"
                           title={`Total: Rs ${parseFloat(booking.total_amount||0).toFixed(2)} | Paid: Rs ${(
                             parseFloat(booking.advance_payment||0)
                             + parseFloat(booking.payments_total||0)
@@ -677,13 +791,13 @@ export const BookingsPage = () => {
                       </div>
                     </div>
                     {booking.meta && (
-                      <div className="mt-4 rounded-lg border border-border bg-surface-tertiary p-3 text-sm text-text-secondary space-y-1">
-                        <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wide">
+                      <div className="mt-4 rounded-lg border border-border bg-surface-tertiary p-3 text-sm text-slate-300 space-y-1">
+                        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
                           Guest context
                         </p>
                         {booking.meta.specialRequests && (
                           <p>
-                            <span className="font-semibold text-text-primary">Requests:</span>{' '}
+                            <span className="font-semibold text-white">Requests:</span>{' '}
                             {booking.meta.specialRequests}
                           </p>
                         )}
@@ -694,44 +808,44 @@ export const BookingsPage = () => {
                         )}
                         {Array.isArray(booking.meta.preferences) && booking.meta.preferences.length > 0 && (
                           <p>
-                            <span className="font-semibold text-text-primary">Preferences:</span>{' '}
+                            <span className="font-semibold text-white">Preferences:</span>{' '}
                             {booking.meta.preferences.join(', ')}
                           </p>
                         )}
                         {booking.meta.loyaltyId && (
                           <p>
-                            <span className="font-semibold text-text-primary">Loyalty ID:</span>{' '}
+                            <span className="font-semibold text-white">Loyalty ID:</span>{' '}
                             {booking.meta.loyaltyId}
                           </p>
                         )}
                         {booking.meta.travelAgentCode && (
                           <p>
-                            <span className="font-semibold text-text-primary">Travel agent:</span>{' '}
+                            <span className="font-semibold text-white">Travel agent:</span>{' '}
                             {booking.meta.travelAgentCode}
                           </p>
                         )}
                         {/* guaranteeType removed - guarantee feature not in schema */}
                         {booking.meta.travelReason && (
                           <p>
-                            <span className="font-semibold text-text-primary">Travel reason:</span>{' '}
+                            <span className="font-semibold text-white">Travel reason:</span>{' '}
                             {booking.meta.travelReason}
                           </p>
                         )}
                         {booking.meta.notes && (
                           <p>
-                            <span className="font-semibold text-text-primary">Internal notes:</span>{' '}
+                            <span className="font-semibold text-white">Internal notes:</span>{' '}
                             {booking.meta.notes}
                           </p>
                         )}
                         {Array.isArray(booking.meta.attachments) && booking.meta.attachments.length > 0 && (
                           <p>
-                            <span className="font-semibold text-text-primary">Attachments:</span>{' '}
+                            <span className="font-semibold text-white">Attachments:</span>{' '}
                             {booking.meta.attachments.join(', ')}
                           </p>
                         )}
                         {booking.meta.group && (booking.meta.group.code || booking.meta.group.name || booking.meta.group.notes) && (
-                          <div className="pt-2 border-t border-border mt-2 text-sm text-text-secondary space-y-1">
-                            <p className="font-semibold text-text-primary">Group / block</p>
+                          <div className="pt-2 border-t border-border mt-2 text-sm text-slate-300 space-y-1">
+                            <p className="font-semibold text-white">Group / block</p>
                             {booking.meta.group.code && <p>Code: {booking.meta.group.code}</p>}
                             {booking.meta.group.name && <p>Name: {booking.meta.group.name}</p>}
                             {booking.meta.group.notes && <p>Notes: {booking.meta.group.notes}</p>}
@@ -788,13 +902,13 @@ export const BookingsPage = () => {
         {hasMoreBookings && (
           <div className="mt-6 text-center">
             <button
-              onClick={() => loadBookings((pagination.page || 1) + 1, {}, true)}
+              onClick={() => loadBookings((pagination.page || 1) + 1, getCurrentFilters(), true)}
               disabled={loading}
               className="btn-primary px-6 py-2"
             >
               {loading ? 'Loading...' : `Load More Bookings (${allBookings.length} loaded)`}
             </button>
-            <p className="text-sm text-text-secondary mt-2">
+            <p className="text-sm text-slate-300 mt-2">
               Load more bookings for better search results
             </p>
           </div>
@@ -803,15 +917,25 @@ export const BookingsPage = () => {
         {/* Pagination Controls & Info */}
         <div className="mt-8 border-t pt-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="text-sm text-text-secondary">
+            <div className="text-sm text-slate-300">
               Showing <span className="font-semibold">{((pagination.page - 1) * pagination.limit) + 1}</span> to{' '}
               <span className="font-semibold">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of{' '}
               <span className="font-semibold">{pagination.total}</span> bookings
               {selectedBranch && <span className="text-luxury-gold"> (filtered by branch)</span>}
+              {(advancedFilters.startDate || advancedFilters.endDate) && (
+                <span className="text-luxury-gold">
+                  {' '}(filtered by dates: 
+                  {advancedFilters.startDate && advancedFilters.endDate 
+                    ? ` ${advancedFilters.startDate} to ${advancedFilters.endDate}` 
+                    : advancedFilters.startDate 
+                    ? ` from ${advancedFilters.startDate} onwards`
+                    : ` up to ${advancedFilters.endDate}`})
+                </span>
+              )}
             </div>
-            
+
             {/* Items per page selector */}
-            <div className="flex items-center gap-2 text-sm text-text-secondary">
+            <div className="flex items-center gap-2 text-sm text-slate-300 relative">
               <label htmlFor="pageSize">Per page:</label>
               <SearchableDropdown
                 value={String(pagination.limit)}
@@ -829,7 +953,7 @@ export const BookingsPage = () => {
           {pagination.totalPages > 1 && (
             <div className="flex items-center justify-center space-x-2">
               <button
-                onClick={() => loadBookings((pagination.page || 1) - 1)}
+                onClick={() => loadBookings((pagination.page || 1) - 1, getCurrentFilters())}
                 disabled={(pagination.page || 1) <= 1}
                 className="px-4 py-2 text-sm font-medium border border-border dark:border-slate-600 rounded-md hover:bg-surface-tertiary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
@@ -844,7 +968,7 @@ export const BookingsPage = () => {
                   return (
                     <button
                       key={pageNum}
-                      onClick={() => loadBookings(pageNum)}
+                      onClick={() => loadBookings(pageNum, getCurrentFilters())}
                       className={`min-w-[40px] px-3 py-2 text-sm font-medium border rounded-md transition-all ${
                         pageNum === (pagination.page || 1)
                           ? 'bg-luxury-gold text-white border-luxury-gold shadow-md scale-105'
@@ -858,7 +982,7 @@ export const BookingsPage = () => {
               </div>
               
               <button
-                onClick={() => loadBookings((pagination.page || 1) + 1)}
+                onClick={() => loadBookings((pagination.page || 1) + 1, getCurrentFilters())}
                 disabled={(pagination.page || 1) >= (pagination.totalPages || 1)}
                 className="px-4 py-2 text-sm font-medium border border-border dark:border-slate-600 rounded-md hover:bg-surface-tertiary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
@@ -875,7 +999,7 @@ export const BookingsPage = () => {
           onClose={() => setShowCreateModal(false)} 
           onSuccess={() => {
             setShowCreateModal(false);
-            loadBookings(pagination.page);
+            loadBookings(pagination.page, getCurrentFilters());
           }}
         />
       )}
@@ -910,10 +1034,10 @@ const PaidPill = ({ booking }) => {
   const pct = total > 0 ? Math.round((paid / total) * 100) : 0;
   const status = booking.payment_status;
   const colorClass = status === 'Paid'
-    ? 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-500/25'
+    ? 'bg-emerald-800/30 dark:bg-emerald-900/200/15 text-emerald-300 dark:text-emerald-200 border border-emerald-700 dark:border-emerald-500/25'
     : status === 'Partial'
       ? 'bg-luxury-gold/10 dark:bg-luxury-gold/20 text-luxury-gold border border-luxury-gold/20 dark:border-luxury-gold/30'
-      : 'bg-rose-100 dark:bg-rose-500/15 text-rose-700 dark:text-rose-200 border border-rose-200 dark:border-rose-500/25';
+      : 'bg-rose-800/30 dark:bg-rose-900/200/15 text-rose-700 dark:text-rose-200 border border-rose-200 dark:border-rose-500/25';
 
   const containerRef = useRef(null);
   const [show, setShow] = useState(false);
@@ -946,19 +1070,19 @@ const PaidPill = ({ booking }) => {
       </span>
       {show && (
         <div
-          className={`absolute right-0 w-64 bg-surface-secondary dark:bg-slate-800 border border-border dark:border-slate-700 shadow-lg rounded-md p-3 text-xs text-text-primary dark:text-slate-200 z-50 ${
+          className={`absolute right-0 w-64 bg-surface-secondary dark:bg-slate-800 border border-border dark:border-slate-700 shadow-lg rounded-md p-3 text-xs text-white dark:text-slate-200 z-50 ${
             position === 'below' ? 'top-full mt-2' : 'bottom-full mb-2'
           }`}
         >
-          <div className="flex justify-between font-semibold text-text-primary">
+          <div className="flex justify-between font-semibold text-white">
             <span>Total</span>
             <span>Rs {total.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between text-text-secondary">
+          <div className="flex justify-between text-slate-300">
             <span>Paid</span>
             <span>Rs {paid.toFixed(2)}</span>
           </div>
-          <div className="mt-2 space-y-1 text-text-secondary">
+          <div className="mt-2 space-y-1 text-slate-300">
             <div className="flex justify-between"><span>Advance</span><span>Rs {adv.toFixed(2)}</span></div>
             <div className="flex justify-between"><span>Payments</span><span>Rs {pay.toFixed(2)}</span></div>
             <div className="flex justify-between"><span>Adjustments</span><span>Rs {adj.toFixed(2)}</span></div>

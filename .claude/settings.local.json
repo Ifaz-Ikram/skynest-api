@@ -5,7 +5,12 @@
       "Bash(PGPASSWORD=200320701070 psql:*)",
       "Bash(npm run build:*)",
       "Bash(node:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(dir:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

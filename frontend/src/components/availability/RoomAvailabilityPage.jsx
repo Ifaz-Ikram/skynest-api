@@ -211,23 +211,23 @@ export const RoomAvailabilityPage = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Available': return 'bg-green-100 text-green-800 border-green-200';
-      case 'Occupied': return 'bg-red-100 text-red-800 border-red-200';
-      case 'Maintenance': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'Out-of-Order': return 'bg-gray-100 text-gray-800 border-border';
-      case 'Unavailable': return 'bg-red-100 text-red-800 border-red-200';
-      case 'Reserved': return 'bg-blue-100 text-blue-800 border-blue-200';
-      default: return 'bg-gray-100 text-gray-800 border-border';
+      case 'Available': return 'bg-green-800/30 text-green-200 border-green-700';
+      case 'Occupied': return 'bg-red-800/30 text-red-200 border-red-700';
+      case 'Maintenance': return 'bg-yellow-800/30 text-yellow-800 border-yellow-200';
+      case 'Out-of-Order': return 'bg-slate-800 text-white border-border';
+      case 'Unavailable': return 'bg-red-800/30 text-red-200 border-red-700';
+      case 'Reserved': return 'bg-blue-800/30 text-blue-200 border-blue-700';
+      default: return 'bg-slate-800 text-white border-border';
     }
   };
 
   const getBookingStatusColor = (status) => {
     switch (status) {
-      case 'Booked': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'Checked-In': return 'bg-green-100 text-green-800 border-green-200';
-      case 'Checked-Out': return 'bg-gray-100 text-gray-800 border-border';
-      case 'Cancelled': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-border';
+      case 'Booked': return 'bg-blue-800/30 text-blue-200 border-blue-700';
+      case 'Checked-In': return 'bg-green-800/30 text-green-200 border-green-700';
+      case 'Checked-Out': return 'bg-slate-800 text-white border-border';
+      case 'Cancelled': return 'bg-red-800/30 text-red-200 border-red-700';
+      default: return 'bg-slate-800 text-white border-border';
     }
   };
 
@@ -263,8 +263,8 @@ export const RoomAvailabilityPage = () => {
         <div className="bg-surface-secondary rounded-xl shadow-md p-6 border border-border">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-text-tertiary" />
-            <span className="font-medium text-text-secondary">Date Range:</span>
+            <Calendar className="w-5 h-5 text-slate-400" />
+            <span className="font-medium text-slate-300">Date Range:</span>
           </div>
           
           <div className="flex items-center gap-2">
@@ -272,20 +272,20 @@ export const RoomAvailabilityPage = () => {
               type="date"
               value={timelineFilters.from}
               onChange={(e) => handleFilterChange('from', e.target.value)}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
             />
-            <span className="text-text-tertiary">to</span>
+            <span className="text-slate-400">to</span>
             <input
               type="date"
               value={timelineFilters.to}
               onChange={(e) => handleFilterChange('to', e.target.value)}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
             />
           </div>
 
           <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-text-tertiary" />
-            <span className="font-medium text-text-secondary">Room Type:</span>
+            <Filter className="w-5 h-5 text-slate-400" />
+            <span className="font-medium text-slate-300">Room Type:</span>
             <SearchableDropdown
               value={timelineFilters.room_type_id}
               onChange={(value) => handleFilterChange('room_type_id', value || '')}
@@ -297,8 +297,8 @@ export const RoomAvailabilityPage = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-text-tertiary" />
-            <span className="font-medium text-text-secondary">Branch:</span>
+            <Building2 className="w-5 h-5 text-slate-400" />
+            <span className="font-medium text-slate-300">Branch:</span>
             <SearchableDropdown
               value={timelineFilters.branch_id}
               onChange={(value) => handleFilterChange('branch_id', value || '')}
@@ -309,8 +309,8 @@ export const RoomAvailabilityPage = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Bed className="w-5 h-5 text-text-tertiary" />
-            <span className="font-medium text-text-secondary">Status:</span>
+            <Bed className="w-5 h-5 text-slate-400" />
+            <span className="font-medium text-slate-300">Status:</span>
             <SearchableDropdown
               value={timelineFilters.status}
               onChange={(value) => handleFilterChange('status', value || '')}
@@ -352,22 +352,22 @@ export const RoomAvailabilityPage = () => {
 
       {/* Active Filters Display */}
       {(timelineFilters.room_type_id || timelineFilters.branch_id || timelineFilters.status) && (
-        <div className="card bg-blue-50 border-blue-200">
-          <div className="flex items-center gap-2 text-blue-800">
+        <div className="card bg-blue-900/20 border-blue-700">
+          <div className="flex items-center gap-2 text-blue-200">
             <Filter className="w-4 h-4" />
             <span className="font-medium">Active Filters:</span>
             {timelineFilters.room_type_id && (
-              <span className="px-2 py-1 bg-blue-100 rounded text-sm">
+              <span className="px-2 py-1 bg-blue-800/30 rounded text-sm">
                 Room Type: {roomTypes.find(rt => rt.room_type_id == timelineFilters.room_type_id)?.name || 'Unknown'}
               </span>
             )}
             {timelineFilters.branch_id && (
-              <span className="px-2 py-1 bg-blue-100 rounded text-sm">
+              <span className="px-2 py-1 bg-blue-800/30 rounded text-sm">
                 Branch: {branches.find(b => b.branch_id == timelineFilters.branch_id)?.branch_name || 'Unknown'}
               </span>
             )}
             {timelineFilters.status && (
-              <span className="px-2 py-1 bg-blue-100 rounded text-sm">
+              <span className="px-2 py-1 bg-blue-800/30 rounded text-sm">
                 Status: {timelineFilters.status}
               </span>
             )}
@@ -377,9 +377,9 @@ export const RoomAvailabilityPage = () => {
 
       {/* Error Display */}
       {timelineError && (
-        <div className="card bg-red-50 border-red-200">
-          <div className="flex items-center gap-2 text-red-800">
-            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+        <div className="card bg-red-900/20 border-red-700">
+          <div className="flex items-center gap-2 text-red-200">
+            <div className="w-2 h-2 bg-red-900/200 rounded-full"></div>
             <span className="font-medium">Error loading timeline:</span>
             <span>{timelineError}</span>
           </div>
@@ -391,42 +391,42 @@ export const RoomAvailabilityPage = () => {
         <div className="card">
           <div className="flex items-center justify-center gap-3 py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-luxury-gold"></div>
-            <span className="text-text-secondary">Loading availability timeline...</span>
+            <span className="text-slate-300">Loading availability timeline...</span>
           </div>
         </div>
       ) : timelineData?.rooms?.length ? (
         <div className="space-y-4">
           {/* Summary Stats */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="card bg-green-50 border-green-200">
-              <div className="text-2xl font-bold text-green-800">
+            <div className="card bg-green-900/20 border-green-700">
+              <div className="text-2xl font-bold text-green-200">
                 {timelineData.rooms.filter(r => getRoomAvailabilityStatus(r) === 'Available').length}
               </div>
               <div className="text-sm text-green-600">Available Rooms</div>
             </div>
-            <div className="card bg-red-50 border-red-200">
-              <div className="text-2xl font-bold text-red-800">
+            <div className="card bg-red-900/20 border-red-700">
+              <div className="text-2xl font-bold text-red-200">
                 {timelineData.rooms.filter(r => getRoomAvailabilityStatus(r) === 'Unavailable').length}
               </div>
               <div className="text-sm text-red-600">Unavailable Rooms</div>
             </div>
-            <div className="card bg-yellow-50 border-yellow-200">
+            <div className="card bg-yellow-900/20 border-yellow-200">
               <div className="text-2xl font-bold text-yellow-800">
                 {timelineData.rooms.filter(r => r.room_status === 'Maintenance').length}
               </div>
               <div className="text-sm text-yellow-600">Maintenance</div>
             </div>
-            <div className="card bg-blue-50 border-blue-200">
-              <div className="text-2xl font-bold text-blue-800">
+            <div className="card bg-blue-900/20 border-blue-700">
+              <div className="text-2xl font-bold text-blue-200">
                 {timelineData.rooms.filter(r => r.room_status === 'Reserved').length}
               </div>
               <div className="text-sm text-blue-600">Reserved</div>
             </div>
             <div className="card bg-surface-tertiary border-border">
-              <div className="text-2xl font-bold text-text-primary">
+              <div className="text-2xl font-bold text-white">
                 {timelineData.rooms.reduce((sum, r) => sum + (r.bookings?.length || 0), 0)}
               </div>
-              <div className="text-sm text-text-secondary">Total Bookings</div>
+              <div className="text-sm text-slate-300">Total Bookings</div>
             </div>
           </div>
 
@@ -440,10 +440,10 @@ export const RoomAvailabilityPage = () => {
                       {getRoomAvailabilityStatus(room)}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-text-primary">
+                      <h3 className="font-semibold text-white">
                         Room {room.room_number || room.room_id}
                       </h3>
-                      <p className="text-sm text-text-tertiary">
+                      <p className="text-sm text-slate-400">
                         {showRoomDetails && (
                           <>
                             {room.room_type_name} • Capacity: {room.capacity} • Rate: Rs. {room.daily_rate || 'N/A'}
@@ -452,14 +452,14 @@ export const RoomAvailabilityPage = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="text-sm text-text-tertiary">
+                  <div className="text-sm text-slate-400">
                     {room.bookings?.length || 0} booking{(room.bookings?.length || 0) !== 1 ? 's' : ''}
                   </div>
                 </div>
 
                 {showRoomDetails && room.bookings?.length > 0 && (
                   <div className="space-y-2">
-                    <div className="text-sm font-medium text-text-secondary mb-2">Bookings:</div>
+                    <div className="text-sm font-medium text-slate-300 mb-2">Bookings:</div>
                     {room.bookings.map((booking) => (
                       <div
                         key={`${room.room_id}-${booking.booking_id}`}
@@ -470,17 +470,17 @@ export const RoomAvailabilityPage = () => {
                             <span className={`px-2 py-1 rounded text-xs font-medium border ${getBookingStatusColor(booking.status)}`}>
                               {booking.status}
                             </span>
-                            <span className="font-medium text-text-primary">
+                            <span className="font-medium text-white">
                               #{booking.booking_id} - {booking.guest_name || 'Guest'}
                             </span>
                           </div>
-                          <div className="text-sm text-text-tertiary">
+                          <div className="text-sm text-slate-400">
                             {booking.date_range_pretty ||
                               `${booking.check_in_pretty || booking.check_in_date} → ${booking.check_out_pretty || booking.check_out_date}`}
                           </div>
                         </div>
                         {booking.meta && (
-                          <div className="mt-2 space-y-1 text-xs text-text-secondary">
+                          <div className="mt-2 space-y-1 text-xs text-slate-300">
                             {booking.meta.specialRequests && (
                               <p>
                                 <span className="font-semibold">Requests:</span> {booking.meta.specialRequests}
@@ -504,9 +504,9 @@ export const RoomAvailabilityPage = () => {
       ) : (
         <div className="card">
           <div className="text-center py-12">
-            <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-text-primary mb-2">No Rooms Found</h3>
-            <p className="text-text-secondary mb-4">
+            <Calendar className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-white mb-2">No Rooms Found</h3>
+            <p className="text-slate-300 mb-4">
               No rooms found for the selected filters. Try adjusting your date range or room type filter.
             </p>
             <button
@@ -529,7 +529,7 @@ export const RoomAvailabilityPage = () => {
           >
             {timelineLoading ? 'Loading...' : `Load More Rooms (${timelineData.rooms.length} loaded)`}
           </button>
-          <p className="text-sm text-text-secondary mt-2">
+          <p className="text-sm text-slate-300 mt-2">
             Load more rooms for better availability overview
           </p>
         </div>
@@ -538,7 +538,7 @@ export const RoomAvailabilityPage = () => {
       {/* Pagination Controls */}
       {pagination.totalPages > 1 && timelineData?.rooms?.length > 0 && (
         <div className="mt-8 flex items-center justify-between">
-          <div className="text-sm text-text-secondary">
+          <div className="text-sm text-slate-300">
             Showing {timelineData.rooms.length} rooms from {pagination.total} total rooms
           </div>
           <div className="flex items-center space-x-2">
@@ -562,7 +562,7 @@ export const RoomAvailabilityPage = () => {
                     className={`px-3 py-2 text-sm border rounded-md ${
                       pageNum === (pagination.page || 1)
                         ? 'bg-luxury-gold text-white border-luxury-gold'
-                        : 'border-border dark:border-slate-600 hover:bg-gray-50'
+                        : 'border-border dark:border-slate-600 hover:bg-slate-900'
                     }`}
                   >
                     {pageNum}

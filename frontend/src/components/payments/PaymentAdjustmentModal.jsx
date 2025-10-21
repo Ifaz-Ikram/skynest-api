@@ -47,23 +47,26 @@ export const PaymentAdjustmentModal = ({ payment, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-surface-secondary rounded-2xl shadow-2xl max-w-md w-full">
-        <div className="p-6 border-b border-border flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-text-primary">Adjust Payment</h2>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 'var(--z-modal)' }}>
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-md w-full border border-slate-700/50" style={{minWidth: '600px'}}>
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 flex items-center justify-between" style={{ zIndex: 'var(--z-sticky)' }}>
+          <h2 className="text-2xl font-bold text-white">Adjust Payment</h2>
+          <button 
+            onClick={onClose} 
+            className="text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg p-2 transition-all duration-200"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>
         <div className="p-6">
           <div className="mb-6 p-4 bg-surface-tertiary rounded-lg">
-            <p className="text-sm text-text-secondary">Original Payment</p>
-            <p className="text-lg font-bold text-text-primary mt-1">Rs {payment.amount}</p>
-            <p className="text-sm text-text-secondary mt-1">Booking #{payment.booking_id}</p>
+            <p className="text-sm text-slate-300">Original Payment</p>
+            <p className="text-lg font-bold text-white mt-1">Rs {payment.amount}</p>
+            <p className="text-sm text-slate-300 mt-1">Booking #{payment.booking_id}</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Adjustment Type</label>
+            <div className="relative z-30">
+              <label className="block text-sm font-medium text-slate-300 mb-2">Adjustment Type</label>
               <SearchableDropdown
                 value={formData.adjustment_type}
                 onChange={(value) => setFormData({ ...formData, adjustment_type: value })}
@@ -74,22 +77,22 @@ export const PaymentAdjustmentModal = ({ payment, onClose, onSuccess }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Adjustment Amount</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Adjustment Amount</label>
               <input
                 type="number"
                 step="0.01"
                 value={formData.adjustment_amount}
                 onChange={(e) => setFormData({...formData, adjustment_amount: e.target.value})}
-                className="input-field"
+                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Reason</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Reason</label>
               <textarea
                 value={formData.reason}
                 onChange={(e) => setFormData({...formData, reason: e.target.value})}
-                className="input-field"
+                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                 rows="3"
                 required
               />

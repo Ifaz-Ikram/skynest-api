@@ -854,6 +854,22 @@ class ApiService {
   async healthCheck() {
     return this.request('/api/health');
   }
+
+  // ============================================================================
+  // OPERATIONS API FUNCTIONS (Today's Operations)
+  // ============================================================================
+  
+  async getArrivalsToday() {
+    return this.request('/api/reports/arrivals-today');
+  }
+
+  async getDeparturesToday() {
+    return this.request('/api/reports/departures-today');
+  }
+
+  async getInHouse() {
+    return this.request('/api/reports/in-house');
+  }
 }
 
 export default new ApiService();

@@ -83,8 +83,8 @@ const RoomTypesPage = () => {
         <div className="bg-surface-secondary dark:bg-slate-800 rounded-xl shadow-md border border-border dark:border-slate-700 overflow-hidden">
         {roomTypes.length === 0 ? (
           <div className="text-center py-12">
-            <Bed className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-text-secondary">No room types found</p>
+            <Bed className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+            <p className="text-slate-300">No room types found</p>
             <button onClick={() => setShowCreateModal(true)} className="mt-4 btn-primary">
               Add First Room Type
             </button>
@@ -94,19 +94,19 @@ const RoomTypesPage = () => {
             <table className="min-w-full divide-y divide-border dark:divide-slate-700">
               <thead className="bg-surface-tertiary dark:bg-slate-800/60">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                     Room Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                     Base Rate
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                     Max Occupancy
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                     Amenities
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -120,9 +120,9 @@ const RoomTypesPage = () => {
                           <Bed className="w-5 h-5 text-luxury-gold" />
                         </div>
                         <div>
-                          <div className="font-medium text-text-primary">{type.name}</div>
+                          <div className="font-medium text-white">{type.name}</div>
                           {type.amenities && (
-                            <div className="text-sm text-text-tertiary">{type.amenities}</div>
+                            <div className="text-sm text-slate-400">{type.amenities}</div>
                           )}
                         </div>
                       </div>
@@ -133,20 +133,20 @@ const RoomTypesPage = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2 text-sm text-text-primary">
-                        <Users className="w-4 h-4 text-text-tertiary" />
+                      <div className="flex items-center gap-2 text-sm text-white">
+                        <Users className="w-4 h-4 text-slate-400" />
                         {type.capacity || 'N/A'}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-text-secondary max-w-xs truncate">
+                      <div className="text-sm text-slate-300 max-w-xs truncate">
                         {type.amenities || 'No amenities listed'}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => handleQuote(type)}
-                        className="text-text-secondary hover:text-text-primary mr-4"
+                        className="text-slate-300 hover:text-white mr-4"
                         title="Get Rate Quote"
                       >
                         <Calculator className="w-5 h-5" />
@@ -241,45 +241,50 @@ const RateQuoteModal = ({ roomType, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-surface-secondary rounded-lg shadow-xl max-w-lg w-full">
-        <div className="p-6 border-b border-border flex justify-between items-center">
-          <h2 className="text-2xl font-display font-bold text-text-primary">Rate Quote · {roomType.name}</h2>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary"><X className="w-6 h-6" /></button>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-lg w-full border border-slate-700/50" style={{minWidth: '600px'}}>
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 z-10 flex justify-between items-center">
+          <h2 className="text-2xl font-display font-bold text-white">Rate Quote · {roomType.name}</h2>
+          <button 
+            onClick={onClose} 
+            className="text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg p-2 transition-all duration-200"
+          >
+            <X className="w-6 h-6" />
+          </button>
         </div>
         <div className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Check In</label>
-              <input type="date" className="input-field" value={form.check_in} onChange={(e)=>setForm({...form, check_in:e.target.value})} />
+              <label className="block text-sm font-medium text-slate-300 mb-2">Check In</label>
+              <input type="date" className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400" value={form.check_in} onChange={(e)=>setForm({...form, check_in:e.target.value})} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Check Out</label>
-              <input type="date" className="input-field" value={form.check_out} onChange={(e)=>setForm({...form, check_out:e.target.value})} />
+              <label className="block text-sm font-medium text-slate-300 mb-2">Check Out</label>
+              <input type="date" className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400" value={form.check_out} onChange={(e)=>setForm({...form, check_out:e.target.value})} />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">Promo Code</label>
-            <input type="text" className="input-field" placeholder="Optional" value={form.promo} onChange={(e)=>setForm({...form, promo:e.target.value})} />
+            <label className="block text-sm font-medium text-slate-300 mb-2">Promo Code</label>
+            <input type="text" className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400" placeholder="Optional" value={form.promo} onChange={(e)=>setForm({...form, promo:e.target.value})} />
           </div>
           <div className="flex items-center gap-3">
             <button onClick={getQuote} className="btn-primary" disabled={loading || !form.check_in || !form.check_out}>
               {loading ? 'Calculating...' : 'Get Quote'}
             </button>
             {quote && (
-              <div className="text-sm text-text-secondary">
+              <div className="text-sm text-slate-300">
                 {quote.nights} night{quote.nights>1?'s':''} · Total Rs {parseFloat(quote.total).toFixed(2)} (Base Rs {parseFloat(quote.base_rate).toFixed(2)})
               </div>
             )}
           </div>
           {quote?.nightly?.length ? (
             <div className="bg-surface-tertiary border border-border rounded-lg p-3">
-              <div className="text-sm font-medium text-text-primary mb-2">Nightly Rates</div>
+              <div className="text-sm font-medium text-white mb-2">Nightly Rates</div>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 {quote.nightly.map(n => (
                   <div key={n.date} className="flex justify-between">
-                    <span className="text-text-secondary">{new Date(n.date).toLocaleDateString()}</span>
-                    <span className="text-text-primary">Rs {parseFloat(n.rate).toFixed(2)}</span>
+                    <span className="text-slate-300">{new Date(n.date).toLocaleDateString()}</span>
+                    <span className="text-white">Rs {parseFloat(n.rate).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
@@ -322,31 +327,31 @@ const RateQuoteModal = ({ roomType, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-surface-secondary dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-border flex justify-between items-center sticky top-0 bg-surface-secondary dark:bg-slate-800">
-          <h2 className="text-2xl font-display font-bold text-text-primary">
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-slate-700/50" style={{minWidth: '600px'}}>
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 z-10 flex justify-between items-center">
+          <h2 className="text-2xl font-display font-bold text-white">
             {isEdit ? 'Edit Room Type' : 'Add New Room Type'}
           </h2>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-300">
             <X className="w-6 h-6" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Type Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               placeholder="e.g., Deluxe Suite, Standard Room"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Base Rate (per night) <span className="text-red-500">*</span>
             </label>
             <input
@@ -354,30 +359,30 @@ const RateQuoteModal = ({ roomType, onClose }) => {
               step="0.01"
               value={formData.daily_rate}
               onChange={(e) => setFormData({...formData, daily_rate: e.target.value})}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               placeholder="0.00"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Max Occupancy <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
               value={formData.capacity}
               onChange={(e) => setFormData({...formData, capacity: e.target.value})}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               placeholder="Number of guests"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">Amenities</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Amenities</label>
             <textarea
               value={formData.amenities}
               onChange={(e) => setFormData({...formData, amenities: e.target.value})}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
               rows="3"
               placeholder="e.g., WiFi, TV, Mini Bar, Ocean View"
             />

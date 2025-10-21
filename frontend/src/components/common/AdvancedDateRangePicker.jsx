@@ -240,15 +240,15 @@ const AdvancedDateRangePicker = ({
         type="button"
         onClick={() => !disabled && setIsOpen((open) => !open)}
         disabled={disabled}
-        className="flex w-full items-center justify-between rounded-lg border border-border bg-surface-primary px-4 py-2 text-left text-sm font-medium text-text-primary shadow-sm transition-colors duration-200 hover:border-accent-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-secondary dark:bg-surface-secondary"
+        className="flex w-full items-center justify-between rounded-lg border border-border bg-surface-primary px-4 py-2 text-left text-sm font-medium text-white shadow-sm transition-colors duration-200 hover:border-accent-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-secondary dark:bg-surface-secondary"
       >
         <span className="flex items-center gap-2 text-sm">
-          <Calendar className="h-4 w-4 text-text-tertiary" />
-          <span className={normalizedValue.startDate && normalizedValue.endDate ? '' : 'text-text-tertiary'}>
+          <Calendar className="h-4 w-4 text-slate-400" />
+          <span className={normalizedValue.startDate && normalizedValue.endDate ? '' : 'text-slate-400'}>
             {renderLabel()}
           </span>
         </span>
-        <ChevronRight className={`h-4 w-4 text-text-tertiary transition-transform duration-200 ${isOpen ? 'rotate-90' : 'rotate-0'}`} />
+        <ChevronRight className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-90' : 'rotate-0'}`} />
       </button>
 
       {isOpen && (
@@ -258,7 +258,7 @@ const AdvancedDateRangePicker = ({
           style={{ backgroundColor: panelBackground }}
         >
           <aside className="hidden w-40 flex-shrink-0 flex-col space-y-2 rounded-xl border border-border bg-surface-secondary p-3 dark:bg-surface-tertiary sm:flex">
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
               Quick ranges
             </h4>
             <div className="flex flex-col space-y-1">
@@ -267,7 +267,7 @@ const AdvancedDateRangePicker = ({
                   key={preset.id}
                   type="button"
                   onClick={() => handlePresetClick(preset)}
-                  className="rounded-lg px-3 py-2 text-left text-sm font-medium text-text-secondary transition-colors duration-150 hover:bg-surface-tertiary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-secondary"
+                  className="rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-300 transition-colors duration-150 hover:bg-surface-tertiary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-secondary"
                 >
                   {preset.label}
                 </button>
@@ -279,22 +279,22 @@ const AdvancedDateRangePicker = ({
             <div className="flex items-center justify-between pb-3">
               <button
                 type="button"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-text-secondary transition-colors duration-200 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-secondary"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-slate-300 transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-secondary"
                 onClick={() => setActiveMonth((current) => subMonths(current, 1))}
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              <p className="text-sm font-semibold text-text-primary">{monthLabel}</p>
+              <p className="text-sm font-semibold text-white">{monthLabel}</p>
               <button
                 type="button"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-text-secondary transition-colors duration-200 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-secondary"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-slate-300 transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-secondary"
                 onClick={() => setActiveMonth((current) => addMonths(current, 1))}
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="grid grid-cols-7 gap-1 pb-2 text-center text-[11px] font-semibold uppercase tracking-wide text-text-tertiary">
+            <div className="grid grid-cols-7 gap-1 pb-2 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-400">
               {weekDayLabels.map((label) => (
                 <span key={label}>{label}</span>
               ))}
@@ -337,9 +337,9 @@ const AdvancedDateRangePicker = ({
             </div>
 
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-xs text-text-secondary">
+              <div className="flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-xs text-slate-300">
                 {draftRange.startDate ? format(draftRange.startDate, displayFormat) : 'Start date'}
-                <span className="text-text-tertiary">to</span>
+                <span className="text-slate-400">to</span>
                 {draftRange.endDate ? format(draftRange.endDate, displayFormat) : 'End date'}
               </div>
               <div className="flex items-center gap-2">
@@ -347,7 +347,7 @@ const AdvancedDateRangePicker = ({
                   <button
                     type="button"
                     onClick={handleClear}
-                    className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-2 text-sm font-medium text-text-secondary transition-colors duration-150 hover:bg-surface-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-secondary"
+                    className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-2 text-sm font-medium text-slate-300 transition-colors duration-150 hover:bg-surface-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-secondary"
                   >
                     <X className="h-4 w-4" />
                     Clear

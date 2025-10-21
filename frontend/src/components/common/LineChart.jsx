@@ -33,7 +33,7 @@ const LineChart = ({
   if (chartData.length === 0) {
     return (
       <div className="flex items-center justify-center" style={{ height }}>
-        <p className="text-text-tertiary text-sm">No data available</p>
+        <p className="text-slate-400 text-sm">No data available</p>
       </div>
     );
   }

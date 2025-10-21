@@ -28,16 +28,16 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-text-primary">Checkout</h1>
-            <p className="text-text-secondary mt-1">Process guest checkouts and payments</p>
+            <h1 className="text-3xl font-bold text-white">Checkout</h1>
+            <p className="text-slate-300 mt-1">Process guest checkouts and payments</p>
           </div>
         </div>
         
         <div className="card">
           <div className="text-center py-12">
             <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-text-primary mb-2">No Valid Booking Selected</h3>
-            <p className="text-text-secondary mb-4">
+            <h3 className="text-lg font-semibold text-white mb-2">No Valid Booking Selected</h3>
+            <p className="text-slate-300 mb-4">
               To process a checkout, please go to the Bookings page and click the "Check Out" button on a checked-in booking.
             </p>
             <div className="flex justify-center space-x-4">
@@ -48,7 +48,7 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
                 Go to Bookings
               </button>
             </div>
-            <p className="text-sm text-text-tertiary mt-4">
+            <p className="text-sm text-slate-400 mt-4">
               Only bookings with "Checked-In" status can be checked out.
             </p>
             {booking && (
@@ -158,8 +158,8 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex justify-center items-center">
-        <div className="bg-surface-secondary rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center" style={{ zIndex: 'var(--z-modal)' }}>
+        <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-slate-700/50">
           <div className="p-6">
             <div className="flex items-center justify-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -172,8 +172,8 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
 
   if (!folio) {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex justify-center items-center">
-        <div className="bg-surface-secondary rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center" style={{ zIndex: 'var(--z-modal)' }}>
+        <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-slate-700/50">
           <div className="p-6">
             <div className="text-center text-red-600">
               <AlertTriangle className="w-12 h-12 mx-auto mb-4" />
@@ -189,21 +189,24 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
   const finalBalance = folio.totals.balance + totalAdditionalCharges - finalPayment;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex justify-center items-center">
-      <div className="bg-surface-secondary rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-border flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-text-primary">Checkout - {folio.booking.guest_name}</h2>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center" style={{ zIndex: 'var(--z-modal)' }}>
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-slate-700/50">
+        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 flex items-center justify-between" style={{ zIndex: 'var(--z-sticky)' }}>
+          <h2 className="text-2xl font-bold text-white">Checkout - {folio.booking.guest_name}</h2>
+          <button 
+            onClick={onClose} 
+            className="text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg p-2 transition-all duration-200"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>
         
         <div className="p-6 space-y-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="bg-red-900/20 border border-red-700 rounded-lg p-4">
               <div className="flex items-center">
                 <AlertTriangle className="w-5 h-5 text-red-600 mr-2" />
-                <p className="text-red-800">{error}</p>
+                <p className="text-red-200">{error}</p>
               </div>
             </div>
           )}
@@ -305,21 +308,21 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
                       placeholder="Description"
                       value={newCharge.description}
                       onChange={(e) => setNewCharge({...newCharge, description: e.target.value})}
-                      className="input-field"
+                      className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                     />
                     <input
                       type="number"
                       placeholder="Amount"
                       value={newCharge.amount}
                       onChange={(e) => setNewCharge({...newCharge, amount: e.target.value})}
-                      className="input-field"
+                      className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                     />
                     <input
                       type="text"
                       placeholder="Department"
                       value={newCharge.department}
                       onChange={(e) => setNewCharge({...newCharge, department: e.target.value})}
-                      className="input-field"
+                      className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                     />
                   </div>
                   <div className="flex gap-2">
@@ -340,7 +343,7 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
                     <span>Rs {charge.amount.toFixed(2)}</span>
                     <button
                       onClick={() => handleRemoveCharge(index)}
-                      className="text-red-600 hover:text-red-800"
+                      className="text-red-600 hover:text-red-200"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -349,7 +352,7 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
               ))}
               
               {additionalCharges.length === 0 && !showAddCharge && (
-                <p className="text-text-tertiary text-sm">No additional charges</p>
+                <p className="text-slate-400 text-sm">No additional charges</p>
               )}
             </div>
 
@@ -363,7 +366,7 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
                     type="number"
                     value={finalPayment}
                     onChange={(e) => setFinalPayment(parseFloat(e.target.value) || 0)}
-                    className="input-field"
+                    className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                     min="0"
                     step="0.01"
                   />
@@ -381,19 +384,19 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
                     onChange={setPaymentMethod}
                     placeholder="Select payment method"
                     searchPlaceholder="Search payment methods..."
-                    className="input-field"
+                    className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                     displayKey="label"
                     valueKey="value"
                     searchKeys={['label']}
                     renderOption={(option) => (
                       <div className="flex items-center space-x-2">
-                        <CreditCard className="w-4 h-4 text-text-tertiary" />
+                        <CreditCard className="w-4 h-4 text-slate-400" />
                         <span>{option.label}</span>
                       </div>
                     )}
                     renderSelected={(option) => (
                       <div className="flex items-center space-x-2">
-                        <CreditCard className="w-4 h-4 text-text-tertiary" />
+                        <CreditCard className="w-4 h-4 text-slate-400" />
                         <span>{option.label}</span>
                       </div>
                     )}
@@ -406,7 +409,7 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
                     type="text"
                     value={paymentReference}
                     onChange={(e) => setPaymentReference(e.target.value)}
-                    className="input-field"
+                    className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                     placeholder="Transaction ID, check number, etc."
                   />
                 </div>
@@ -419,7 +422,7 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
               <textarea
                 value={signature}
                 onChange={(e) => setSignature(e.target.value)}
-                className="input-field h-20"
+                className="input-field h-20 bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                 placeholder="Guest signature or acknowledgment..."
               />
             </div>
@@ -430,13 +433,13 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="input-field h-20"
+                className="input-field h-20 bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
                 placeholder="Additional notes about checkout..."
               />
             </div>
 
             {/* Final Totals */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-4">
               <h4 className="font-medium mb-3">Final Totals</h4>
               <div className="space-y-2">
                 <div className="flex justify-between">
@@ -469,7 +472,7 @@ export const CheckoutModal = ({ booking, onClose, onSuccess }) => {
             <button
               onClick={handleCheckout}
               disabled={processing || finalBalance < 0}
-              className="btn-primary flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400"
+              className="btn-primary flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-slate-500"
             >
               {processing ? (
                 <>

@@ -156,13 +156,16 @@ async function getRevenueReport(startDate, endDate) {
     occupancy: Math.round((parseInt(rt.occupancy) / parseInt(rt.bookings)) * 100) || 0
   }));
 
+  // Calculate market share based on total bookings
+  const totalBookings = channels.reduce((sum, ch) => sum + parseInt(ch.bookings), 0);
+  
   return {
     channels: channels.map(ch => ({
       name: ch.name,
       bookings: parseInt(ch.bookings),
       revenue: parseFloat(ch.revenue),
       adr: Math.round(parseFloat(ch.adr) * 100) / 100,
-      market_share: 100 // Mock data
+      market_share: totalBookings > 0 ? Math.round((parseInt(ch.bookings) / totalBookings) * 100) : 0
     })),
     room_types: roomTypes
   };
@@ -231,13 +234,38 @@ async function getGuestReport(startDate, endDate) {
   const guestRes = await pool.query(guestQuery, [startDate, endDate]);
   const guests = guestRes.rows[0];
 
-  // Guest satisfaction (mock data)
-  const satisfaction = {
-    avg_rating: 4.2,
-    total_reviews: 45,
-    positive: 85,
-    complaints: 3
+  // Guest satisfaction - get from database if available
+  let satisfaction = {
+    avg_rating: 0,
+    total_reviews: 0,
+    positive: 0,
+    complaints: 0
   };
+  
+  try {
+    const satisfactionQuery = `
+      SELECT 
+        COALESCE(AVG(rating), 0) as avg_rating,
+        COUNT(*) as total_reviews,
+        COUNT(CASE WHEN rating >= 4 THEN 1 END) as positive,
+        COUNT(CASE WHEN rating <= 2 THEN 1 END) as complaints
+      FROM guest_reviews gr
+      JOIN booking b ON gr.booking_id = b.booking_id
+      WHERE DATE(b.check_in_date) BETWEEN $1 AND $2
+    `;
+    const satisfactionRes = await pool.query(satisfactionQuery, [startDate, endDate]);
+    if (satisfactionRes.rows.length > 0) {
+      const sat = satisfactionRes.rows[0];
+      satisfaction = {
+        avg_rating: Math.round(parseFloat(sat.avg_rating) * 100) / 100,
+        total_reviews: parseInt(sat.total_reviews),
+        positive: Math.round((parseInt(sat.positive) / parseInt(sat.total_reviews)) * 100) || 0,
+        complaints: Math.round((parseInt(sat.complaints) / parseInt(sat.total_reviews)) * 100) || 0
+      };
+    }
+  } catch (error) {
+    console.log('Guest reviews table not available, using default values');
+  }
 
   // Channel analysis
   const channelQuery = `
@@ -274,21 +302,63 @@ async function getGuestReport(startDate, endDate) {
 
 // Get forecasting report
 async function getForecastingReport(startDate, endDate) {
-  // Mock forecasting data
-  const forecast = {
-    next_week: 12500,
-    next_month: 45000,
-    next_quarter: 135000
+  // Get real forecasting data from database
+  let forecast = {
+    next_week: 0,
+    next_month: 0,
+    next_quarter: 0
   };
+  
+  try {
+    // Calculate forecast based on historical booking patterns
+    const forecastQuery = `
+      SELECT 
+        COALESCE(SUM(b.booked_rate * EXTRACT(DAY FROM (b.check_out_date - b.check_in_date))), 0) as historical_revenue,
+        COUNT(*) as historical_bookings,
+        AVG(b.booked_rate * EXTRACT(DAY FROM (b.check_out_date - b.check_in_date))) as avg_booking_value
+      FROM booking b
+      WHERE DATE(b.check_in_date) BETWEEN $1::date - INTERVAL '30 days' AND $1::date
+    `;
+    const forecastRes = await pool.query(forecastQuery, [startDate]);
+    
+    if (forecastRes.rows.length > 0) {
+      const data = forecastRes.rows[0];
+      const avgDailyRevenue = parseFloat(data.historical_revenue) / 30;
+      const avgBookingValue = parseFloat(data.avg_booking_value) || 0;
+      
+      forecast = {
+        next_week: Math.round(avgDailyRevenue * 7),
+        next_month: Math.round(avgDailyRevenue * 30),
+        next_quarter: Math.round(avgDailyRevenue * 90)
+      };
+    }
+  } catch (error) {
+    console.log('Forecasting calculation failed, using default values');
+  }
 
-  // Pickup analysis (mock data)
-  const pickupData = [
-    { date: '2024-01-01', bookings: 15, revenue: 1800 },
-    { date: '2024-01-02', bookings: 18, revenue: 2160 },
-    { date: '2024-01-03', bookings: 12, revenue: 1440 },
-    { date: '2024-01-04', bookings: 20, revenue: 2400 },
-    { date: '2024-01-05', bookings: 25, revenue: 3000 }
-  ];
+  // Get real pickup data from database
+  let pickupData = [];
+  try {
+    const pickupQuery = `
+      SELECT 
+        DATE(b.check_in_date) as date,
+        COUNT(*) as bookings,
+        SUM(b.booked_rate * EXTRACT(DAY FROM (b.check_out_date - b.check_in_date))) as revenue
+      FROM booking b
+      WHERE DATE(b.check_in_date) BETWEEN $1 AND $2
+      GROUP BY DATE(b.check_in_date)
+      ORDER BY DATE(b.check_in_date)
+    `;
+    const pickupRes = await pool.query(pickupQuery, [startDate, endDate]);
+    pickupData = pickupRes.rows.map(row => ({
+      date: row.date,
+      bookings: parseInt(row.bookings),
+      revenue: parseFloat(row.revenue)
+    }));
+  } catch (error) {
+    console.log('Pickup data query failed, using empty array');
+    pickupData = [];
+  }
 
   return {
     forecast: forecast,

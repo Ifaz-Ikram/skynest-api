@@ -51,8 +51,8 @@ const ReportingDashboard = () => {
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [showBranchSelector, setShowBranchSelector] = useState(true);
   const [dateRange, setDateRange] = useState({
-    start: '2025-10-01', // Set to October 2025 where your data exists
-    end: '2025-10-31'    // Set to October 2025 where your data exists
+    start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days ago
+    end: new Date().toISOString().split('T')[0] // Today
   });
   const [reportType, setReportType] = useState('overview');
   const [reportData, setReportData] = useState(null);
@@ -76,15 +76,27 @@ const ReportingDashboard = () => {
     [],
   );
 
-  const roomTypeOptions = useMemo(
-    () => [
-      { id: 'all', name: 'All Room Types' },
-      { id: 'standard', name: 'Standard Room' },
-      { id: 'deluxe', name: 'Deluxe Room' },
-      { id: 'family', name: 'Family Room' },
-    ],
-    [],
-  );
+  const [roomTypeOptions, setRoomTypeOptions] = useState([
+    { id: 'all', name: 'All Room Types' }
+  ]);
+
+  // Load room types from database
+  useEffect(() => {
+    const loadRoomTypes = async () => {
+      try {
+        const roomTypes = await api.getRoomTypes();
+        const options = [
+          { id: 'all', name: 'All Room Types' },
+          ...roomTypes.map(rt => ({ id: rt.room_type_id, name: rt.name }))
+        ];
+        setRoomTypeOptions(options);
+      } catch (error) {
+        console.error('Failed to load room types:', error);
+        // Keep default option if API fails
+      }
+    };
+    loadRoomTypes();
+  }, []);
 
   useEffect(() => {
     if (selectedBranch) {
@@ -379,23 +391,23 @@ const ReportingDashboard = () => {
   const getTrendIcon = (trend) => {
     if (trend > 0) return <TrendingUp className="w-4 h-4 text-green-600" />;
     if (trend < 0) return <TrendingDown className="w-4 h-4 text-red-600" />;
-    return <Activity className="w-4 h-4 text-text-secondary" />;
+    return <Activity className="w-4 h-4 text-slate-300" />;
   };
 
   const getTrendColor = (trend) => {
     if (trend > 0) return 'text-green-600';
     if (trend < 0) return 'text-red-600';
-    return 'text-gray-600';
+    return 'text-slate-200';
   };
 
   const renderKPICards = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {/* Revenue KPI */}
-      <div className="card hover:shadow-xl transition-all duration-300 group">
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50 hover:shadow-xl transition-all duration-300 group">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-sm font-medium text-text-tertiary mb-2">Total Revenue</p>
-            <p className="text-3xl font-bold text-text-primary mb-2">
+            <p className="text-sm font-medium text-slate-400 mb-2">Total Revenue</p>
+            <p className="text-3xl font-bold text-white mb-2">
               Rs {(reportData?.kpis?.total_revenue || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
             <div className="flex items-center">
@@ -403,7 +415,7 @@ const ReportingDashboard = () => {
               <span className={`ml-1 text-sm font-medium ${getTrendColor(reportData?.kpis?.revenue_trend || 0)}`}>
                 {Math.abs(reportData?.kpis?.revenue_trend || 0).toFixed(1)}%
               </span>
-              <span className="text-xs text-text-tertiary ml-2">vs last period</span>
+              <span className="text-xs text-slate-400 ml-2">vs last period</span>
             </div>
           </div>
           <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -413,11 +425,11 @@ const ReportingDashboard = () => {
       </div>
 
       {/* ADR KPI */}
-      <div className="card hover:shadow-xl transition-all duration-300 group">
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50 hover:shadow-xl transition-all duration-300 group">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-sm font-medium text-text-tertiary mb-2">ADR (Avg Daily Rate)</p>
-            <p className="text-3xl font-bold text-text-primary mb-2">
+            <p className="text-sm font-medium text-slate-400 mb-2">ADR (Avg Daily Rate)</p>
+            <p className="text-3xl font-bold text-white mb-2">
               Rs {(reportData?.kpis?.adr || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
             <div className="flex items-center">
@@ -425,7 +437,7 @@ const ReportingDashboard = () => {
               <span className={`ml-1 text-sm font-medium ${getTrendColor(reportData?.kpis?.adr_trend || 0)}`}>
                 {Math.abs(reportData?.kpis?.adr_trend || 0).toFixed(1)}%
               </span>
-              <span className="text-xs text-text-tertiary ml-2">vs last period</span>
+              <span className="text-xs text-slate-400 ml-2">vs last period</span>
             </div>
           </div>
           <div className="p-4 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -435,11 +447,11 @@ const ReportingDashboard = () => {
       </div>
 
       {/* RevPAR KPI */}
-      <div className="card hover:shadow-xl transition-all duration-300 group">
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50 hover:shadow-xl transition-all duration-300 group">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-sm font-medium text-text-tertiary mb-2">RevPAR</p>
-            <p className="text-3xl font-bold text-text-primary mb-2">
+            <p className="text-sm font-medium text-slate-400 mb-2">RevPAR</p>
+            <p className="text-3xl font-bold text-white mb-2">
               Rs {(reportData?.kpis?.revpar || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
             <div className="flex items-center">
@@ -447,7 +459,7 @@ const ReportingDashboard = () => {
               <span className={`ml-1 text-sm font-medium ${getTrendColor(reportData?.kpis?.revpar_trend || 0)}`}>
                 {Math.abs(reportData?.kpis?.revpar_trend || 0).toFixed(1)}%
               </span>
-              <span className="text-xs text-text-tertiary ml-2">vs last period</span>
+              <span className="text-xs text-slate-400 ml-2">vs last period</span>
             </div>
           </div>
           <div className="p-4 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -457,11 +469,11 @@ const ReportingDashboard = () => {
       </div>
 
       {/* Occupancy KPI */}
-      <div className="card hover:shadow-xl transition-all duration-300 group">
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50 hover:shadow-xl transition-all duration-300 group">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-sm font-medium text-text-tertiary mb-2">Occupancy Rate</p>
-            <p className="text-3xl font-bold text-text-primary mb-2">
+            <p className="text-sm font-medium text-slate-400 mb-2">Occupancy Rate</p>
+            <p className="text-3xl font-bold text-white mb-2">
               {(reportData?.kpis?.occupancy || 0).toFixed(1)}%
             </p>
             <div className="flex items-center">
@@ -469,7 +481,7 @@ const ReportingDashboard = () => {
               <span className={`ml-1 text-sm font-medium ${getTrendColor(reportData?.kpis?.occupancy_trend || 0)}`}>
                 {Math.abs(reportData?.kpis?.occupancy_trend || 0).toFixed(1)}%
               </span>
-              <span className="text-xs text-text-tertiary ml-2">vs last period</span>
+              <span className="text-xs text-slate-400 ml-2">vs last period</span>
             </div>
           </div>
           <div className="p-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -481,41 +493,41 @@ const ReportingDashboard = () => {
   );
 
   const renderRevenueChart = () => (
-    <div className="card shadow-lg hover:shadow-xl transition-shadow">
+    <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50 hover:shadow-xl transition-shadow">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
             <BarChart3 className="w-5 h-5 text-white" />
           </div>
-          <h3 className="text-xl font-bold text-text-primary">Revenue Trend</h3>
+          <h3 className="text-xl font-bold text-white">Revenue Trend</h3>
         </div>
         <div className="flex space-x-2">
           <button 
             onClick={() => setRevenueTimeFilter('daily')}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-              revenueTimeFilter === 'daily' 
-                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' 
-                : 'text-text-secondary dark:text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-800'
+              revenueTimeFilter === 'daily'
+                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
+                : 'text-slate-300 hover:bg-slate-700/40'
             }`}
           >
             Daily
           </button>
-          <button 
+          <button
             onClick={() => setRevenueTimeFilter('weekly')}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-              revenueTimeFilter === 'weekly' 
-                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' 
-                : 'text-text-secondary dark:text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-800'
+              revenueTimeFilter === 'weekly'
+                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
+                : 'text-slate-300 hover:bg-slate-700/40'
             }`}
           >
             Weekly
           </button>
-          <button 
+          <button
             onClick={() => setRevenueTimeFilter('monthly')}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-              revenueTimeFilter === 'monthly' 
-                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' 
-                : 'text-text-secondary dark:text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-800'
+              revenueTimeFilter === 'monthly'
+                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
+                : 'text-slate-300 hover:bg-slate-700/40'
             }`}
           >
             Monthly
@@ -570,11 +582,11 @@ const ReportingDashboard = () => {
             </AreaChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex items-center justify-center h-full text-text-tertiary bg-surface-tertiary rounded-lg">
+          <div className="flex items-center justify-center h-full text-slate-400 bg-slate-700/30 rounded-lg">
             <div className="text-center p-8">
-              <Activity className="w-16 h-16 mx-auto mb-3 text-gray-300" />
-              <p className="text-lg font-medium text-text-secondary">No revenue data available</p>
-              <p className="text-sm text-text-tertiary mt-1">Try selecting a different date range</p>
+              <Activity className="w-16 h-16 mx-auto mb-3 text-slate-500" />
+              <p className="text-lg font-medium text-slate-300">No revenue data available</p>
+              <p className="text-sm text-slate-400 mt-1">Try selecting a different date range</p>
             </div>
         </div>
         )}
@@ -583,15 +595,15 @@ const ReportingDashboard = () => {
   );
 
   const renderOccupancyChart = () => (
-    <div className="card shadow-lg hover:shadow-xl transition-shadow">
+    <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50 hover:shadow-xl transition-shadow">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
             <PieChart className="w-5 h-5 text-white" />
           </div>
-          <h3 className="text-xl font-bold text-text-primary">Occupancy Rate</h3>
+          <h3 className="text-xl font-bold text-white">Occupancy Rate</h3>
         </div>
-        <div className="px-3 py-1 bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-200 text-sm font-medium rounded-lg">
+        <div className="px-3 py-1 bg-purple-900/30 text-purple-200 text-sm font-medium rounded-lg">
           By Room Type
         </div>
       </div>
@@ -630,11 +642,11 @@ const ReportingDashboard = () => {
             </RechartsPieChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex items-center justify-center h-full text-text-tertiary bg-surface-tertiary rounded-lg">
+          <div className="flex items-center justify-center h-full text-slate-400 bg-slate-700/30 rounded-lg">
             <div className="text-center p-8">
-              <PieChart className="w-16 h-16 mx-auto mb-3 text-gray-300" />
-              <p className="text-lg font-medium text-text-secondary">No occupancy data available</p>
-              <p className="text-sm text-text-tertiary mt-1">Try selecting a different date range</p>
+              <PieChart className="w-16 h-16 mx-auto mb-3 text-slate-500" />
+              <p className="text-lg font-medium text-slate-300">No occupancy data available</p>
+              <p className="text-sm text-slate-400 mt-1">Try selecting a different date range</p>
             </div>
         </div>
         )}
@@ -643,34 +655,34 @@ const ReportingDashboard = () => {
   );
 
   const renderGuestAnalytics = () => (
-    <div className="card shadow-lg hover:shadow-xl transition-shadow">
+    <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50 hover:shadow-xl transition-shadow">
       <div className="flex items-center space-x-3 mb-6">
         <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
           <Users className="w-5 h-5 text-white" />
         </div>
-        <h3 className="text-xl font-bold text-text-primary">Guest Analytics</h3>
+        <h3 className="text-xl font-bold text-white">Guest Analytics</h3>
       </div>
       <div className="space-y-4">
-        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-700 rounded-lg hover:shadow-md transition-shadow border border-border/60 dark:border-slate-700">
+        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-slate-800/80 to-slate-700/80 rounded-lg hover:shadow-md transition-shadow border border-slate-700/50">
           <div className="flex items-center space-x-3">
-            <Users className="w-5 h-5 text-text-tertiary" />
-            <span className="text-text-secondary font-medium">Total Guests</span>
+            <Users className="w-5 h-5 text-slate-400" />
+            <span className="text-slate-300 font-medium">Total Guests</span>
           </div>
-          <span className="text-2xl font-bold text-text-primary">{reportData?.guests?.total || 0}</span>
+          <span className="text-2xl font-bold text-white">{reportData?.guests?.total || 0}</span>
         </div>
-        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-700 rounded-lg hover:shadow-md transition-shadow border border-border/60 dark:border-slate-700">
+        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-slate-800/80 to-slate-700/80 rounded-lg hover:shadow-md transition-shadow border border-slate-700/50">
           <div className="flex items-center space-x-3">
-            <Clock className="w-5 h-5 text-text-tertiary" />
-            <span className="text-text-secondary font-medium">Avg Stay Length</span>
+            <Clock className="w-5 h-5 text-slate-400" />
+            <span className="text-slate-300 font-medium">Avg Stay Length</span>
           </div>
-          <span className="text-2xl font-bold text-text-primary">{reportData?.guests?.avg_stay || 0} <span className="text-sm text-text-tertiary">nights</span></span>
+          <span className="text-2xl font-bold text-white">{reportData?.guests?.avg_stay || 0} <span className="text-sm text-slate-400">nights</span></span>
         </div>
-        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-700 rounded-lg hover:shadow-md transition-shadow border border-border/60 dark:border-slate-700">
+        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-slate-800/80 to-slate-700/80 rounded-lg hover:shadow-md transition-shadow border border-slate-700/50">
           <div className="flex items-center space-x-3">
-            <Calendar className="w-5 h-5 text-text-tertiary" />
-            <span className="text-text-secondary font-medium">Total Bookings</span>
+            <Calendar className="w-5 h-5 text-slate-400" />
+            <span className="text-slate-300 font-medium">Total Bookings</span>
           </div>
-          <span className="text-2xl font-bold text-text-primary">
+          <span className="text-2xl font-bold text-white">
             {reportData?.channel_performance?.reduce((sum, channel) => sum + channel.bookings, 0) || 0}
           </span>
         </div>
@@ -680,43 +692,43 @@ const ReportingDashboard = () => {
 
 
   const renderRoomTypeAnalysis = () => (
-    <div className="card shadow-lg hover:shadow-xl transition-shadow">
+    <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50 hover:shadow-xl transition-shadow">
       <div className="flex items-center space-x-3 mb-6">
         <div className="p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg">
           <Bed className="w-5 h-5 text-white" />
         </div>
-        <h3 className="text-xl font-bold text-text-primary">Room Type Performance</h3>
+        <h3 className="text-xl font-bold text-white">Room Type Performance</h3>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {reportData?.room_type_performance?.map((roomType, index) => (
-          <div key={index} className="group bg-gradient-to-br from-white to-gray-50 border-2 border-border rounded-xl p-5 hover:border-indigo-300 hover:shadow-lg transition-all duration-300">
+          <div key={index} className="group bg-gradient-to-br from-slate-800/90 to-slate-700/90 border border-slate-700/50 rounded-xl p-5 hover:border-indigo-400/50 hover:shadow-lg transition-all duration-300">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="font-bold text-text-primary text-lg">{roomType.room_type_name}</h4>
-              <div className="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm font-semibold rounded-lg">
+              <h4 className="font-bold text-white text-lg">{roomType.room_type_name}</h4>
+              <div className="px-3 py-1 bg-indigo-900/30 text-indigo-300 text-sm font-semibold rounded-lg">
                 {roomType.occupancy}%
               </div>
             </div>
             <div className="space-y-3">
-              <div className="flex justify-between items-center p-2 bg-surface-secondary rounded-lg group-hover:shadow-sm transition-shadow">
-                <span className="text-text-secondary text-sm flex items-center">
+              <div className="flex justify-between items-center p-2 bg-slate-800/60 rounded-lg group-hover:shadow-sm transition-shadow">
+                <span className="text-slate-300 text-sm flex items-center">
                   <DollarSign className="w-4 h-4 mr-1" />
                   Revenue:
                 </span>
-                <span className="font-bold text-text-primary">Rs {roomType.revenue?.toFixed(2)}</span>
+                <span className="font-bold text-white">Rs {roomType.revenue?.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between items-center p-2 bg-surface-secondary rounded-lg group-hover:shadow-sm transition-shadow">
-                <span className="text-text-secondary text-sm flex items-center">
+              <div className="flex justify-between items-center p-2 bg-slate-800/60 rounded-lg group-hover:shadow-sm transition-shadow">
+                <span className="text-slate-300 text-sm flex items-center">
                   <TrendingUp className="w-4 h-4 mr-1" />
                   ADR:
                 </span>
-                <span className="font-bold text-text-primary">Rs {roomType.adr?.toFixed(2)}</span>
+                <span className="font-bold text-white">Rs {roomType.adr?.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between items-center p-2 bg-surface-secondary rounded-lg group-hover:shadow-sm transition-shadow">
-                <span className="text-text-secondary text-sm flex items-center">
+              <div className="flex justify-between items-center p-2 bg-slate-800/60 rounded-lg group-hover:shadow-sm transition-shadow">
+                <span className="text-slate-300 text-sm flex items-center">
                   <Calendar className="w-4 h-4 mr-1" />
                   Bookings:
                 </span>
-                <span className="font-bold text-text-primary">{roomType.bookings}</span>
+                <span className="font-bold text-white">{roomType.bookings}</span>
               </div>
             </div>
           </div>
@@ -729,7 +741,7 @@ const ReportingDashboard = () => {
   // const renderForecasting = () => (
   //   <div className="space-y-6">
   //     <div className="bg-surface-secondary border border-border rounded-lg p-6">
-  //       <h3 className="text-lg font-semibold text-text-primary mb-4">Revenue Forecast</h3>
+  //       <h3 className="text-lg font-semibold text-white mb-4">Revenue Forecast</h3>
   //       {/* ... forecasting content ... */}
   //     </div>
   //   </div>
@@ -777,7 +789,7 @@ const ReportingDashboard = () => {
   // Show branch selector if no branch is selected
   if (showBranchSelector) {
     return (
-      <div className="min-h-screen bg-surface-primary dark:bg-slate-950 p-6 transition-colors">
+      <div className="min-h-screen bg-slate-950 p-6 transition-colors">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="luxury-gradient rounded-2xl p-8 text-white shadow-2xl">
             <div className="flex items-center justify-between mb-6">
@@ -792,8 +804,8 @@ const ReportingDashboard = () => {
               </div>
             </div>
           </div>
-          <div className="card shadow-xl">
-            <BranchSelector 
+          <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl p-6 border border-slate-700/50">
+            <BranchSelector
               onBranchSelect={handleBranchSelect}
               selectedBranch={selectedBranch}
             />
@@ -804,7 +816,7 @@ const ReportingDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-surface-primary dark:bg-slate-950 p-6 transition-colors">
+    <div className="min-h-screen bg-slate-950 p-6 transition-colors">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="luxury-gradient rounded-2xl p-8 text-white shadow-2xl">
@@ -869,19 +881,19 @@ const ReportingDashboard = () => {
         </div>
 
       {error && (
-        <div className="bg-red-50 dark:bg-red-500/15 border border-red-200 dark:border-red-500/30 rounded-lg p-4">
+        <div className="bg-slate-800/90 backdrop-blur-xl border border-red-700/50 rounded-xl p-4">
           <div className="flex items-center">
-            <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
-            <span className="text-red-700">{error}</span>
+            <AlertCircle className="w-5 h-5 text-red-400 mr-2" />
+            <span className="text-slate-300">{error}</span>
           </div>
         </div>
       )}
 
       {/* Date Range and Report Type */}
-      <div className="card shadow-lg">
+      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div>
-            <label className="block text-sm font-semibold text-text-secondary mb-2 flex items-center">
+            <label className="block text-sm font-semibold text-slate-300 mb-2 flex items-center">
               <Calendar className="w-4 h-4 mr-2 text-blue-500" />
               Start Date
             </label>
@@ -889,11 +901,11 @@ const ReportingDashboard = () => {
               type="date"
               value={dateRange.start}
               onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-text-secondary mb-2 flex items-center">
+            <label className="block text-sm font-semibold text-slate-300 mb-2 flex items-center">
               <Calendar className="w-4 h-4 mr-2 text-blue-500" />
               End Date
             </label>
@@ -901,11 +913,11 @@ const ReportingDashboard = () => {
               type="date"
               value={dateRange.end}
               onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-              className="input-field"
+              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-text-secondary mb-2 flex items-center">
+            <label className="block text-sm font-semibold text-slate-300 mb-2 flex items-center">
               <BarChart3 className="w-4 h-4 mr-2 text-purple-500" />
               Report Type
             </label>
@@ -933,14 +945,14 @@ const ReportingDashboard = () => {
 
       {/* Room Type Filter */}
       {showFilters && (
-        <div className="card shadow-lg bg-surface-secondary dark:bg-slate-800 border border-border dark:border-slate-700 ring-1 ring-blue-500/20">
-          <h3 className="text-lg font-bold text-text-primary mb-4 flex items-center">
+        <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50 ring-1 ring-blue-500/20">
+          <h3 className="text-lg font-bold text-white mb-4 flex items-center">
             <Filter className="w-5 h-5 mr-2 text-blue-600" />
             Advanced Filters
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Room Type</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Room Type</label>
               <SearchableDropdown
                 value={filters.roomType}
                 onChange={(value) => setFilters((prev) => ({ ...prev, roomType: value || 'all' }))}
@@ -955,15 +967,15 @@ const ReportingDashboard = () => {
 
       {/* Content */}
       {loading ? (
-        <div className="card shadow-xl text-center py-20">
+        <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl p-12 text-center border border-slate-700/50">
           <div className="relative">
-            <div className="animate-spin rounded-full h-20 w-20 border-4 border-border border-t-blue-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-20 w-20 border-4 border-slate-700/50 border-t-blue-600 mx-auto"></div>
             <div className="absolute inset-0 flex items-center justify-center">
               <BarChart3 className="w-8 h-8 text-blue-600 animate-pulse" />
             </div>
           </div>
-          <p className="mt-6 text-text-secondary text-xl font-semibold">Loading Report Data...</p>
-          <p className="mt-2 text-text-tertiary text-sm">Analyzing metrics and generating insights</p>
+          <p className="mt-6 text-slate-300 text-xl font-semibold">Loading Report Data...</p>
+          <p className="mt-2 text-slate-400 text-sm">Analyzing metrics and generating insights</p>
           <div className="mt-6 flex justify-center space-x-2">
             <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
             <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
@@ -971,13 +983,13 @@ const ReportingDashboard = () => {
           </div>
         </div>
       ) : error ? (
-        <div className="card shadow-xl text-center py-16">
-          <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-10 max-w-lg mx-auto">
-            <div className="bg-red-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <AlertCircle className="w-10 h-10 text-white" />
+        <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl p-12 text-center border border-slate-700/50">
+          <div className="bg-red-900/20 rounded-2xl p-10 max-w-lg mx-auto border border-red-700/50">
+            <div className="bg-red-900/40 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <AlertCircle className="w-10 h-10 text-red-400" />
             </div>
-            <h3 className="text-2xl font-bold text-red-900 mb-3">Unable to Load Report Data</h3>
-            <p className="text-red-700 mb-6 text-lg">{error}</p>
+            <h3 className="text-2xl font-bold text-white mb-3">Unable to Load Report Data</h3>
+            <p className="text-slate-300 mb-6 text-lg">{error}</p>
             <button
               onClick={loadReportData}
               className="btn-primary inline-flex items-center space-x-2 px-8 py-3 text-lg"

@@ -144,13 +144,13 @@ const SearchableDropdown = ({
   };
 
   const baseButtonClasses = `
-    w-full px-3 py-2 text-left rounded-lg border border-border bg-surface-primary text-text-primary shadow-sm
+    w-full px-3 py-2 text-left rounded-lg border border-border bg-surface-primary text-white shadow-sm
     transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
     focus-visible:ring-accent-secondary dark:bg-surface-secondary
   `;
 
   const disabledClasses = disabled
-    ? 'bg-surface-tertiary/60 text-text-tertiary cursor-not-allowed opacity-70'
+    ? 'bg-surface-tertiary/60 text-slate-400 cursor-not-allowed opacity-70'
     : 'hover:border-accent-secondary';
 
   const requiredClasses =
@@ -172,13 +172,13 @@ const SearchableDropdown = ({
         {...props}
       >
         <div className="flex items-center justify-between">
-          <span className={`block truncate ${!value ? 'text-text-tertiary' : ''}`}>
+          <span className={`block truncate ${!value ? 'text-slate-400' : ''}`}>
             {value ? getDisplayValue(selectedOption) : placeholder}
           </span>
           <div className="flex items-center">
             {value && clearable && !disabled && (
               <div
-                className="mr-1 text-text-tertiary hover:text-text-primary cursor-pointer transition-colors duration-150"
+                className="mr-1 text-slate-400 hover:text-white cursor-pointer transition-colors duration-150"
                 onClick={(e) => {
                   e.stopPropagation();
                   onChange('');
@@ -188,7 +188,7 @@ const SearchableDropdown = ({
               </div>
             )}
             <ChevronDown 
-              className={`w-4 h-4 text-text-tertiary transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+              className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
             />
           </div>
         </div>
@@ -197,16 +197,17 @@ const SearchableDropdown = ({
       {/* Dropdown menu */}
       {isOpen && (
         <div
-          className={`absolute z-50 mt-2 w-full overflow-hidden rounded-xl border border-border bg-surface-primary shadow-xl dark:bg-surface-secondary ${dropdownClassName}`}
+          className={`absolute mt-2 w-full overflow-hidden rounded-xl border-2 border-slate-600 bg-slate-800 shadow-2xl backdrop-blur-xl ${dropdownClassName}`}
+          style={{ zIndex: 'var(--z-dropdown)' }}
         >
           {!hideSearch && (
-            <div className="p-2 border-b border-border">
+            <div className="p-3 border-b border-slate-600">
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-tertiary" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <input
                   ref={searchInputRef}
                   type="text"
-                  className={`w-full rounded-lg border border-border bg-surface-secondary/70 pl-9 pr-3 py-2 text-sm text-text-primary outline-none transition-colors duration-150 focus:border-accent-secondary focus-visible:ring-2 focus-visible:ring-accent-secondary ${inputClassName}`}
+                  className={`w-full rounded-lg border-2 border-slate-600 bg-slate-700/50 pl-9 pr-3 py-2 text-sm text-white placeholder-slate-400 outline-none transition-all duration-150 focus:border-blue-500 focus:bg-slate-700 focus-visible:ring-2 focus-visible:ring-blue-500/50 ${inputClassName}`}
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -219,11 +220,11 @@ const SearchableDropdown = ({
           {/* Options list */}
           <div className="max-h-56 overflow-y-auto">
             {loading ? (
-              <div className="px-3 py-2 text-sm text-text-secondary text-center">
+              <div className="px-3 py-2 text-sm text-slate-300 text-center">
                 {loadingMessage}
               </div>
             ) : filteredOptions.length === 0 ? (
-              <div className="px-3 py-2 text-sm text-text-secondary text-center">
+              <div className="px-3 py-2 text-sm text-slate-300 text-center">
                 {emptyMessage}
               </div>
             ) : (
@@ -232,10 +233,11 @@ const SearchableDropdown = ({
                   key={option[valueKey]}
                   type="button"
                   className={`
-                    w-full px-3 py-2 text-left text-sm transition-colors duration-150
-                    ${highlightedIndex === index ? 'bg-accent-secondary/10 text-accent-secondary' : ''}
-                    ${option[valueKey] === value ? 'bg-accent-secondary/15 text-accent-secondary font-semibold' : 'text-text-primary'}
-                    hover:bg-accent-secondary/10 focus-visible:outline-none focus-visible:bg-accent-secondary/10
+                    w-full px-4 py-3 text-left text-sm font-medium transition-all duration-150
+                    ${highlightedIndex === index ? 'bg-blue-600/20 text-white' : ''}
+                    ${option[valueKey] === value ? 'bg-blue-600/30 text-white font-bold border-l-4 border-blue-500' : 'text-slate-100 hover:text-white'}
+                    hover:bg-blue-600/20 hover:border-l-4 hover:border-blue-500/50 focus-visible:outline-none focus-visible:bg-blue-600/20
+                    border-l-4 border-transparent
                     ${optionClassName}
                   `}
                   onClick={() => handleSelect(option)}

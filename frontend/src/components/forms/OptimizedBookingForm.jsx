@@ -161,7 +161,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-surface-secondary rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-text-primary mb-6 flex items-center">
+      <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
         <Bed className="w-6 h-6 mr-2 text-blue-600" />
         Create New Booking
       </h2>
@@ -170,7 +170,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
         {/* Guest Selection */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               <User className="w-4 h-4 inline mr-1" />
               Guest *
             </label>
@@ -191,7 +191,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
                 <div className="flex justify-between items-center w-full">
                   <div>
                     <div className="font-medium">{guest.full_name}</div>
-                    <div className="text-sm text-text-secondary">
+                    <div className="text-sm text-slate-300">
                       {guest.email && `${guest.email}`}
                       {guest.phone && ` | ${guest.phone}`}
                     </div>
@@ -201,7 +201,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
               renderSelected={(guest) => (
                 <div className="flex justify-between items-center w-full">
                   <span className="font-medium">{guest.full_name}</span>
-                  <span className="text-sm text-text-secondary">{guest.email}</span>
+                  <span className="text-sm text-slate-300">{guest.email}</span>
                 </div>
               )}
               emptyMessage="No guests found"
@@ -212,7 +212,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               <Bed className="w-4 h-4 inline mr-1" />
               Room *
             </label>
@@ -233,7 +233,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
                 <div className="flex justify-between items-center w-full">
                   <div>
                     <div className="font-medium">Room {room.room_number}</div>
-                    <div className="text-sm text-text-secondary">
+                    <div className="text-sm text-slate-300">
                       {room.room_type_name} | Floor {room.floor}
                     </div>
                   </div>
@@ -247,7 +247,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
               renderSelected={(room) => (
                 <div className="flex justify-between items-center w-full">
                   <span className="font-medium">Room {room.room_number}</span>
-                  <span className="text-sm text-text-secondary">
+                  <span className="text-sm text-slate-300">
                     {room.room_type_name} - Rs {parseFloat(room.base_rate).toFixed(2)}/night
                   </span>
                 </div>
@@ -263,7 +263,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
         {/* Date Selection */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               <Calendar className="w-4 h-4 inline mr-1" />
               Check-in Date *
             </label>
@@ -282,7 +282,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               <Calendar className="w-4 h-4 inline mr-1" />
               Check-out Date *
             </label>
@@ -304,7 +304,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
         {/* Pricing */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               <DollarSign className="w-4 h-4 inline mr-1" />
               Booking Rate *
             </label>
@@ -324,7 +324,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               <Percent className="w-4 h-4 inline mr-1" />
               Tax Rate (%)
             </label>
@@ -345,7 +345,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               <CreditCard className="w-4 h-4 inline mr-1" />
               Advance Payment
             </label>
@@ -363,7 +363,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
             {errors.advance_payment && (
               <p className="mt-1 text-sm text-red-600">{errors.advance_payment}</p>
             )}
-            <p className="mt-1 text-xs text-text-tertiary">
+            <p className="mt-1 text-xs text-slate-400">
               Minimum: Rs {calculateMinimumAdvance().toFixed(2)}
             </p>
           </div>
@@ -371,7 +371,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
 
         {/* Payment Method */}
         <div>
-          <label className="block text-sm font-medium text-text-secondary mb-2">
+          <label className="block text-sm font-medium text-slate-300 mb-2">
             Preferred Payment Method
           </label>
           <SearchableDropdown
@@ -407,7 +407,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
 
         {/* Total Calculation */}
         <div className="bg-surface-tertiary p-4 rounded-lg">
-          <h3 className="font-semibold text-text-primary mb-2">Booking Summary</h3>
+          <h3 className="font-semibold text-white mb-2">Booking Summary</h3>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between">
               <span>Nights:</span>
@@ -438,8 +438,8 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
 
         {/* Submit Error */}
         {errors.submit && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800">{errors.submit}</p>
+          <div className="bg-red-900/20 border border-red-700 rounded-lg p-4">
+            <p className="text-red-200">{errors.submit}</p>
           </div>
         )}
 
@@ -448,7 +448,7 @@ const OptimizedBookingForm = ({ onBookingCreated, onCancel }) => {
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-3 border border-border dark:border-slate-600 rounded-lg text-text-secondary hover:bg-surface-tertiary transition-colors"
+            className="px-6 py-3 border border-border dark:border-slate-600 rounded-lg text-slate-300 hover:bg-surface-tertiary transition-colors"
           >
             Cancel
           </button>

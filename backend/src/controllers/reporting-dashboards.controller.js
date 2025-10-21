@@ -66,13 +66,20 @@ async function getKPIsDashboard(req, res) {
     
     // Calculate RevPAR
     const revPAR = occupancy.total_rooms > 0 ? (occupancy.total_revenue / (occupancy.total_rooms * nightsInPeriod)) : 0;
-    
-    // Since we can't modify the database, return simulated data
-    const serviceRevenue = {
-      service_revenue: 3500.00,
-      bookings_with_services: 20,
-      total_service_transactions: 45
-    };
+
+    // Get service revenue from database
+    const serviceRevenueQuery = `
+      SELECT
+        COALESCE(SUM(su.qty * su.unit_price_at_use), 0) as service_revenue,
+        COUNT(DISTINCT su.booking_id) as bookings_with_services,
+        COUNT(su.service_usage_id) as total_service_transactions
+      FROM service_usage su
+      JOIN booking b ON su.booking_id = b.booking_id
+      WHERE su.used_on BETWEEN $1::date AND $2::date${branchFilter}
+    `;
+
+    const serviceRevenueRes = await pool.query(serviceRevenueQuery, queryParams);
+    const serviceRevenue = serviceRevenueRes.rows[0];
     
     // Get payment metrics
     const paymentQuery = `
@@ -162,10 +169,10 @@ async function getKPIsDashboard(req, res) {
         total_rooms: parseInt(occupancy.total_rooms)
       },
       revenue_metrics: {
-        room_revenue: parseFloat(occupancy.total_revenue || 0),
-        service_revenue: parseFloat(serviceRevenue.service_revenue || 0),
-        total_revenue: parseFloat((occupancy.total_revenue || 0) + (serviceRevenue.service_revenue || 0)),
-        avg_daily_rate: parseFloat(occupancy.avg_daily_rate || 0),
+        room_revenue: parseFloat((occupancy.total_revenue || 0).toFixed(2)),
+        service_revenue: parseFloat((serviceRevenue.service_revenue || 0).toFixed(2)),
+        total_revenue: parseFloat(((parseFloat(occupancy.total_revenue || 0) + parseFloat(serviceRevenue.service_revenue || 0))).toFixed(2)),
+        avg_daily_rate: parseFloat((occupancy.avg_daily_rate || 0).toFixed(2)),
         revpar: parseFloat(revPAR.toFixed(2))
       },
       service_metrics: {
@@ -235,17 +242,20 @@ async function getOccupancyTrends(req, res) {
     `;
 
     const trendsRes = await pool.query(trendsQuery, [startDate, endDate]);
-    
+
+    // Get total rooms count from database
+    const roomCountQuery = 'SELECT COUNT(*) as total_rooms FROM room';
+    const roomCountRes = await pool.query(roomCountQuery);
+    const totalRooms = parseInt(roomCountRes.rows[0].total_rooms);
+
     // Calculate occupancy rate for each period
     const trends = trendsRes.rows.map(row => {
       const periodDate = new Date(row.period);
-      const daysInPeriod = granularity === 'daily' ? 1 : 
-                          granularity === 'weekly' ? 7 : 
+      const daysInPeriod = granularity === 'daily' ? 1 :
+                          granularity === 'weekly' ? 7 :
                           new Date(periodDate.getFullYear(), periodDate.getMonth() + 1, 0).getDate();
-      
-      // Get total rooms for occupancy calculation
-      const totalRooms = 50; // This should be dynamic based on your property
-      const occupancyRate = (row.completed_stays / (totalRooms * daysInPeriod)) * 100;
+
+      const occupancyRate = totalRooms > 0 ? (row.completed_stays / (totalRooms * daysInPeriod)) * 100 : 0;
       
       return {
         period: row.period,

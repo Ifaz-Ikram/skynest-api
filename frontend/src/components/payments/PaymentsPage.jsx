@@ -127,8 +127,8 @@ export const PaymentsPage = () => {
         <div className="bg-surface-secondary rounded-xl shadow-md p-6 border border-border">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-text-secondary" />
-            <span className="font-medium text-text-secondary">Filter by Branch:</span>
+            <Building2 className="w-5 h-5 text-slate-300" />
+            <span className="font-medium text-slate-300">Filter by Branch:</span>
           </div>
           <SearchableDropdown
             value={selectedBranch}
@@ -137,13 +137,13 @@ export const PaymentsPage = () => {
             placeholder="All branches"
             searchPlaceholder="Search branches..."
             className="min-w-[220px]"
-            buttonClassName="!px-4 !py-2.5 !rounded-xl !border border-border dark:border-slate-600 !bg-surface-secondary dark:!bg-slate-800 !text-text-secondary dark:!text-slate-200 font-medium hover:!border-luxury-gold focus-visible:!ring-luxury-gold focus-visible:!ring-offset-0"
+            buttonClassName="!px-4 !py-2.5 !rounded-xl !border border-border dark:border-slate-600 !bg-surface-secondary dark:!bg-slate-800 !text-slate-300 dark:!text-slate-200 font-medium hover:!border-luxury-gold focus-visible:!ring-luxury-gold focus-visible:!ring-offset-0"
             dropdownClassName="!border-border"
           />
           {selectedBranch && (
             <button
               onClick={() => setSelectedBranch('')}
-              className="text-sm text-text-tertiary hover:text-text-secondary underline"
+              className="text-sm text-slate-400 hover:text-slate-300 underline"
             >
               Clear Filter
             </button>
@@ -155,27 +155,27 @@ export const PaymentsPage = () => {
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-luxury-gold mx-auto"></div>
-            <p className="text-text-secondary mt-4">Loading payments...</p>
+            <p className="text-slate-300 mt-4">Loading payments...</p>
           </div>
         ) : payments.length === 0 ? (
           <div className="text-center py-12">
-            <CreditCard className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-text-secondary">No transactions found</p>
-            <p className="text-text-tertiary text-sm mt-2">Payments and adjustments will appear here</p>
+            <CreditCard className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+            <p className="text-slate-300">No transactions found</p>
+            <p className="text-slate-400 text-sm mt-2">Payments and adjustments will appear here</p>
           </div>
         ) : (
           <div className="overflow-x-auto border border-border dark:border-slate-700 rounded-xl">
             <table className="min-w-full">
               <thead className="bg-surface-tertiary dark:bg-slate-800/60">
                 <tr className="border-b border-border dark:border-slate-700">
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Transaction ID</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Type</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Booking ID</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Amount</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Method</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Reason</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Date</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-text-secondary">Actions</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300">Transaction ID</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300">Type</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300">Booking ID</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300">Amount</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300">Method</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300">Reason</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300">Date</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-surface-secondary dark:bg-slate-800">
@@ -183,10 +183,10 @@ export const PaymentsPage = () => {
                   <tr 
                     key={`${transaction.transaction_type}-${transaction.payment_id}`} 
                     className={`border-b border-border dark:border-slate-700 transition-colors bg-surface-secondary dark:bg-slate-800 hover:bg-surface-tertiary dark:hover:bg-slate-700/40 ${
-                      transaction.transaction_type === 'adjustment' ? 'bg-blue-50 dark:bg-blue-500/15' : ''
+                      transaction.transaction_type === 'adjustment' ? 'bg-blue-900/20 dark:bg-blue-900/200/15' : ''
                     }`}
                   >
-                    <td className="py-4 px-4 font-medium text-text-primary">
+                    <td className="py-4 px-4 font-medium text-white">
                       <div className="flex items-center gap-2">
                         {transaction.transaction_type === 'payment' ? (
                           <ArrowUpCircle className="w-4 h-4 text-green-600 dark:text-green-300" />
@@ -199,13 +199,13 @@ export const PaymentsPage = () => {
                     <td className="py-4 px-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                         transaction.transaction_type === 'payment' 
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' 
-                          : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                          ? 'bg-green-800/30 text-green-200 dark:bg-green-900/30 dark:text-green-300' 
+                          : 'bg-blue-800/30 text-blue-200 dark:bg-blue-900/30 dark:text-blue-300'
                       }`}>
                         {transaction.transaction_type === 'payment' ? 'Payment' : 'Adjustment'}
                       </span>
                     </td>
-                    <td className="py-4 px-4 text-text-secondary">{transaction.booking_id}</td>
+                    <td className="py-4 px-4 text-slate-300">{transaction.booking_id}</td>
                     <td className={`py-4 px-4 font-bold ${
                       transaction.transaction_type === 'adjustment' && transaction.amount < 0
                         ? 'text-red-600' 
@@ -213,31 +213,31 @@ export const PaymentsPage = () => {
                     }`}>
                       {transaction.transaction_type === 'adjustment' && transaction.amount < 0 ? '-' : ''}Rs {Math.abs(transaction.amount)}
                     </td>
-                    <td className="py-4 px-4 text-text-secondary">
+                    <td className="py-4 px-4 text-slate-300">
                       {transaction.transaction_type === 'payment' 
                         ? transaction.method || 'N/A'
                         : transaction.adjustment_type || 'N/A'
                       }
                     </td>
-                    <td className="py-4 px-4 text-text-secondary text-sm">
+                    <td className="py-4 px-4 text-slate-300 text-sm">
                       {transaction.transaction_type === 'adjustment' 
                         ? (transaction.reason || 'No reason provided')
                         : '-'
                       }
                     </td>
-                    <td className="py-4 px-4 text-text-secondary">
+                    <td className="py-4 px-4 text-slate-300">
                       {transaction.paid_at ? format(new Date(transaction.paid_at), 'dd/MM/yyyy') : 'N/A'}
                     </td>
                     <td className="py-4 px-4">
                       {transaction.transaction_type === 'payment' ? (
                         <button 
                           onClick={() => handleAdjustment(transaction)}
-                          className="text-blue-500 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-200 font-medium text-sm transition-colors"
+                          className="text-blue-500 dark:text-blue-300 hover:text-blue-300 dark:hover:text-blue-200 font-medium text-sm transition-colors"
                         >
                           Adjust
                         </button>
                       ) : (
-                        <span className="text-text-tertiary text-sm">-</span>
+                        <span className="text-slate-400 text-sm">-</span>
                       )}
                     </td>
                   </tr>
@@ -252,7 +252,7 @@ export const PaymentsPage = () => {
           <div className="mt-6 flex justify-center">
             <button
               onClick={() => setPage(p => p + 1)}
-              className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-md shadow-sm transition-colors"
+              className="px-6 py-3 bg-yellow-900/200 hover:bg-yellow-600 text-white font-medium rounded-md shadow-sm transition-colors"
             >
               Load More Payments ({payments.length} loaded)
             </button>
@@ -260,7 +260,7 @@ export const PaymentsPage = () => {
         )}
         
         {!loading && payments.length > 0 && (
-          <div className="mt-4 text-center text-sm text-text-secondary">
+          <div className="mt-4 text-center text-sm text-slate-300">
             Load more payments for better search results
           </div>
         )}
@@ -268,7 +268,7 @@ export const PaymentsPage = () => {
         {/* Pagination Controls */}
         {!loading && payments.length > 0 && totalPages > 1 && (
           <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
-            <div className="text-sm text-text-secondary">
+            <div className="text-sm text-slate-300">
               Showing <span className="font-medium">{payments.length}</span> filtered results from{' '}
               <span className="font-medium">{total}</span> loaded payments
             </div>
@@ -276,7 +276,7 @@ export const PaymentsPage = () => {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3 py-2 border border-border dark:border-slate-600 rounded text-sm font-medium text-text-secondary hover:bg-surface-tertiary dark:hover:bg-slate-700/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                className="px-3 py-2 border border-border dark:border-slate-600 rounded text-sm font-medium text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-700/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
               >
                 Previous
               </button>
@@ -300,8 +300,8 @@ export const PaymentsPage = () => {
                     onClick={() => setPage(pageNum)}
                     className={`min-w-[40px] px-3 py-2 border rounded text-sm font-medium transition-colors ${
                       page === pageNum
-                        ? 'bg-yellow-500 text-white border-yellow-500'
-                        : 'border-border dark:border-slate-600 text-text-primary dark:text-slate-200 hover:bg-surface-tertiary dark:hover:bg-slate-700/40'
+                        ? 'bg-yellow-900/200 text-white border-yellow-500'
+                        : 'border-border dark:border-slate-600 text-white dark:text-slate-200 hover:bg-surface-tertiary dark:hover:bg-slate-700/40'
                     }`}
                   >
                     {pageNum}
@@ -312,7 +312,7 @@ export const PaymentsPage = () => {
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-3 py-2 border border-border dark:border-slate-600 rounded text-sm font-medium text-text-secondary hover:bg-surface-tertiary dark:hover:bg-slate-700/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                className="px-3 py-2 border border-border dark:border-slate-600 rounded text-sm font-medium text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-700/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
               >
                 Next
               </button>

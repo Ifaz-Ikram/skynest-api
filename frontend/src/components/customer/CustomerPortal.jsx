@@ -110,12 +110,12 @@ const CustomerPortal = () => {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-text-primary">Customer Portal</h1>
-        <p className="text-text-secondary mt-2">Manage your bookings, check-in online, and update your preferences</p>
+        <h1 className="text-3xl font-bold text-white">Customer Portal</h1>
+        <p className="text-slate-300 mt-2">Manage your bookings, check-in online, and update your preferences</p>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+        <div className="bg-red-900/20 border border-red-700 text-red-300 px-4 py-3 rounded mb-6">
           {error}
         </div>
       )}
@@ -125,21 +125,21 @@ const CustomerPortal = () => {
         <div className="bg-surface-secondary shadow rounded-lg p-6 mb-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-text-primary">{profile.full_name}</h2>
-              <p className="text-text-secondary">{profile.email}</p>
-              <div className="mt-2 flex items-center space-x-4 text-sm text-text-tertiary">
+              <h2 className="text-xl font-semibold text-white">{profile.full_name}</h2>
+              <p className="text-slate-300">{profile.email}</p>
+              <div className="mt-2 flex items-center space-x-4 text-sm text-slate-400">
                 <span>{profile.total_stays} stays</span>
                 <span>Rs {profile.total_spent.toLocaleString()} total spent</span>
                 {profile.loyalty.membership_level && (
-                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                  <span className="bg-blue-800/30 text-blue-200 px-2 py-1 rounded-full text-xs">
                     {profile.loyalty.membership_level} Member
                   </span>
                 )}
               </div>
             </div>
             <div className="text-right">
-              <p className="text-sm text-text-tertiary">Loyalty Points</p>
-              <p className="text-2xl font-semibold text-text-primary">
+              <p className="text-sm text-slate-400">Loyalty Points</p>
+              <p className="text-2xl font-semibold text-white">
                 {profile.loyalty.current_points || 0}
               </p>
             </div>
@@ -161,7 +161,7 @@ const CustomerPortal = () => {
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === tab.id
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-border dark:border-slate-600'
+                  : 'border-transparent text-slate-300 hover:text-slate-100 hover:border-border dark:border-slate-600'
               }`}
             >
               {tab.name}
@@ -245,10 +245,10 @@ const BookingsManagement = ({ bookings, onCheckIn, onCheckOut, onViewDetails }) 
                 <div className="flex justify-between items-start">
                   <div>
                     <h4 className="font-medium">{booking.room_type}</h4>
-                    <p className="text-sm text-text-secondary">
+                    <p className="text-sm text-slate-300">
                       {new Date(booking.check_in_date).toLocaleDateString()} - {new Date(booking.check_out_date).toLocaleDateString()}
                     </p>
-                    <p className="text-sm text-text-tertiary">Room {booking.room_number}</p>
+                    <p className="text-sm text-slate-400">Room {booking.room_number}</p>
                     <p className="text-sm font-medium">${booking.booked_rate.toLocaleString()}</p>
                   </div>
                   <div className="flex space-x-2">
@@ -284,10 +284,10 @@ const BookingsManagement = ({ bookings, onCheckIn, onCheckOut, onViewDetails }) 
                 <div className="flex justify-between items-start">
                   <div>
                     <h4 className="font-medium">{booking.room_type}</h4>
-                    <p className="text-sm text-text-secondary">
+                    <p className="text-sm text-slate-300">
                       {new Date(booking.check_in_date).toLocaleDateString()} - {new Date(booking.check_out_date).toLocaleDateString()}
                     </p>
-                    <p className="text-sm text-text-tertiary">Room {booking.room_number}</p>
+                    <p className="text-sm text-slate-400">Room {booking.room_number}</p>
                     <p className="text-sm font-medium">${booking.booked_rate.toLocaleString()}</p>
                   </div>
                   <div className="flex space-x-2">
@@ -323,10 +323,10 @@ const BookingsManagement = ({ bookings, onCheckIn, onCheckOut, onViewDetails }) 
                 <div className="flex justify-between items-start">
                   <div>
                     <h4 className="font-medium">{booking.room_type}</h4>
-                    <p className="text-sm text-text-secondary">
+                    <p className="text-sm text-slate-300">
                       {new Date(booking.check_in_date).toLocaleDateString()} - {new Date(booking.check_out_date).toLocaleDateString()}
                     </p>
-                    <p className="text-sm text-text-tertiary">Room {booking.room_number}</p>
+                    <p className="text-sm text-slate-400">Room {booking.room_number}</p>
                     <p className="text-sm font-medium">${booking.booked_rate.toLocaleString()}</p>
                   </div>
                   <div className="flex space-x-2">
@@ -346,7 +346,7 @@ const BookingsManagement = ({ bookings, onCheckIn, onCheckOut, onViewDetails }) 
 
       {bookings.length === 0 && (
         <div className="bg-surface-secondary shadow rounded-lg p-6 text-center">
-          <p className="text-text-tertiary">No bookings found</p>
+          <p className="text-slate-400">No bookings found</p>
         </div>
       )}
     </div>
@@ -381,8 +381,8 @@ const PreferencesManagement = ({ preferences, onAdd, onUpdate, onDelete, showFor
               <div className="flex justify-between items-start">
                 <div>
                   <h4 className="font-medium">{preference.preference_type}</h4>
-                  <p className="text-sm text-text-secondary">{preference.preference_value}</p>
-                  <p className="text-xs text-text-tertiary">
+                  <p className="text-sm text-slate-300">{preference.preference_value}</p>
+                  <p className="text-xs text-slate-400">
                     Added {new Date(preference.created_at).toLocaleDateString()}
                   </p>
                 </div>
@@ -407,8 +407,8 @@ const PreferencesManagement = ({ preferences, onAdd, onUpdate, onDelete, showFor
 
         {preferences.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-text-tertiary">No preferences set yet</p>
-            <p className="text-sm text-text-tertiary mt-2">Add your preferences to personalize your stay</p>
+            <p className="text-slate-400">No preferences set yet</p>
+            <p className="text-sm text-slate-400 mt-2">Add your preferences to personalize your stay</p>
           </div>
         )}
       </div>
@@ -442,7 +442,7 @@ const PreferenceForm = ({ onSubmit, onCancel }) => {
       <h4 className="font-medium mb-4">Add New Preference</h4>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-text-secondary mb-1">
+          <label className="block text-sm font-medium text-slate-300 mb-1">
             Preference Type
           </label>
           <SearchableDropdown
@@ -479,7 +479,7 @@ const PreferenceForm = ({ onSubmit, onCancel }) => {
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-text-secondary mb-1">
+          <label className="block text-sm font-medium text-slate-300 mb-1">
             Preference Description
           </label>
           <textarea
@@ -488,7 +488,7 @@ const PreferenceForm = ({ onSubmit, onCancel }) => {
             onChange={handleChange}
             rows="3"
             placeholder="Describe your preference..."
-            className="w-full border border-border dark:border-slate-600 rounded-md px-3 py-2 bg-surface-secondary text-text-primary placeholder:text-text-tertiary dark:bg-slate-700 dark:text-slate-100 bg-surface-secondary text-text-primary dark:bg-slate-700 dark:text-slate-100 placeholder:text-text-tertiary"
+            className="w-full border border-border dark:border-slate-600 rounded-md px-3 py-2 bg-surface-secondary text-white placeholder:text-slate-400 dark:bg-slate-700 dark:text-slate-100 bg-surface-secondary text-white dark:bg-slate-700 dark:text-slate-100 placeholder:text-slate-400"
             required
           />
         </div>
@@ -501,14 +501,14 @@ const PreferenceForm = ({ onSubmit, onCancel }) => {
             onChange={handleChange}
             className="mr-2"
           />
-          <label className="text-sm text-text-secondary">Active</label>
+          <label className="text-sm text-slate-300">Active</label>
         </div>
 
         <div className="flex justify-end space-x-2">
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 border border-border dark:border-slate-600 rounded-md text-text-secondary hover:bg-surface-tertiary"
+            className="px-4 py-2 border border-border dark:border-slate-600 rounded-md text-slate-300 hover:bg-surface-tertiary"
           >
             Cancel
           </button>
@@ -532,7 +532,7 @@ const ProfileManagement = ({ profile }) => {
         <h3 className="text-lg font-medium mb-4">Profile Information</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h4 className="font-medium text-text-primary mb-2">Personal Information</h4>
+            <h4 className="font-medium text-white mb-2">Personal Information</h4>
             <div className="space-y-2 text-sm">
               <div><span className="font-medium">Name:</span> {profile.full_name}</div>
               <div><span className="font-medium">Email:</span> {profile.email}</div>
@@ -542,7 +542,7 @@ const ProfileManagement = ({ profile }) => {
           </div>
           
           <div>
-            <h4 className="font-medium text-text-primary mb-2">Stay History</h4>
+            <h4 className="font-medium text-white mb-2">Stay History</h4>
             <div className="space-y-2 text-sm">
               <div><span className="font-medium">Total Stays:</span> {profile.total_stays}</div>
               <div><span className="font-medium">Total Spent:</span> Rs {profile.total_spent.toLocaleString()}</div>
@@ -558,20 +558,20 @@ const ProfileManagement = ({ profile }) => {
           <h3 className="text-lg font-medium mb-4">Loyalty Program</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <h4 className="font-medium text-text-primary mb-2">Membership Level</h4>
-              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+              <h4 className="font-medium text-white mb-2">Membership Level</h4>
+              <span className="bg-blue-800/30 text-blue-200 px-3 py-1 rounded-full text-sm font-medium">
                 {profile.loyalty.membership_level}
               </span>
             </div>
             <div>
-              <h4 className="font-medium text-text-primary mb-2">Current Points</h4>
-              <p className="text-2xl font-semibold text-text-primary">
+              <h4 className="font-medium text-white mb-2">Current Points</h4>
+              <p className="text-2xl font-semibold text-white">
                 {profile.loyalty.current_points || 0}
               </p>
             </div>
             <div>
-              <h4 className="font-medium text-text-primary mb-2">Member Since</h4>
-              <p className="text-sm text-text-secondary">
+              <h4 className="font-medium text-white mb-2">Member Since</h4>
+              <p className="text-sm text-slate-300">
                 {profile.loyalty.enrollment_date ? new Date(profile.loyalty.enrollment_date).toLocaleDateString() : 'N/A'}
               </p>
             </div>
@@ -616,13 +616,13 @@ const OnlineCheckInModal = ({ booking, onSubmit, onCancel }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full" style={{ zIndex: 'var(--z-modal)' }}>
+      <div className="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-slate-800">
         <h3 className="text-lg font-medium mb-4">Online Check-In</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">
+              <label className="block text-sm font-medium text-slate-300 mb-1">
                 ID Document Type *
               </label>
               <SearchableDropdown
@@ -657,7 +657,7 @@ const OnlineCheckInModal = ({ booking, onSubmit, onCancel }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">
+              <label className="block text-sm font-medium text-slate-300 mb-1">
                 ID Document Number *
               </label>
               <input
@@ -673,7 +673,7 @@ const OnlineCheckInModal = ({ booking, onSubmit, onCancel }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">
+              <label className="block text-sm font-medium text-slate-300 mb-1">
                 Emergency Contact Name *
               </label>
               <input
@@ -686,7 +686,7 @@ const OnlineCheckInModal = ({ booking, onSubmit, onCancel }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">
+              <label className="block text-sm font-medium text-slate-300 mb-1">
                 Emergency Contact Phone *
               </label>
               <input
@@ -701,7 +701,7 @@ const OnlineCheckInModal = ({ booking, onSubmit, onCancel }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               Special Requests
             </label>
             <textarea
@@ -709,7 +709,7 @@ const OnlineCheckInModal = ({ booking, onSubmit, onCancel }) => {
               value={formData.special_requests}
               onChange={handleChange}
               rows="3"
-              className="w-full border border-border dark:border-slate-600 rounded-md px-3 py-2 bg-surface-secondary text-text-primary placeholder:text-text-tertiary dark:bg-slate-700 dark:text-slate-100 bg-surface-secondary text-text-primary dark:bg-slate-700 dark:text-slate-100 placeholder:text-text-tertiary"
+              className="w-full border border-border dark:border-slate-600 rounded-md px-3 py-2 bg-surface-secondary text-white placeholder:text-slate-400 dark:bg-slate-700 dark:text-slate-100 bg-surface-secondary text-white dark:bg-slate-700 dark:text-slate-100 placeholder:text-slate-400"
             />
           </div>
 
@@ -722,7 +722,7 @@ const OnlineCheckInModal = ({ booking, onSubmit, onCancel }) => {
               className="mr-2"
               required
             />
-            <label className="text-sm text-text-secondary">
+            <label className="text-sm text-slate-300">
               I agree to the terms and conditions *
             </label>
           </div>
@@ -731,7 +731,7 @@ const OnlineCheckInModal = ({ booking, onSubmit, onCancel }) => {
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 border border-border dark:border-slate-600 rounded-md text-text-secondary hover:bg-surface-tertiary"
+              className="px-4 py-2 border border-border dark:border-slate-600 rounded-md text-slate-300 hover:bg-surface-tertiary"
             >
               Cancel
             </button>
@@ -774,12 +774,12 @@ const OnlineCheckOutModal = ({ booking, onSubmit, onCancel }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full" style={{ zIndex: 'var(--z-modal)' }}>
+      <div className="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-slate-800">
         <h3 className="text-lg font-medium mb-4">Online Check-Out</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               Check-Out Method *
             </label>
             <SearchableDropdown
@@ -814,7 +814,7 @@ const OnlineCheckOutModal = ({ booking, onSubmit, onCancel }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">
+              <label className="block text-sm font-medium text-slate-300 mb-1">
                 Receipt Email
               </label>
               <input
@@ -826,7 +826,7 @@ const OnlineCheckOutModal = ({ booking, onSubmit, onCancel }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">
+              <label className="block text-sm font-medium text-slate-300 mb-1">
                 Receipt SMS
               </label>
               <input
@@ -840,7 +840,7 @@ const OnlineCheckOutModal = ({ booking, onSubmit, onCancel }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               Overall Rating
             </label>
             <SearchableDropdown
@@ -876,7 +876,7 @@ const OnlineCheckOutModal = ({ booking, onSubmit, onCancel }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               Feedback Comments
             </label>
             <textarea
@@ -884,7 +884,7 @@ const OnlineCheckOutModal = ({ booking, onSubmit, onCancel }) => {
               value={formData.feedback_comments}
               onChange={handleChange}
               rows="3"
-              className="w-full border border-border dark:border-slate-600 rounded-md px-3 py-2 bg-surface-secondary text-text-primary placeholder:text-text-tertiary dark:bg-slate-700 dark:text-slate-100 bg-surface-secondary text-text-primary dark:bg-slate-700 dark:text-slate-100 placeholder:text-text-tertiary"
+              className="w-full border border-border dark:border-slate-600 rounded-md px-3 py-2 bg-surface-secondary text-white placeholder:text-slate-400 dark:bg-slate-700 dark:text-slate-100 bg-surface-secondary text-white dark:bg-slate-700 dark:text-slate-100 placeholder:text-slate-400"
             />
           </div>
 
@@ -896,7 +896,7 @@ const OnlineCheckOutModal = ({ booking, onSubmit, onCancel }) => {
               onChange={handleChange}
               className="mr-2"
             />
-            <label className="text-sm text-text-secondary">
+            <label className="text-sm text-slate-300">
               I consent to receive marketing communications
             </label>
           </div>
@@ -905,7 +905,7 @@ const OnlineCheckOutModal = ({ booking, onSubmit, onCancel }) => {
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 border border-border dark:border-slate-600 rounded-md text-text-secondary hover:bg-surface-tertiary"
+              className="px-4 py-2 border border-border dark:border-slate-600 rounded-md text-slate-300 hover:bg-surface-tertiary"
             >
               Cancel
             </button>
