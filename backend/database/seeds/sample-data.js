@@ -6,8 +6,17 @@ async function ensureOneRow(sqlCheck, sqlInsert, replacements = {}) {
   const [rows] = await sequelize.query(sqlCheck, { replacements });
   if (rows.length) return rows[0];
 
-  const [inserted] = await sequelize.query(sqlInsert, { replacements });
-  if (inserted?.[0]) return inserted[0];
+  try {
+    const [inserted] = await sequelize.query(sqlInsert, { replacements });
+    if (inserted?.[0]) return inserted[0];
+  } catch (err) {
+    // If duplicate key error, re-check and return existing row
+    if (err.name === 'SequelizeUniqueConstraintError' || err.original?.code === '23505') {
+      const [rows2] = await sequelize.query(sqlCheck, { replacements });
+      if (rows2[0]) return rows2[0];
+    }
+    throw err;
+  }
 
   const [rows2] = await sequelize.query(sqlCheck, { replacements });
   return rows2[0];
