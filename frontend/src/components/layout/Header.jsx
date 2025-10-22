@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, Hotel, LogOut } from 'lucide-react';
-import { ThemeToggle } from '../common';
 import { useTheme } from '../../context/ThemeContext';
 
 export const Header = ({
@@ -91,7 +90,6 @@ export const Header = ({
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4">
-            <ThemeToggle />
             <div className="relative" ref={userMenuRef}>
               <button
                 type="button"
