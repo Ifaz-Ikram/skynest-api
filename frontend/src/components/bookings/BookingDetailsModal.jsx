@@ -54,9 +54,14 @@ export const BookingDetailsModal = ({ booking, onClose }) => {
     }
   };
 
-  const viewInvoice = () => {
-    const url = api.getInvoiceHtmlUrl(booking.booking_id);
-    window.open(url, '_blank');
+  const viewInvoice = async () => {
+    try {
+      const url = await api.getInvoiceHtmlUrlWithToken(booking.booking_id);
+      window.open(url, '_blank');
+    } catch (error) {
+      console.error('Error opening invoice:', error);
+      alert('Failed to open invoice. Please try again.');
+    }
   };
 
   return (

@@ -15,6 +15,9 @@ export const RoomsPage = () => {
   const [branches, setBranches] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState('');
 
+  // Room type filtering state
+  const [selectedRoomType, setSelectedRoomType] = useState('');
+
   // Room search state
   const [selectedRoom, setSelectedRoom] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -39,11 +42,11 @@ export const RoomsPage = () => {
   }, []);
 
   useEffect(() => {
-    // Reload rooms when branch filter changes
+    // Reload rooms when branch or room type filter changes
     if (branches.length > 0) {
       loadRooms();
     }
-  }, [selectedBranch]);
+  }, [selectedBranch, selectedRoomType]);
 
   const loadBranches = async () => {
     try {
@@ -75,6 +78,11 @@ export const RoomsPage = () => {
       // Add branch filter if selected
       if (selectedBranch) {
         params.branch_id = selectedBranch;
+      }
+      
+      // Add room type filter if selected
+      if (selectedRoomType) {
+        params.room_type_id = selectedRoomType;
       }
       
       // Get all rooms (including occupied and maintenance)
@@ -281,7 +289,40 @@ export const RoomsPage = () => {
         </div>
       </div>
 
-      {/* Room Search Filter - Third Priority */}
+      {/* Room Type Filter - Third Priority */}
+      <div className="card relative">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Bed className="w-5 h-5 text-slate-300 dark:text-slate-300" />
+            <span className="font-medium text-slate-300 dark:text-slate-200">Filter by Room Type:</span>
+          </div>
+          <SearchableDropdown
+            options={[
+              { room_type_id: '', name: 'All Room Types' },
+              ...roomTypes
+            ]}
+            value={selectedRoomType}
+            onChange={setSelectedRoomType}
+            placeholder="All Room Types"
+            searchPlaceholder="Search room types..."
+            displayKey="name"
+            valueKey="room_type_id"
+            searchKeys={['name']}
+            renderOption={(roomType) => `${roomType.name} - Rs.${parseFloat(roomType.daily_rate || 0).toFixed(2)}/night`}
+            className="min-w-[250px]"
+          />
+          {selectedRoomType && (
+            <button
+              onClick={() => setSelectedRoomType('')}
+              className="text-sm text-slate-400 dark:text-slate-400 hover:text-slate-300 dark:text-slate-200 underline"
+            >
+              Clear Filter
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Room Search Filter - Fourth Priority */}
       <div className="card relative">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">

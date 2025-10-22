@@ -129,28 +129,87 @@ export const Header = ({
               </button>
               {userMenuOpen && (
                 <div
-                  className="absolute right-0 mt-2 w-60 overflow-hidden rounded-xl border bg-surface-primary/95 shadow-xl dark:bg-surface-secondary/95"
+                  className="absolute right-1/2 transform translate-x-1/2 mt-2 w-56 overflow-hidden rounded-xl shadow-xl backdrop-blur-xl"
                   role="menu"
                   aria-label="User menu"
-                  style={{ borderColor: controlBorder }}
+                  style={{ 
+                    background: isDark 
+                      ? 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)'
+                      : 'linear-gradient(135deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.95) 100%)',
+                    border: isDark 
+                      ? '1px solid rgba(148, 163, 184, 0.2)' 
+                      : '1px solid rgba(148, 163, 184, 0.3)',
+                    boxShadow: isDark 
+                      ? '0 20px 40px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+                      : '0 20px 40px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)'
+                  }}
                 >
-                  <div className="border-b border-border px-4 py-3">
-                    <p className="text-sm font-semibold text-white">{user?.username}</p>
-                    <p className="text-xs text-slate-300">{user?.email ?? 'No email linked'}</p>
+                  {/* User Info Section */}
+                  <div className="px-4 py-3">
+                    <div className="flex items-center space-x-3">
+                      <div 
+                        className="flex h-10 w-10 items-center justify-center rounded-lg text-base font-bold text-white shadow-md"
+                        style={{
+                          background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)'
+                        }}
+                      >
+                        {user?.username?.slice(0, 1)?.toUpperCase() ?? 'U'}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-white truncate">{user?.username}</p>
+                        <p className="text-xs text-slate-300 truncate">{user?.email ?? 'No email linked'}</p>
+                        <div className="mt-1">
+                          <span 
+                            className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                            style={{
+                              backgroundColor: isDark ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.1)',
+                              color: '#60a5fa',
+                              border: '1px solid rgba(59, 130, 246, 0.3)'
+                            }}
+                          >
+                            {user?.role ?? 'Guest'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="border-t border-border bg-surface-secondary px-4 py-2 dark:bg-surface-tertiary">
+
+                  {/* Divider */}
+                  <div 
+                    className="mx-4 h-px"
+                    style={{
+                      background: isDark 
+                        ? 'linear-gradient(90deg, transparent 0%, rgba(148, 163, 184, 0.3) 50%, transparent 100%)'
+                        : 'linear-gradient(90deg, transparent 0%, rgba(148, 163, 184, 0.2) 50%, transparent 100%)'
+                    }}
+                  ></div>
+
+                  {/* Action Section */}
+                  <div className="px-4 py-3">
                     <button
                       type="button"
                       onClick={onLogout}
-                      className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold transition-colors duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--error)]"
+                      className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-200 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-red-500/50"
                       style={{
-                        backgroundColor:
-                          theme === 'dark' ? 'rgba(248, 113, 113, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-                        color: 'var(--error)',
+                        background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%)',
+                        border: '1px solid rgba(239, 68, 68, 0.2)',
+                        color: '#f87171'
                       }}
                     >
-                      <LogOut className="h-4 w-4" />
-                      Logout
+                      <div 
+                        className="flex h-6 w-6 items-center justify-center rounded-md transition-colors duration-200 group-hover:bg-red-500/20"
+                        style={{
+                          backgroundColor: 'rgba(239, 68, 68, 0.1)'
+                        }}
+                      >
+                        <LogOut className="h-3 w-3" />
+                      </div>
+                      <span>Sign Out</span>
+                      <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
                     </button>
                   </div>
                 </div>

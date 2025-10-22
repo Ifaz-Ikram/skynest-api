@@ -55,7 +55,8 @@ router.get('/bookings/:id/full', requireAuth, bookingController.getBookingFull);
 
 // Invoices
 router.get('/bookings/:id/invoice', requireAuth, requireRole('Admin', 'Customer', 'Receptionist', 'Accountant', 'Manager'), invoiceController.generateInvoice);
-router.get('/bookings/:id/invoice/html', requireAuth, requireRole('Admin', 'Customer', 'Receptionist', 'Accountant', 'Manager'), invoiceController.generateInvoiceHTML);
+router.get('/bookings/:id/invoice/html', invoiceController.generateInvoiceHTML); // Allow token-based access
+router.post('/bookings/:id/invoice/token', requireAuth, requireRole('Admin', 'Customer', 'Receptionist', 'Accountant', 'Manager'), invoiceController.generateInvoiceToken);
 
 // Emails
 router.post('/bookings/:id/send-confirmation', requireAuth, requireRole('Admin', 'Receptionist', 'Manager'), emailController.triggerBookingConfirmation);
@@ -240,22 +241,76 @@ router.delete('/rooms/:id', requireAuth, requireRole('Admin', 'Manager'), async 
   try {
     const { id } = req.params;
     
-    // Check if room has any bookings
-    const bookingCheck = await pool.query('SELECT COUNT(*) as count FROM booking WHERE room_id = $1', [id]);
+    // Check if room has any active bookings (not cancelled or checked-out)
+    const bookingCheck = await pool.query(`
+      SELECT COUNT(*) as count 
+      FROM booking 
+      WHERE room_id = $1 
+      AND status NOT IN ('Cancelled', 'Checked-Out')
+    `, [id]);
     if (parseInt(bookingCheck.rows[0].count) > 0) {
       return res.status(400).json({ 
-        error: 'Cannot delete room with existing bookings',
-        details: 'Please move or cancel all bookings for this room first'
+        error: 'Cannot delete room with active bookings',
+        details: 'Please move or cancel all active bookings for this room first. Cancelled and checked-out bookings are allowed.'
       });
     }
     
-    const result = await pool.query('DELETE FROM room WHERE room_id = $1 RETURNING *', [id]);
-    
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Room not found' });
-    }
+    // Start a transaction to handle foreign key constraints
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      
+      // Get booking IDs for cancelled/checked-out bookings for this room
+      const bookingIds = await client.query(`
+        SELECT booking_id FROM booking 
+        WHERE room_id = $1 
+        AND status IN ('Cancelled', 'Checked-Out')
+      `, [id]);
+      
+      if (bookingIds.rows.length > 0) {
+        const ids = bookingIds.rows.map(row => row.booking_id);
+        
+        // Delete related records in correct order (child tables first)
+        await client.query(`
+          DELETE FROM service_usage 
+          WHERE booking_id = ANY($1)
+        `, [ids]);
+        
+        await client.query(`
+          DELETE FROM invoice 
+          WHERE booking_id = ANY($1)
+        `, [ids]);
+        
+        await client.query(`
+          DELETE FROM payment 
+          WHERE booking_id = ANY($1)
+        `, [ids]);
+        
+        // checkin_validation and payment_adjustment have CASCADE DELETE, so they'll be deleted automatically
+        
+        // Finally delete the bookings
+        await client.query(`
+          DELETE FROM booking 
+          WHERE booking_id = ANY($1)
+        `, [ids]);
+      }
+      
+      // Now delete the room
+      const result = await client.query('DELETE FROM room WHERE room_id = $1 RETURNING *', [id]);
+      
+      await client.query('COMMIT');
+      
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: 'Room not found' });
+      }
 
-    return res.json({ message: 'Room deleted successfully', room: result.rows[0] });
+      return res.json({ message: 'Room deleted successfully', room: result.rows[0] });
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
   } catch (err) {
     console.error('Delete room error:', err);
     res.status(500).json({ error: 'Internal server error' });
@@ -298,16 +353,31 @@ router.delete('/branches/:id', requireAuth, requireRole('Admin', 'Manager'), asy
   try {
     const { id } = req.params;
     
-    // Check if branch has any bookings
-    const bookingCheck = await pool.query('SELECT COUNT(*) as count FROM booking WHERE branch_id = $1', [id]);
-    if (parseInt(bookingCheck.rows[0].count) > 0) {
-      return res.status(400).json({ error: 'Cannot delete branch with existing bookings' });
+    // Check if branch has any employees
+    const employeeCheck = await pool.query('SELECT COUNT(*) as count FROM employee WHERE branch_id = $1', [id]);
+    if (parseInt(employeeCheck.rows[0].count) > 0) {
+      return res.status(400).json({ 
+        error: 'Cannot delete branch with existing employees',
+        details: 'Please reassign or remove all employees from this branch first'
+      });
     }
     
     // Check if branch has any rooms
     const roomCheck = await pool.query('SELECT COUNT(*) as count FROM room WHERE branch_id = $1', [id]);
     if (parseInt(roomCheck.rows[0].count) > 0) {
-      return res.status(400).json({ error: 'Cannot delete branch with existing rooms' });
+      return res.status(400).json({ 
+        error: 'Cannot delete branch with existing rooms',
+        details: 'Please delete all rooms from this branch first'
+      });
+    }
+    
+    // Check if branch has any pre-bookings
+    const prebookingCheck = await pool.query('SELECT COUNT(*) as count FROM pre_booking WHERE branch_id = $1', [id]);
+    if (parseInt(prebookingCheck.rows[0].count) > 0) {
+      return res.status(400).json({ 
+        error: 'Cannot delete branch with existing pre-bookings',
+        details: 'Please delete or reassign all pre-bookings from this branch first'
+      });
     }
     
     const result = await pool.query('DELETE FROM branch WHERE branch_id = $1 RETURNING *', [id]);
@@ -935,10 +1005,10 @@ router.post('/users', requireAuth, requireRole('Admin'), async (req, res) => {
       // If it's a customer role, create guest record and link to user
       if (role === 'Customer') {
         const { rows: guestRows } = await client.query(`
-          INSERT INTO guest (guest_id, full_name, email, phone)
-          VALUES (nextval('guest_guest_id_seq'), $1, $2, $3)
+          INSERT INTO guest (guest_id, full_name, email, phone, id_proof_type, id_proof_number)
+          VALUES (nextval('guest_guest_id_seq'), $1, $2, $3, $4, $5)
           RETURNING guest_id
-        `, [name || null, email || null, contact_no || null]);
+        `, [name || null, email || null, contact_no || null, 'Not Provided', 'Not Provided']);
         
         const guest = guestRows[0];
         

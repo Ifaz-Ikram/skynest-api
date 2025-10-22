@@ -19,6 +19,10 @@ const PreBookingsPage = () => {
   const [branches, setBranches] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState('');
   
+  // Room type filtering state
+  const [roomTypes, setRoomTypes] = useState([]);
+  const [selectedRoomType, setSelectedRoomType] = useState('');
+  
   // Date filtering state
   const [dateFilters, setDateFilters] = useState({
     start_date: '',
@@ -36,26 +40,32 @@ const PreBookingsPage = () => {
 
   const branchOptions = useMemo(
     () => [
-      { id: '', name: 'All Branches' },
-      ...branches.map((branch) => ({
-        id: String(branch.branch_id ?? branch.id ?? ''),
-        name: branch.branch_name ?? branch.name ?? 'Branch',
-      })),
+      { branch_id: '', branch_name: 'All Branches' },
+      ...branches,
     ],
     [branches],
   );
 
+  const roomTypeOptions = useMemo(
+    () => [
+      { room_type_id: '', name: 'All Room Types' },
+      ...roomTypes,
+    ],
+    [roomTypes],
+  );
+
   useEffect(() => {
     loadBranches();
+    loadRoomTypes();
     loadPreBookings();
   }, []);
 
   useEffect(() => {
-    // Reload pre-bookings when branch or date filters change
-    if (branches.length > 0) {
+    // Reload pre-bookings when branch, room type, or date filters change
+    if (branches.length > 0 && roomTypes.length > 0) {
       loadPreBookings();
     }
-  }, [selectedBranch, dateFilters.start_date, dateFilters.end_date]);
+  }, [selectedBranch, selectedRoomType, dateFilters.start_date, dateFilters.end_date]);
 
   const loadBranches = async () => {
     try {
@@ -63,6 +73,15 @@ const PreBookingsPage = () => {
       setBranches(branchesData);
     } catch (error) {
       console.error('Failed to load branches:', error);
+    }
+  };
+
+  const loadRoomTypes = async () => {
+    try {
+      const roomTypesData = await api.getRoomTypes();
+      setRoomTypes(roomTypesData);
+    } catch (error) {
+      console.error('Failed to load room types:', error);
     }
   };
 
@@ -79,6 +98,11 @@ const PreBookingsPage = () => {
       // Add branch filter if selected
       if (selectedBranch) {
         params.branch_id = selectedBranch;
+      }
+      
+      // Add room type filter if selected
+      if (selectedRoomType) {
+        params.room_type_id = selectedRoomType;
       }
       
       // Add date filters if selected - backend expects 'from' and 'to'
@@ -213,10 +237,44 @@ const PreBookingsPage = () => {
             placeholder="All Branches"
             className="min-w-[200px]"
             hideSearch={branchOptions.length <= 6}
+            displayKey="branch_name"
+            valueKey="branch_id"
+            searchKeys={['branch_name', 'branch_code']}
+            renderOption={(branch) => `${branch.branch_name} (${branch.branch_code || ''})`}
           />
           {selectedBranch && (
             <button
               onClick={() => setSelectedBranch('')}
+              className="text-sm text-slate-400 hover:text-slate-300 underline"
+            >
+              Clear Filter
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Room Type Filter */}
+      <div className="bg-surface-secondary rounded-xl shadow-md p-6 border border-border">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Building2 className="w-5 h-5 text-slate-300" />
+            <span className="font-medium text-slate-300">Filter by Room Type:</span>
+          </div>
+          <SearchableDropdown
+            value={selectedRoomType}
+            onChange={(value) => setSelectedRoomType(value || '')}
+            options={roomTypeOptions}
+            placeholder="All Room Types"
+            className="min-w-[200px]"
+            hideSearch={roomTypeOptions.length <= 6}
+            displayKey="name"
+            valueKey="room_type_id"
+            searchKeys={['name']}
+            renderOption={(roomType) => roomType.name}
+          />
+          {selectedRoomType && (
+            <button
+              onClick={() => setSelectedRoomType('')}
               className="text-sm text-slate-400 hover:text-slate-300 underline"
             >
               Clear Filter

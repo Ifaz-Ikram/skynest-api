@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, DollarSign, CheckCircle, TrendingUp, Users, Bed, CreditCard, AlertCircle, Home, LogOut, Star, ShoppingBag, Clock } from 'lucide-react';
+import { Calendar, DollarSign, CheckCircle, TrendingUp, Users, Bed, CreditCard, AlertCircle, Home, LogOut, Star, ShoppingBag, Clock, RefreshCw } from 'lucide-react';
 import { format, subDays, isAfter, isBefore, startOfDay, startOfMonth, endOfMonth, eachDayOfInterval, getDate } from 'date-fns';
 import api from '../../utils/api';
 import {
@@ -46,39 +46,84 @@ const Dashboard = ({ user, onNavigate }) => {
   const [roomStatusData, setRoomStatusData] = useState([]);
   const [calendarData, setCalendarData] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
     loadDashboardData();
+    
+    // Auto-refresh every 5 minutes to keep data current
+    const interval = setInterval(() => {
+      loadDashboardData();
+    }, 5 * 60 * 1000); // 5 minutes
+    
+    return () => clearInterval(interval);
   }, []);
+
+  // Add refresh functionality
+  const handleRefresh = () => {
+    setLoading(true);
+    loadDashboardData();
+  };
 
   const loadDashboardData = async () => {
     try {
+      console.log('Starting dashboard data load...');
+      
       // Fetch all necessary data including operational reports with branch info
-      const [bookingsData, roomsData, guestsData, paymentsData, arrivalsData, departuresData, inHouseData] = await Promise.all([
+      // Use Promise.allSettled to handle partial failures gracefully
+      const [bookingsResult, roomsResult, guestsResult, paymentsResult, arrivalsResult, departuresResult, inHouseResult] = await Promise.allSettled([
         api.getBookings(),
-        api.getRooms(),
+        api.getRooms(), // Get available rooms (status = 'Available')
         api.getGuests(),
-        api.getPayments(),
-        api.request('/api/reports/arrivals-today'),
-        api.request('/api/reports/departures-today'),
-        api.request('/api/reports/in-house'),
+        api.getPayments().catch(err => { console.warn('Payments API failed:', err.message); return []; }),
+        api.request('/api/reports/arrivals-today').catch(err => { console.warn('Arrivals API failed:', err.message); return []; }),
+        api.request('/api/reports/departures-today').catch(err => { console.warn('Departures API failed:', err.message); return []; }),
+        api.request('/api/reports/in-house').catch(err => { console.warn('In-house API failed:', err.message); return []; }),
       ]);
+
+      // Extract data from settled promises
+      const bookingsData = bookingsResult.status === 'fulfilled' ? bookingsResult.value : null;
+      const roomsData = roomsResult.status === 'fulfilled' ? roomsResult.value : null;
+      const guestsData = guestsResult.status === 'fulfilled' ? guestsResult.value : null;
+      const paymentsData = paymentsResult.status === 'fulfilled' ? paymentsResult.value : [];
+      const arrivalsData = arrivalsResult.status === 'fulfilled' ? arrivalsResult.value : [];
+      const departuresData = departuresResult.status === 'fulfilled' ? departuresResult.value : [];
+      const inHouseData = inHouseResult.status === 'fulfilled' ? inHouseResult.value : [];
+
+      console.log('API responses received:', {
+        bookingsData: bookingsData?.length || bookingsData?.bookings?.length || 0,
+        roomsData: roomsData?.length || roomsData?.rooms?.length || 0,
+        guestsData: guestsData?.length || guestsData?.guests?.length || 0,
+        paymentsData: paymentsData?.length || 0,
+        arrivalsData: arrivalsData?.length || 0,
+        departuresData: departuresData?.length || 0,
+        inHouseData: inHouseData?.length || 0,
+        failedAPIs: [
+          bookingsResult.status === 'rejected' ? 'bookings' : null,
+          roomsResult.status === 'rejected' ? 'rooms' : null,
+          guestsResult.status === 'rejected' ? 'guests' : null,
+          paymentsResult.status === 'rejected' ? 'payments' : null,
+          arrivalsResult.status === 'rejected' ? 'arrivals' : null,
+          departuresResult.status === 'rejected' ? 'departures' : null,
+          inHouseResult.status === 'rejected' ? 'in-house' : null,
+        ].filter(Boolean)
+      });
 
       let bookingsList = bookingsData?.bookings || bookingsData || [];
       const roomsList = roomsData?.rooms || roomsData || [];
       const guestsList = guestsData?.guests || guestsData || [];
       const paymentsList = paymentsData || [];
 
-      // Calculate active bookings (Confirmed or Checked-In)
+      // Calculate active bookings (Booked or Checked-In) - for general reference
       const activeBookings = bookingsList.filter(b => 
-        b.status === 'Confirmed' || b.status === 'Checked-In' || b.status === 'Booked'
+        b.status === 'Booked' || b.status === 'Checked-In'
       );
 
-      // Calculate pending check-ins (Booked/Confirmed bookings with check-in date today or in the future)
+      // Calculate pending check-ins (Booked bookings with check-in date today or in the future)
       const today = startOfDay(new Date());
       const pendingCheckIns = bookingsList.filter(b => {
-        // Include both "Booked" and "Confirmed" statuses
-        if (b.status !== 'Confirmed' && b.status !== 'Booked') return false;
+        // Include only "Booked" status (not yet checked in)
+        if (b.status !== 'Booked') return false;
         if (!b.check_in_date) return false;
         
         const checkInDate = startOfDay(new Date(b.check_in_date));
@@ -90,19 +135,6 @@ const Dashboard = ({ user, onNavigate }) => {
       const arrivals = arrivalsData || [];
       const departures = departuresData || [];
       const inHouse = inHouseData || [];
-
-      console.log('Dashboard Stats Debug:', {
-        totalBookings: bookingsList.length,
-        bookedBookings: bookingsList.filter(b => b.status === 'Booked').length,
-        confirmedBookings: bookingsList.filter(b => b.status === 'Confirmed').length,
-        pendingCheckIns: pendingCheckIns.length,
-        pendingCheckInsDetails: pendingCheckIns.map(b => ({
-          id: b.booking_id,
-          status: b.status,
-          checkIn: b.check_in_date,
-          guest: b.guest_name
-        }))
-      });
 
       // Calculate total revenue from all bookings
       const totalRevenue = bookingsList.reduce((sum, b) => 
@@ -118,18 +150,76 @@ const Dashboard = ({ user, onNavigate }) => {
         sum + parseFloat(b.total_amount || 0), 0
       );
 
-      // Calculate occupancy rate
-      const occupiedRooms = activeBookings.length;
+      // Calculate occupancy rate - count all active bookings (Booked + Checked-In)
+      // Get unique occupied/booked room IDs (filter out duplicates and null/undefined values)
+      const occupiedRoomIds = [...new Set(
+        bookingsList
+          .filter(b => (b.status === 'Booked' || b.status === 'Checked-In') && b.room_id)
+          .map(b => b.room_id)
+      )];
+      const actuallyOccupiedRooms = occupiedRoomIds.length;
       const totalRooms = roomsList.length || 1; // Avoid division by zero
-      const occupancyRate = ((occupiedRooms / totalRooms) * 100).toFixed(0);
+      const occupancyRate = ((actuallyOccupiedRooms / totalRooms) * 100).toFixed(0);
 
-      // Calculate available rooms
-      const bookedRoomIds = activeBookings.map(b => b.room_id);
-      const availableRooms = roomsList.filter(r => !bookedRoomIds.includes(r.room_id)).length;
+      // Calculate available rooms (exclude all active bookings)
+      const availableRooms = roomsList.filter(r => !occupiedRoomIds.includes(r.room_id)).length;
+
+      console.log('Occupancy Calculation Details:', {
+        activeBookingsBreakdown: {
+          booked: bookingsList.filter(b => b.status === 'Booked').length,
+          checkedIn: bookingsList.filter(b => b.status === 'Checked-In').length,
+          total: activeBookings.length
+        },
+        roomData: {
+          totalRooms: roomsList.length,
+          roomIds: roomsList.map(r => r.room_id),
+          roomNumbers: roomsList.map(r => r.room_number)
+        },
+        occupancyCalculation: {
+          actuallyOccupiedRooms: actuallyOccupiedRooms,
+          totalRooms: totalRooms,
+          occupancyRate: occupancyRate,
+          formula: `${actuallyOccupiedRooms} / ${totalRooms} * 100 = ${occupancyRate}%`
+        },
+        occupiedRoomIds: occupiedRoomIds,
+      });
+
+      console.log('Dashboard Stats Debug:', {
+        totalBookings: bookingsList.length,
+        bookedBookings: bookingsList.filter(b => b.status === 'Booked').length,
+        checkedInBookings: bookingsList.filter(b => b.status === 'Checked-In').length,
+        activeBookings: activeBookings.length,
+        totalRooms: totalRooms,
+        occupiedRooms: actuallyOccupiedRooms,
+        occupancyRate: occupancyRate,
+        pendingCheckIns: pendingCheckIns.length,
+        roomsListLength: roomsList.length,
+        roomsListSample: roomsList.slice(0, 3),
+        bookingsListSample: bookingsList.slice(0, 3).map(b => ({
+          id: b.booking_id,
+          status: b.status,
+          room_id: b.room_id,
+          guest: b.guest_name
+        })),
+        pendingCheckInsDetails: pendingCheckIns.map(b => ({
+          id: b.booking_id,
+          status: b.status,
+          checkIn: b.check_in_date,
+          guest: b.guest_name
+        }))
+      });
+
+      console.log('💡 OCCUPANCY FIX - Setting stats:', {
+        actuallyOccupiedRooms,
+        occupiedRoomIds,
+        totalRooms,
+        occupancyRate,
+        calculation: `${actuallyOccupiedRooms} / ${totalRooms} = ${occupancyRate}%`
+      });
 
       setStats({
         totalBookings: bookingsList.length,
-        activeBookings: activeBookings.length,
+        activeBookings: actuallyOccupiedRooms, // Use actually occupied rooms (Checked-In only)
         revenue: totalRevenue,
         occupancyRate: parseInt(occupancyRate),
         pendingCheckIns: pendingCheckIns.length,
@@ -180,8 +270,27 @@ const Dashboard = ({ user, onNavigate }) => {
 
     } catch (error) {
       console.error('Failed to load dashboard:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      
+      // Set default values to prevent empty dashboard
+      setStats({
+        totalBookings: 0,
+        activeBookings: 0,
+        revenue: 0,
+        occupancyRate: 0,
+        pendingCheckIns: 0,
+        totalGuests: 0,
+        totalRooms: 0,
+        availableRooms: 0,
+      });
     } finally {
       setLoading(false);
+      setLastUpdated(new Date());
     }
   };
 
@@ -266,9 +375,9 @@ const Dashboard = ({ user, onNavigate }) => {
       // Payment stats - Today's collected payments only
       const todaysCollected = todaysPaymentsData.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
       
-      // Calculate pending only for active bookings (Pre-Booked, Checked-In)
+      // Calculate pending only for active bookings (Booked, Checked-In)
       const activeBookingsForPayment = bookingsList.filter(b => 
-        b.status === 'Pre-Booked' || b.status === 'Checked-In'
+        b.status === 'Booked' || b.status === 'Checked-In'
       );
       
       console.log('Active bookings for payment:', activeBookingsForPayment.length);
@@ -305,7 +414,7 @@ const Dashboard = ({ user, onNavigate }) => {
       const roomsList = await api.getRooms();
       const rooms = roomsList?.rooms || roomsList || [];
       const bookedRoomIds = bookingsList
-        .filter(b => b.status === 'Checked-In' || b.status === 'Confirmed')
+        .filter(b => b.status === 'Checked-In' || b.status === 'Booked')
         .map(b => b.room_id);
       
       // Group rooms by actual status from database
@@ -345,7 +454,9 @@ const Dashboard = ({ user, onNavigate }) => {
 
       // Load top room types (from API if available)
       try {
-        const revenueAnalysis = await api.get('/reports/dashboard/revenue-analysis', { params: { breakdown_by: 'room_type' } });
+        const startDate = startOfMonth(new Date()).toISOString().split('T')[0];
+        const endDate = endOfMonth(new Date()).toISOString().split('T')[0];
+        const revenueAnalysis = await api.request(`/api/reports/dashboard/revenue-analysis?breakdown_by=room_type&start_date=${startDate}&end_date=${endDate}`);
         if (revenueAnalysis?.data) {
           setTopRoomTypes(revenueAnalysis.data.slice(0, 5));
         }
@@ -369,7 +480,7 @@ const Dashboard = ({ user, onNavigate }) => {
 
       // Load top services
       try {
-        const serviceData = await api.get('/reports/service-usage-detail');
+        const serviceData = await api.request('/api/reports/service-usage-detail');
         if (serviceData?.data) {
           const serviceRevenue = {};
           serviceData.data.forEach(s => {
@@ -494,16 +605,50 @@ const Dashboard = ({ user, onNavigate }) => {
   };
 
   if (loading) {
-    return <LoadingSpinner size="xl" message="Loading dashboard..." />;
+    return (
+      <div className="min-h-screen bg-surface-primary p-6 flex items-center justify-center">
+        <div className="text-center">
+          <LoadingSpinner size="xl" message="Loading dashboard..." />
+          <p className="text-slate-400 mt-4 text-sm">
+            Fetching bookings, rooms, guests, and reports...
+          </p>
+          <p className="text-slate-500 mt-2 text-xs">
+            Check browser console (F12) for detailed API logs
+          </p>
+        </div>
+      </div>
+    );
   }
 
   const bookingTrend = calculateTrend(stats.totalBookings, lastMonthStats.bookings);
   const revenueTrend = calculateTrend(stats.revenue, lastMonthStats.revenue);
 
+  // Check if we have critical data
+  const hasCriticalData = stats.totalBookings > 0 || stats.totalRooms > 0;
+
   return (
     <div className="min-h-screen bg-surface-primary p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         
+        {/* Show warning if no data loaded */}
+        {!hasCriticalData && (
+          <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-4 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="text-yellow-200 font-semibold mb-1">No Data Available</h3>
+              <p className="text-yellow-300 text-sm">
+                The dashboard is not loading data from the API. Please check:
+              </p>
+              <ul className="text-yellow-300 text-sm mt-2 ml-4 list-disc space-y-1">
+                <li>Backend server is running on port 4000</li>
+                <li>You are logged in with proper credentials</li>
+                <li>Your user role has access to dashboard data</li>
+                <li>Browser console (F12) for detailed error messages</li>
+              </ul>
+            </div>
+          </div>
+        )}
+
         {/* 🎨 PHASE 1: Glassmorphism Hero Card */}
         <div className="card bg-gradient-to-r from-luxury-navy to-indigo-900 text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
@@ -520,8 +665,21 @@ const Dashboard = ({ user, onNavigate }) => {
                 </h1>
                 <p className="text-indigo-200 text-lg">
                   {format(new Date(), 'EEEE, MMMM do yyyy')} • {stats.activeBookings} active bookings
+                  {lastUpdated && (
+                    <span className="text-indigo-300 text-sm ml-2">
+                      • Last updated: {format(lastUpdated, 'HH:mm:ss')}
+                    </span>
+                  )}
                 </p>
               </div>
+              <button 
+                onClick={handleRefresh}
+                disabled={loading}
+                className="bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg p-3 transition-all duration-300 disabled:opacity-50"
+                title="Refresh Dashboard Data"
+              >
+                <RefreshCw className={`w-6 h-6 text-white ${loading ? 'animate-spin' : ''}`} />
+              </button>
               
             </div>
 
@@ -651,6 +809,7 @@ const Dashboard = ({ user, onNavigate }) => {
                   color={alert.color}
                   title={alert.title}
                   action="View"
+                  onClick={() => onNavigate && onNavigate('reports')}
                 />
               ))}
             </div>
@@ -947,7 +1106,7 @@ function MiniTable({ title, rows, onOpen }) {
 
 function QuickQuoteModal({ onClose }) {
   const [roomTypes, setRoomTypes] = React.useState([]);
-  const [form, setForm] = React.useState({ room_type_id: '', check_in: '', check_out: '', promo: '' });
+  const [form, setForm] = React.useState({ room_type_id: '', check_in: '', check_out: '' });
   const [quote, setQuote] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
 
@@ -1029,30 +1188,70 @@ function QuickQuoteModal({ onClose }) {
               <input type="date" className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400" value={form.check_out} onChange={(e)=>setForm({...form, check_out:e.target.value})} />
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Promo Code</label>
-            <input type="text" className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400" placeholder="Optional" value={form.promo} onChange={(e)=>setForm({...form, promo:e.target.value})} />
-          </div>
-          <div className="flex items-center gap-3">
-            <button className="btn-primary" onClick={getQuote} disabled={loading || !form.room_type_id || !form.check_in || !form.check_out}>
-              {loading ? 'Calculating...' : 'Get Quote'}
+          <div className="flex items-center gap-4">
+            <button className="btn-primary flex-1" onClick={getQuote} disabled={loading || !form.room_type_id || !form.check_in || !form.check_out}>
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                  Calculating...
+                </div>
+              ) : (
+                'Get Quote'
+              )}
             </button>
             {quote && (
-              <div className="text-sm text-slate-300">
-                {quote.nights} night{quote.nights>1?'s':''} · Total Rs {parseFloat(quote.total).toFixed(2)}
+              <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-lg px-4 py-2">
+                <div className="text-sm font-semibold text-white">
+                  {quote.nights} night{quote.nights>1?'s':''} · Total Rs {parseFloat(quote.total).toFixed(2)}
+                </div>
+                <div className="text-xs text-blue-300">
+                  Avg Rs {parseFloat(quote.total / quote.nights).toFixed(2)} per night
+                </div>
               </div>
             )}
           </div>
           {quote?.nightly?.length ? (
-            <div className="bg-surface-tertiary border border-border rounded-lg p-3">
-              <div className="text-sm font-medium text-white mb-2">Nightly Rates</div>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                {quote.nightly.map(n => (
-                  <div key={n.date} className="flex justify-between">
-                    <span className="text-slate-300">{new Date(n.date).toLocaleDateString()}</span>
-                    <span className="text-white">Rs {parseFloat(n.rate).toFixed(2)}</span>
+            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-600/30 rounded-xl p-4 backdrop-blur-sm">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                <div className="text-sm font-semibold text-white">Nightly Breakdown</div>
+              </div>
+              <div className="space-y-2">
+                {quote.nightly.map((n, index) => (
+                  <div key={n.date} className="flex items-center justify-between bg-slate-700/30 rounded-lg px-3 py-2 hover:bg-slate-700/50 transition-colors duration-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center">
+                        <span className="text-xs font-bold text-blue-300">{index + 1}</span>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-white">
+                          {new Date(n.date).toLocaleDateString('en-US', { 
+                            weekday: 'short', 
+                            month: 'short', 
+                            day: 'numeric' 
+                          })}
+                        </div>
+                        <div className="text-xs text-slate-400">
+                          {new Date(n.date).toLocaleDateString('en-US', { year: 'numeric' })}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-bold text-white">Rs {parseFloat(n.rate).toFixed(2)}</div>
+                      <div className="text-xs text-slate-400">per night</div>
+                    </div>
                   </div>
                 ))}
+              </div>
+              <div className="mt-3 pt-3 border-t border-slate-600/30">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-slate-300">Total Amount</span>
+                  <span className="text-lg font-bold text-luxury-gold">Rs {parseFloat(quote.total).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center mt-1">
+                  <span className="text-xs text-slate-400">Average per night</span>
+                  <span className="text-sm font-semibold text-blue-300">Rs {parseFloat(quote.total / quote.nights).toFixed(2)}</span>
+                </div>
               </div>
             </div>
           ) : null}
@@ -1141,16 +1340,25 @@ function AlertItem({ icon: Icon, color, title, action, onClick }) {
     yellow: 'bg-yellow-900/20 text-yellow-700 border-yellow-200',
   };
 
+  const handleClick = () => {
+    console.log('Alert button clicked:', { title, action, onClick: !!onClick });
+    if (onClick) {
+      onClick();
+    } else {
+      console.warn('No onClick handler provided for alert:', title);
+    }
+  };
+
   return (
-    <div className={`flex items-center justify-between p-3 rounded-lg border ${colorStyles[color] || colorStyles.blue}`}>
+    <div className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-200 hover:scale-[1.02] ${colorStyles[color] || colorStyles.blue}`}>
       <div className="flex items-center gap-2">
         <Icon className="w-4 h-4" />
         <span className="text-sm font-medium">{title}</span>
       </div>
       {action && (
         <button 
-          onClick={onClick}
-          className="text-xs font-medium hover:underline"
+          onClick={handleClick}
+          className="text-xs font-medium hover:underline hover:text-white transition-colors duration-200 px-2 py-1 rounded hover:bg-white/10"
         >
           {action} →
         </button>

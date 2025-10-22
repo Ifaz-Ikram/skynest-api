@@ -171,7 +171,7 @@ async function sendCheckInReminder(bookingId) {
       SELECT 
         b.booking_id,
         b.check_in_date,
-        g.first_name || ' ' || g.last_name AS guest_name,
+        g.full_name AS guest_name,
         g.email,
         r.room_number,
         rt.type_name AS room_type,
@@ -255,7 +255,7 @@ async function sendInvoiceEmail(bookingId) {
     const query = `
       SELECT 
         b.booking_id,
-        g.first_name || ' ' || g.last_name AS guest_name,
+        g.full_name AS guest_name,
         g.email
       FROM booking b
       JOIN guest g ON b.guest_id = g.guest_id

@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'http://localhost:3000');
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:4000' : 'http://localhost:4000');
 
 class ApiService {
   async request(endpoint, options = {}) {
@@ -742,6 +742,35 @@ class ApiService {
 
   async generateInvoiceHTML(bookingId) {
     return this.request(`/api/bookings/${bookingId}/invoice/html`);
+  }
+
+  async generateInvoiceToken(bookingId) {
+    return this.request(`/api/bookings/${bookingId}/invoice/token`, {
+      method: 'POST',
+    });
+  }
+
+  getInvoiceHtmlUrl(bookingId) {
+    const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:4000' : 'http://localhost:4000');
+    return `${API_URL}/api/bookings/${bookingId}/invoice/html`;
+  }
+
+  async getInvoiceHtmlUrlWithToken(bookingId) {
+    try {
+      const response = await this.generateInvoiceToken(bookingId);
+      const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:4000' : 'http://localhost:4000');
+      return `${API_URL}${response.invoice_url}`;
+    } catch (error) {
+      console.error('Error generating invoice token:', error);
+      // Fallback to regular URL
+      return this.getInvoiceHtmlUrl(bookingId);
+    }
+  }
+
+  async sendInvoiceEmail(bookingId) {
+    return this.request(`/api/bookings/${bookingId}/send-invoice`, {
+      method: 'POST',
+    });
   }
 
   // User Management

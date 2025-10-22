@@ -880,7 +880,15 @@ export const BookingsPage = () => {
                       </button>
                     )}
                     <button
-                      onClick={() => window.open(api.getInvoiceHtmlUrl(booking.booking_id), '_blank')}
+                      onClick={async () => {
+                        try {
+                          const url = await api.getInvoiceHtmlUrlWithToken(booking.booking_id);
+                          window.open(url, '_blank');
+                        } catch (error) {
+                          console.error('Error opening invoice:', error);
+                          alert('Failed to open invoice. Please try again.');
+                        }
+                      }}
                       className="btn-secondary text-sm"
                     >
                       Invoice

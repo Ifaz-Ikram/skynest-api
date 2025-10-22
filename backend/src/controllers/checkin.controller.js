@@ -359,15 +359,26 @@ async function getRoomTypes(req, res) {
  */
 async function getAllRooms(req, res) {
   try {
-    const { branch_id } = req.query; // NEW: Get branch filter
+    const { branch_id, room_type_id } = req.query;
     
-    // Build branch filter condition
-    let branchFilter = '';
-    let branchParams = [];
+    // Build filter conditions
+    const whereConditions = [];
+    const queryParams = [];
+    let paramIndex = 1;
+    
     if (branch_id) {
-      branchFilter = 'WHERE r.branch_id = $1';
-      branchParams = [Number(branch_id)];
+      whereConditions.push(`r.branch_id = $${paramIndex}`);
+      queryParams.push(Number(branch_id));
+      paramIndex++;
     }
+    
+    if (room_type_id) {
+      whereConditions.push(`r.room_type_id = $${paramIndex}`);
+      queryParams.push(Number(room_type_id));
+      paramIndex++;
+    }
+    
+    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
     
     const query = `
       SELECT 
@@ -384,11 +395,11 @@ async function getAllRooms(req, res) {
       FROM room r
       JOIN room_type rt ON r.room_type_id = rt.room_type_id
       JOIN branch b ON r.branch_id = b.branch_id
-      ${branchFilter}
+      ${whereClause}
       ORDER BY r.room_number
     `;
     
-    const result = await pool.query(query, branchParams);
+    const result = await pool.query(query, queryParams);
     res.json(result.rows);
     
   } catch (error) {

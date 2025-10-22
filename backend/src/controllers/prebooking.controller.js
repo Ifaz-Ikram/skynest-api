@@ -10,7 +10,7 @@ const { pool } = require('../db');
  */
 async function listPreBookings(req, res) {
   try {
-    const { from, to, branch_id } = req.query; // NEW: Add branch filter
+    const { from, to, branch_id, room_type_id } = req.query; // NEW: Add branch and room type filters
     
     // First check if the new columns exist
     const columnCheck = await pool.query(`
@@ -44,8 +44,8 @@ async function listPreBookings(req, res) {
       'COALESCE(pb.number_of_rooms, 1) as number_of_rooms',
       'COALESCE(pb.status, \'Pending\') as status',
       'pb.auto_cancel_date',
-      'COALESCE(br_room.branch_id, (SELECT b.branch_id FROM branch b JOIN room r ON r.branch_id = b.branch_id WHERE r.room_type_id = pb.room_type_id LIMIT 1)) as branch_id',
-      'COALESCE(br_room.branch_name, (SELECT b.branch_name FROM branch b JOIN room r ON r.branch_id = b.branch_id WHERE r.room_type_id = pb.room_type_id LIMIT 1)) as branch_name'
+      'pb.branch_id',
+      'br_prebooking.branch_name'
     ];
     
     // Build the JOIN clauses dynamically
@@ -61,6 +61,7 @@ async function listPreBookings(req, res) {
     joins.push('LEFT JOIN room r ON r.room_id = pb.room_id');
     joins.push('LEFT JOIN room_type rt_assigned ON rt_assigned.room_type_id = r.room_type_id');
     joins.push('LEFT JOIN branch br_room ON br_room.branch_id = r.branch_id');
+    joins.push('LEFT JOIN branch br_prebooking ON br_prebooking.branch_id = pb.branch_id');
     
     if (hasRoomTypeId) {
       joins.push('LEFT JOIN room_type rt_requested ON rt_requested.room_type_id = pb.room_type_id');
@@ -74,18 +75,29 @@ async function listPreBookings(req, res) {
       WHERE 1=1
     `;
     const params = [];
+    let paramIndex = 1;
     
     if (from) {
       params.push(from);
-      query += ` AND pb.expected_check_in >= $${params.length}`;
+      query += ` AND pb.expected_check_in >= $${paramIndex}`;
+      paramIndex++;
     }
     if (to) {
       params.push(to);
-      query += ` AND pb.expected_check_out <= $${params.length}`;
+      query += ` AND pb.expected_check_out <= $${paramIndex}`;
+      paramIndex++;
     }
     if (branch_id) { // NEW: Add branch filtering
       params.push(Number(branch_id));
-      query += ` AND r.branch_id = $${params.length}`;
+      // Always use pb.branch_id since the pre_booking table has this column
+      query += ` AND pb.branch_id = $${paramIndex}`;
+      paramIndex++;
+    }
+    
+    if (room_type_id) { // NEW: Add room type filtering
+      params.push(Number(room_type_id));
+      query += ` AND pb.room_type_id = $${paramIndex}`;
+      paramIndex++;
     }
     
     query += ` ORDER BY pb.created_at DESC`;
