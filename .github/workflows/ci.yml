@@ -71,7 +71,7 @@ jobs:
           done
 
       - name: Apply schema
-        run: psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" -f skynest_schema_nodb.sql
+        run: psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" -f skynest_schema.sql
 
       - name: Install dependencies
         run: npm ci
