@@ -2,22 +2,19 @@
 require("dotenv").config({ quiet: true });
 const { sequelize } = require("../../src/models");
 
-async function ensureOneRow(sqlCheck, sqlInsert, replacements = {}) {
+async function ensureOneRow(sqlCheck, sqlInsert, replacements = {}, conflictColumns = null) {
   const [rows] = await sequelize.query(sqlCheck, { replacements });
   if (rows.length) return rows[0];
 
-  try {
-    const [inserted] = await sequelize.query(sqlInsert, { replacements });
-    if (inserted?.[0]) return inserted[0];
-  } catch (err) {
-    // If duplicate key error, re-check and return existing row
-    if (err.name === 'SequelizeUniqueConstraintError' || err.original?.code === '23505') {
-      const [rows2] = await sequelize.query(sqlCheck, { replacements });
-      if (rows2[0]) return rows2[0];
-    }
-    throw err;
+  let insertSql = sqlInsert;
+  if (conflictColumns) {
+    insertSql = insertSql.replace('RETURNING', `ON CONFLICT (${conflictColumns}) DO NOTHING RETURNING`);
   }
 
+  const [inserted] = await sequelize.query(insertSql, { replacements });
+  if (inserted.length > 0) return inserted[0];
+
+  // If not inserted due to conflict, query again
   const [rows2] = await sequelize.query(sqlCheck, { replacements });
   return rows2[0];
 }
@@ -38,6 +35,7 @@ async function seedSampleData() {
       addr: "N/A",
       mgr: "N/A",
     },
+    'branch_code'
   );
   console.log(`Branch ready: ${branch.branch_id}`);
 
@@ -47,6 +45,7 @@ async function seedSampleData() {
      VALUES (:name, 2, 10000.00, 'AC, TV')
      RETURNING room_type_id`,
     { name: "Deluxe" },
+    'name'
   );
   console.log(`Room type ready: ${roomType.room_type_id}`);
 
@@ -60,6 +59,7 @@ async function seedSampleData() {
       room_type_id: roomType.room_type_id,
       num: "101",
     },
+    'branch_id, room_number'
   );
   console.log(`Room ready: ${room.room_id}`);
 
@@ -69,6 +69,7 @@ async function seedSampleData() {
      VALUES (:name, :email, :phone)
      RETURNING guest_id`,
     { name: "Test Guest", email: "guest@test.local", phone: "0710000000" },
+    'email'
   );
   console.log(`Guest ready: ${guest.guest_id}`);
 
@@ -78,6 +79,7 @@ async function seedSampleData() {
      VALUES (:code, :name, 'Misc', 1500.00, 0, true)
      RETURNING service_id`,
     { code: "MISC", name: "Misc Service" },
+    'code'
   );
   console.log(`Service ready: ${service.service_id}`);
 
