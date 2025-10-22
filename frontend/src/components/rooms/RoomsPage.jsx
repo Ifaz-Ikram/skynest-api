@@ -186,10 +186,11 @@ export const RoomsPage = () => {
           icon={Bed}
           stats={headerStats}
           action={
-            <div className="flex gap-2">
+            <div className="flex gap-2" style={{ zIndex: 1200 }}>
               <button
                 onClick={() => setShowCreateModal(true)}
                 className="px-6 py-3 rounded-xl font-medium transition-all bg-surface-secondary text-slate-300 dark:text-slate-200 border-2 border-border dark:border-slate-700 hover:border-blue-600 flex items-center gap-2"
+                style={{ zIndex: 1200 }}
               >
                 <Plus className="w-5 h-5" /> Add Room
               </button>
@@ -219,7 +220,7 @@ export const RoomsPage = () => {
 
       {/* Create Room Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 'var(--z-modal)' }}>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 1200 }}>
           <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-md w-full border border-slate-700/50" style={{minWidth: '600px'}}>
             <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 flex justify-between items-center" style={{ zIndex: 'var(--z-sticky)' }}>
               <h2 className="text-2xl font-display font-bold text-white">Add New Room</h2>
@@ -260,7 +261,7 @@ export const RoomsPage = () => {
       )}
 
       {/* Branch Filter - Second Priority */}
-      <div className="card relative">
+      <div className="card relative" style={{ zIndex: 1150 }}>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Building2 className="w-5 h-5 text-slate-300 dark:text-slate-300" />
@@ -290,17 +291,14 @@ export const RoomsPage = () => {
       </div>
 
       {/* Room Type Filter - Third Priority */}
-      <div className="card relative">
+      <div className="card relative" style={{ zIndex: 1100 }}>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Bed className="w-5 h-5 text-slate-300 dark:text-slate-300" />
             <span className="font-medium text-slate-300 dark:text-slate-200">Filter by Room Type:</span>
           </div>
           <SearchableDropdown
-            options={[
-              { room_type_id: '', name: 'All Room Types' },
-              ...roomTypes
-            ]}
+            options={roomTypes}
             value={selectedRoomType}
             onChange={setSelectedRoomType}
             placeholder="All Room Types"
@@ -323,7 +321,7 @@ export const RoomsPage = () => {
       </div>
 
       {/* Room Search Filter - Fourth Priority */}
-      <div className="card relative">
+      <div className="card relative" style={{ zIndex: 1050 }}>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Bed className="w-5 h-5 text-slate-300 dark:text-slate-300" />
@@ -359,7 +357,7 @@ export const RoomsPage = () => {
       </div>
 
       {/* View Mode - Lower Priority */}
-      <div className="bg-surface-secondary rounded-xl shadow-md p-6 border border-border dark:border-slate-700/80 relative">
+      <div className="bg-surface-secondary rounded-xl shadow-md p-6 border border-border dark:border-slate-700/80 relative" style={{ zIndex: 1000 }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="font-medium text-slate-300 dark:text-slate-200">View Mode:</span>
@@ -684,7 +682,7 @@ const EditRoomModal = ({ room, branches, roomTypes, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 'var(--z-modal)' }}>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 1200 }}>
       <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-slate-700/50" style={{minWidth: '600px'}}>
         <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 flex justify-between items-center" style={{ zIndex: 'var(--z-sticky)' }}>
           <h2 className="text-2xl font-display font-bold text-white">
