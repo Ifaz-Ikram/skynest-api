@@ -8,7 +8,7 @@ async function ensureOneRow(sqlCheck, sqlInsert, replacements = {}, conflictColu
 
   let insertSql = sqlInsert;
   if (conflictColumns) {
-    insertSql = insertSql.replace('RETURNING', `ON CONFLICT (${conflictColumns}) DO NOTHING`);
+    insertSql = insertSql.replace(/RETURNING \w+/, `ON CONFLICT (${conflictColumns}) DO NOTHING`);
   }
 
   await sequelize.query(insertSql, { replacements });
