@@ -6,14 +6,23 @@ async function ensureOneRow(sqlCheck, sqlInsert, replacements = {}, conflictColu
   const [rows] = await sequelize.query(sqlCheck, { replacements });
   if (rows.length) return rows[0];
 
-  let insertSql = sqlInsert;
-  if (conflictColumns) {
-    insertSql = insertSql.replace(/RETURNING \w+/, `ON CONFLICT (${conflictColumns}) DO NOTHING`);
+  try {
+    let insertSql = sqlInsert;
+    if (conflictColumns) {
+      insertSql = insertSql.replace(/RETURNING \w+/, `ON CONFLICT (${conflictColumns}) DO NOTHING`);
+    }
+    await sequelize.query(insertSql, { replacements });
+  } catch (err) {
+    if (err.name === 'SequelizeDatabaseError' && err.original?.code === '42P10') {
+      // No unique constraint, insert without ON CONFLICT
+      const insertSql = sqlInsert.replace(/RETURNING \w+/, '');
+      await sequelize.query(insertSql, { replacements });
+    } else {
+      throw err;
+    }
   }
 
-  await sequelize.query(insertSql, { replacements });
-
-  // Always query after to get the row
+  // Query again
   const [rows2] = await sequelize.query(sqlCheck, { replacements });
   return rows2[0];
 }
@@ -58,7 +67,7 @@ async function seedSampleData() {
       room_type_id: roomType.room_type_id,
       num: "101",
     },
-    'branch_id, room_number'
+    'room_number'
   );
   console.log(`Room ready: ${room.room_id}`);
 
