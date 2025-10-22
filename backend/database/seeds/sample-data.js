@@ -47,6 +47,9 @@ async function seedSampleData() {
   );
   console.log(`Branch ready: ${branch.branch_id}`);
 
+  // Reset sequence for room_type to avoid conflicts
+  await sequelize.query(`SELECT setval('room_type_room_type_id_seq', (SELECT COALESCE(MAX(room_type_id), 0) + 1 FROM room_type))`);
+
   const roomType = await ensureOneRow(
     `SELECT room_type_id FROM room_type WHERE name = :name LIMIT 1`,
     `INSERT INTO room_type (name, capacity, daily_rate, amenities)
@@ -56,6 +59,9 @@ async function seedSampleData() {
     'name'
   );
   console.log(`Room type ready: ${roomType.room_type_id}`);
+
+  // Reset sequence for room to avoid conflicts
+  await sequelize.query(`SELECT setval('room_room_id_seq', (SELECT COALESCE(MAX(room_id), 0) + 1 FROM room))`);
 
   const room = await ensureOneRow(
     `SELECT room_id FROM room WHERE room_number = :num LIMIT 1`,
@@ -71,6 +77,9 @@ async function seedSampleData() {
   );
   console.log(`Room ready: ${room.room_id}`);
 
+  // Reset sequence for guest to avoid conflicts
+  await sequelize.query(`SELECT setval('guest_guest_id_seq', (SELECT COALESCE(MAX(guest_id), 0) + 1 FROM guest))`);
+
   const guest = await ensureOneRow(
     `SELECT guest_id FROM guest WHERE full_name = :name LIMIT 1`,
     `INSERT INTO guest (full_name, email, phone)
@@ -80,6 +89,9 @@ async function seedSampleData() {
     'email'
   );
   console.log(`Guest ready: ${guest.guest_id}`);
+
+  // Reset sequence for service_catalog to avoid conflicts
+  await sequelize.query(`SELECT setval('service_catalog_service_id_seq', (SELECT COALESCE(MAX(service_id), 0) + 1 FROM service_catalog))`);
 
   const service = await ensureOneRow(
     `SELECT service_id FROM service_catalog WHERE code = :code LIMIT 1`,
