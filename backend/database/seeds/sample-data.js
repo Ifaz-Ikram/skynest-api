@@ -45,13 +45,20 @@ async function seedSampleData() {
   );
   console.log(`Branch ready: ${branch.branch_id}`);
 
-  const roomType = await ensureOneRow(
+  // First check if 'Deluxe' room type exists
+  let roomType = await ensureOneRow(
     `SELECT room_type_id FROM room_type WHERE name = :name LIMIT 1`,
     `INSERT INTO room_type (name, capacity, daily_rate, amenities)
      VALUES (:name, 2, 10000.00, 'AC, TV')
      RETURNING room_type_id`,
     { name: "Deluxe" }
   );
+  
+  // If still not found, just pick any room type
+  if (!roomType) {
+    const [types] = await sequelize.query(`SELECT room_type_id FROM room_type LIMIT 1`);
+    roomType = types[0];
+  }
   console.log(`Room type ready: ${roomType.room_type_id}`);
 
   const room = await ensureOneRow(
