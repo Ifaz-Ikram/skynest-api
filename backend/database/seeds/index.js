@@ -1,6 +1,6 @@
 // seeds/index.js
 require("dotenv").config();
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { sequelize, UserAccount } = require("../../src/models");
 
 async function seedAdmin() {
