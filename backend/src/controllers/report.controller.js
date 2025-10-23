@@ -23,67 +23,27 @@ exports.billingSummary = async (req, res, next) => {
     const queryParams = [];
     let paramIndex = 1;
     
-    // Add date filter if provided
-    if (start_date) {
-      whereConditions.push(`b.check_in_date >= $${paramIndex}`);
-      queryParams.push(start_date);
-      paramIndex++;
-    }
-    if (end_date) {
-      whereConditions.push(`b.check_out_date <= $${paramIndex}`);
-      queryParams.push(end_date);
-      paramIndex++;
-    }
+    // Note: vw_billing_summary doesn't have check_in_date/check_out_date columns
+    // We can only filter by status and branch_name
     
-    // Add status filter if provided
     if (status) {
-      whereConditions.push(`b.status = $${paramIndex}`);
+      whereConditions.push(`status = $${paramIndex}`);
       queryParams.push(status);
       paramIndex++;
     }
-    
-    // Add branch filter if provided
     if (branch_id) {
-      whereConditions.push(`br.branch_id = $${paramIndex}`);
+      whereConditions.push(`branch_name IN (SELECT branch_name FROM branch WHERE branch_id = $${paramIndex})`);
       queryParams.push(branch_id);
       paramIndex++;
     }
     
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
     
+    // Use the fixed view instead of rebuilding the query
     const query = `
-      SELECT 
-        b.booking_id,
-        g.full_name AS guest,
-        br.branch_name,
-        r.room_number,
-        (b.check_out_date - b.check_in_date) AS nights,
-        ((b.check_out_date - b.check_in_date) * b.booked_rate) AS room_total,
-        COALESCE(service_totals.service_total, 0) AS service_total,
-        ROUND((((b.booked_rate * (b.check_out_date - b.check_in_date) + COALESCE(service_totals.service_total, 0)) + COALESCE(b.late_fee_amount, 0)) - COALESCE(b.discount_amount, 0)) * (1 + (b.tax_rate_percent / 100.0)), 2) AS total_bill,
-        COALESCE(payment_totals.total_paid, 0) AS total_paid,
-        ROUND(((((b.booked_rate * (b.check_out_date - b.check_in_date) + COALESCE(service_totals.service_total, 0)) + COALESCE(b.late_fee_amount, 0)) - COALESCE(b.discount_amount, 0)) * (1 + (b.tax_rate_percent / 100.0))) - COALESCE(payment_totals.total_paid, 0), 2) AS balance_due,
-        b.status
-      FROM booking b
-      LEFT JOIN guest g ON g.guest_id = b.guest_id
-      LEFT JOIN room r ON r.room_id = b.room_id
-      LEFT JOIN branch br ON br.branch_id = r.branch_id
-      LEFT JOIN (
-        SELECT 
-          booking_id,
-          SUM(qty * unit_price_at_use) AS service_total
-        FROM service_usage
-        GROUP BY booking_id
-      ) service_totals ON service_totals.booking_id = b.booking_id
-      LEFT JOIN (
-        SELECT 
-          booking_id,
-          SUM(amount) AS total_paid
-        FROM payment
-        GROUP BY booking_id
-      ) payment_totals ON payment_totals.booking_id = b.booking_id
+      SELECT * FROM vw_billing_summary
       ${whereClause}
-      ORDER BY b.booking_id DESC
+      ORDER BY booking_id DESC
       LIMIT 1000
     `;
     

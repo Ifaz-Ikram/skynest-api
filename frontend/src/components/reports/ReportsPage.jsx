@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Bed, DollarSign, Calendar, CreditCard, Users, ShoppingBag, Download, LogIn, LogOut, Building2, FileText, TrendingUp, Filter } from 'lucide-react';
+import { Bed, DollarSign, Calendar, CreditCard, Users, ShoppingBag, Download, LogIn, LogOut, Building2, FileText, TrendingUp, Filter, Eye } from 'lucide-react';
 import api from '../../utils/api';
 import { format } from 'date-fns';
 
@@ -151,7 +151,7 @@ export const ReportsPage = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <OpsCard
-              title="Arrivals Today"
+              title={<>Arrivals<br/>Today</>}
               icon={LogIn}
               count={Array.isArray(arrivals) ? arrivals.length : 0}
               data={Array.isArray(arrivals) ? arrivals : []}
@@ -159,7 +159,7 @@ export const ReportsPage = () => {
               color="green"
             />
             <OpsCard
-              title="Departures Today"
+              title={<>Departures<br/>Today</>}
               icon={LogOut}
               count={Array.isArray(departures) ? departures.length : 0}
               data={Array.isArray(departures) ? departures : []}
@@ -167,7 +167,7 @@ export const ReportsPage = () => {
               color="orange"
             />
             <OpsCard
-              title="In-House Guests"
+              title={<>In-House<br/>Guests</>}
               icon={Building2}
               count={Array.isArray(inHouse) ? inHouse.length : 0}
               data={Array.isArray(inHouse) ? inHouse : []}
@@ -351,9 +351,11 @@ export const ReportsPage = () => {
 };
 
 function OpsCard({ title, count, icon: Icon, data, onView, color }) {
+  const [showPreview, setShowPreview] = useState(false);
+  
   const exportCsv = () => {
     if (!Array.isArray(data) || !data.length) return;
-    const header = ['booking_id','guest','room_number','branch_name'];
+    const header = ['Booking ID','Guest','Room','Branch'];
     const lines = [header.join(',')].concat(data.map(r=>[r.booking_id,r.guest,r.room_number,r.branch_name].join(',')));
     const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -373,37 +375,86 @@ function OpsCard({ title, count, icon: Icon, data, onView, color }) {
   };
 
   const bgColors = {
-    green: 'bg-green-900/30 border border-green-700/50',
-    orange: 'bg-orange-900/30 border border-orange-700/50',
-    blue: 'bg-blue-900/30 border border-blue-700/50'
+    green: 'bg-gradient-to-br from-green-900/40 to-emerald-900/20 border border-green-600/30',
+    orange: 'bg-gradient-to-br from-orange-900/40 to-amber-900/20 border border-orange-600/30',
+    blue: 'bg-gradient-to-br from-blue-900/40 to-indigo-900/20 border border-blue-600/30'
+  };
+
+  const textColors = {
+    green: 'text-green-400',
+    orange: 'text-orange-400',
+    blue: 'text-blue-400'
+  };
+
+  const buttonColors = {
+    green: 'bg-green-600/20 hover:bg-green-600/30 text-green-300 border-green-600/40',
+    orange: 'bg-orange-600/20 hover:bg-orange-600/30 text-orange-300 border-orange-600/40',
+    blue: 'bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border-blue-600/40'
   };
 
   return (
-    <div className={`${bgColors[color]} backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 group hover:scale-105 transform`}>
-      <div className="flex items-center justify-between mb-4">
+    <div className={`${bgColors[color]} backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 group`}>
+      {/* Header */}
+      <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-4">
-          <div className={`bg-gradient-to-br ${colorClasses[color]} p-4 rounded-xl shadow-md group-hover:scale-110 transition-transform`}>
-            <Icon className="w-8 h-8 text-white" />
+          <div className={`bg-gradient-to-br ${colorClasses[color]} p-3 rounded-xl shadow-lg`}>
+            <Icon className="w-7 h-7 text-white" />
           </div>
           <div>
-            <div className="text-sm font-medium text-slate-300 mb-1">{title}</div>
-            <div className="text-4xl font-bold text-white">{count}</div>
+            <h3 className="text-lg font-bold text-white mb-1">{title}</h3>
+            <div className={`text-5xl font-black ${textColors[color]} tabular-nums`}>{count}</div>
           </div>
         </div>
       </div>
-      <div className="flex gap-2">
+
+      {/* Guest List Preview */}
+      {count > 0 && (
+        <div className="mb-4 bg-slate-900/40 rounded-xl p-3 sm:p-4 border border-slate-700/50">
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {data.slice(0, 3).map((item, idx) => (
+              <div key={idx} className="bg-slate-800/60 rounded-lg p-2 sm:p-3 border border-slate-700/30 hover:border-slate-600/50 transition-colors">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 text-sm">
+                  <div>
+                    <div className="text-xs text-slate-400 mb-1">Guest</div>
+                    <div className="text-white font-medium text-xs sm:text-sm truncate">{item.guest || 'N/A'}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-400 mb-1">Room</div>
+                    <div className={`font-bold text-xs sm:text-sm ${textColors[color]}`}>{item.room_number || 'N/A'}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-400 mb-1">Branch</div>
+                    <div className="text-slate-300 text-xs truncate">{item.branch_name || 'N/A'}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {count > 3 && (
+              <div className="text-center text-xs text-slate-400 pt-2">
+                +{count - 3} more...
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-2">
         <button
-          className="flex-1 bg-slate-800/80 text-slate-200 px-4 py-2 rounded-xl font-medium hover:bg-slate-700 transition-all shadow-sm border border-slate-600"
+          className={`flex-1 ${buttonColors[color]} px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm border flex items-center justify-center gap-2`}
           onClick={exportCsv}
+          disabled={count === 0}
         >
-          <Download className="w-4 h-4 inline mr-1" />
-          Export
+          <Download className="w-4 h-4" />
+          <span className="hidden sm:inline">Export</span>
         </button>
         <button 
-          className="flex-1 bg-luxury-navy text-white px-4 py-2 rounded-xl font-medium hover:bg-indigo-900 transition-all shadow-sm"
+          className={`flex-1 ${buttonColors[color]} px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm border flex items-center justify-center gap-2`}
           onClick={onView}
+          disabled={count === 0}
         >
-          View Details
+          <Eye className="w-4 h-4" />
+          <span className="hidden sm:inline">View</span>
         </button>
       </div>
     </div>

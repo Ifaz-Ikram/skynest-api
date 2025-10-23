@@ -93,9 +93,20 @@ export const Sidebar = ({ user, currentPage, onNavigate, isOpen }) => {
   }
 
   return (
-    <aside className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-surface-secondary/95 dark:bg-slate-900/95 backdrop-blur-sm border-r border-border dark:border-slate-800 shadow-lg transition-all duration-300 ${
-      isOpen ? 'w-64' : 'w-0 -translate-x-full'
-    }`} style={{ zIndex: 'var(--z-sidebar)' }}>
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm lg:hidden z-[var(--z-overlay)]"
+          onClick={() => onNavigate && onNavigate(currentPage)} // Close sidebar on overlay click
+          style={{ top: '4rem' }}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <aside className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-surface-secondary/95 dark:bg-slate-900/95 backdrop-blur-sm border-r border-border dark:border-slate-800 shadow-lg transition-all duration-300 ${
+        isOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64 lg:w-0'
+      } lg:translate-x-0`} style={{ zIndex: 'var(--z-sidebar)' }}>
       <nav className="h-full overflow-y-auto py-4">
         {menuSections.map((section, sectionIndex) => (
           <div key={section.title} className="mb-6">
@@ -139,5 +150,6 @@ export const Sidebar = ({ user, currentPage, onNavigate, isOpen }) => {
         ))}
       </nav>
     </aside>
+    </>
   );
 };

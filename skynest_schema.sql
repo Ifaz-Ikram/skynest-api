@@ -1559,10 +1559,11 @@ CREATE VIEW public.vw_billing_summary AS
             COALESCE(sum(((u.qty)::numeric * u.unit_price_at_use)), (0)::numeric) AS service_total,
             b_1.discount_amount,
             b_1.late_fee_amount,
-            b_1.tax_rate_percent
+            b_1.tax_rate_percent,
+            b_1.advance_payment
            FROM (public.booking b_1
              LEFT JOIN public.service_usage u ON ((u.booking_id = b_1.booking_id)))
-          GROUP BY b_1.booking_id, (b_1.check_out_date - b_1.check_in_date), (((b_1.check_out_date - b_1.check_in_date))::numeric * b_1.booked_rate), b_1.discount_amount, b_1.late_fee_amount, b_1.tax_rate_percent
+          GROUP BY b_1.booking_id, (b_1.check_out_date - b_1.check_in_date), (((b_1.check_out_date - b_1.check_in_date))::numeric * b_1.booked_rate), b_1.discount_amount, b_1.late_fee_amount, b_1.tax_rate_percent, b_1.advance_payment
         ), paid AS (
          SELECT payment.booking_id,
             COALESCE(sum(payment.amount), (0)::numeric) AS total_paid
@@ -1577,8 +1578,8 @@ CREATE VIEW public.vw_billing_summary AS
     c.room_total,
     c.service_total,
     round(((((c.room_total + c.service_total) + b.late_fee_amount) - b.discount_amount) * ((1)::numeric + (b.tax_rate_percent / 100.0))), 2) AS total_bill,
-    COALESCE(p.total_paid, (0)::numeric) AS total_paid,
-    round((((((c.room_total + c.service_total) + b.late_fee_amount) - b.discount_amount) * ((1)::numeric + (b.tax_rate_percent / 100.0))) - COALESCE(p.total_paid, (0)::numeric)), 2) AS balance_due,
+    (COALESCE(c.advance_payment, (0)::numeric) + COALESCE(p.total_paid, (0)::numeric)) AS total_paid,
+    round((((((c.room_total + c.service_total) + b.late_fee_amount) - b.discount_amount) * ((1)::numeric + (b.tax_rate_percent / 100.0))) - (COALESCE(c.advance_payment, (0)::numeric) + COALESCE(p.total_paid, (0)::numeric))), 2) AS balance_due,
     b.status
    FROM (((((calc c
      JOIN public.booking b ON ((b.booking_id = c.booking_id)))
@@ -1625,7 +1626,11 @@ CREATE VIEW public.vw_branch_revenue_monthly AS
          SELECT br.branch_name,
             (date_trunc('day'::text, dd.dd))::date AS day,
             b.booking_id,
-            (b.booked_rate)::numeric AS room_rate
+            (b.booked_rate)::numeric AS room_rate,
+            b.tax_rate_percent,
+            b.discount_amount,
+            b.late_fee_amount,
+            (b.check_out_date - b.check_in_date) AS total_nights
            FROM (((public.booking b
              JOIN public.room r ON ((r.room_id = b.room_id)))
              JOIN public.branch br ON ((br.branch_id = r.branch_id)))
@@ -1635,7 +1640,19 @@ CREATE VIEW public.vw_branch_revenue_monthly AS
          SELECT (date_trunc('month'::text, (room_days.day)::timestamp with time zone))::date AS month,
             room_days.branch_name,
             count(*) AS nights_in_month,
-            sum(room_days.room_rate) AS room_revenue
+            sum(
+              CASE 
+                WHEN room_days.day = (SELECT MIN(rd2.day) FROM room_days rd2 WHERE rd2.booking_id = room_days.booking_id AND (date_trunc('month'::text, (rd2.day)::timestamp with time zone)) = (date_trunc('month'::text, (room_days.day)::timestamp with time zone)))
+                THEN round(
+                  (
+                    ((room_days.room_rate * room_days.total_nights) - room_days.discount_amount + room_days.late_fee_amount) 
+                    * ((1)::numeric + (room_days.tax_rate_percent / 100.0))
+                  ), 
+                  2
+                )
+                ELSE (0)::numeric
+              END
+            ) AS room_revenue
            FROM room_days
           GROUP BY ((date_trunc('month'::text, (room_days.day)::timestamp with time zone))::date), room_days.branch_name
         ), service_month AS (

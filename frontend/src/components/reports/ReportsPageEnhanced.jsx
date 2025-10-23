@@ -379,15 +379,21 @@ export const ReportsPageEnhanced = () => {
           <div className="p-6">
           <div className="space-y-3">
             {topRevenue.map((guest, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+              <div key={idx} className="flex items-center justify-between p-4 bg-slate-700/50 rounded-xl hover:bg-slate-700/70 transition-all">
                 <div>
-                  <p className="font-medium text-white">{guest.guest || 'Unknown'}</p>
-                  <p className="text-sm text-slate-300">{guest.room || 'N/A'} • {guest.nights || 0} nights</p>
+                  <p className="font-semibold text-white text-lg">{guest.guest || 'Unknown Guest'}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-sm text-slate-300">{guest.branch_name || 'Unknown Branch'}</span>
+                    <span className="text-slate-500">•</span>
+                    <span className="text-sm text-slate-300">Room {guest.room_number || 'Unknown'}</span>
+                    <span className="text-slate-500">•</span>
+                    <span className="text-sm text-slate-400">{guest.nights || 0} nights</span>
+                  </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold text-luxury-gold">Rs {parseFloat(guest.total_bill || 0).toLocaleString()}</p>
+                  <p className="text-xl font-bold text-luxury-gold">Rs {parseFloat(guest.total_bill || 0).toLocaleString()}</p>
                   {parseFloat(guest.balance_due || 0) > 0 && (
-                    <p className="text-sm text-red-600">Outstanding: Rs {parseFloat(guest.balance_due).toLocaleString()}</p>
+                    <p className="text-sm text-red-400 mt-1">Outstanding: Rs {parseFloat(guest.balance_due).toLocaleString()}</p>
                   )}
                 </div>
               </div>
@@ -398,41 +404,58 @@ export const ReportsPageEnhanced = () => {
 
         {/* Outstanding Payments Alert */}
         {billingData.filter(b => parseFloat(b.balance_due || 0) > 0).length > 0 && (
-          <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-red-700/50">
-            <div className="flex items-start space-x-3">
-              <AlertCircle className="w-6 h-6 text-red-400 mt-1" />
-              <div>
-                <h4 className="font-bold text-white mb-2">Outstanding Payments Alert</h4>
-                <p className="text-slate-300 mb-3">
-                  {billingData.filter(b => parseFloat(b.balance_due || 0) > 0).length} bookings with outstanding balance
-                </p>
-                <div className="overflow-x-auto">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>Booking ID</th>
-                        <th>Guest</th>
-                        <th>Total Bill</th>
-                        <th>Paid</th>
-                        <th>Balance Due</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {billingData
-                        .filter(b => parseFloat(b.balance_due || 0) > 0)
-                        .slice(0, 10)
-                        .map((row, idx) => (
-                          <tr key={idx}>
-                            <td>{row.booking_id}</td>
-                            <td>{row.guest}</td>
-                            <td>Rs {parseFloat(row.total_bill || 0).toLocaleString()}</td>
-                            <td>Rs {parseFloat(row.total_paid || 0).toLocaleString()}</td>
-                            <td className="text-red-600 font-bold">Rs {parseFloat(row.balance_due || 0).toLocaleString()}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
+          <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-red-700/50 overflow-hidden">
+            <div className="bg-gradient-to-r from-red-500 to-rose-600 p-6">
+              <div className="flex items-center justify-between text-white">
+                <div className="flex items-center space-x-3">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <AlertCircle className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold">Outstanding Payments Alert</h3>
+                    <p className="text-red-100 text-sm mt-1">
+                      {billingData.filter(b => parseFloat(b.balance_due || 0) > 0).length} bookings with outstanding balance
+                    </p>
+                  </div>
                 </div>
+                <button 
+                  onClick={() => exportToCSV(billingData.filter(b => parseFloat(b.balance_due || 0) > 0), 'outstanding-payments')} 
+                  className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg transition-all duration-200 flex items-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  Export
+                </button>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-slate-700">
+                      <th className="text-left py-3 px-4 text-slate-300 font-semibold">Booking ID</th>
+                      <th className="text-left py-3 px-4 text-slate-300 font-semibold">Guest</th>
+                      <th className="text-right py-3 px-4 text-slate-300 font-semibold">Total Bill</th>
+                      <th className="text-right py-3 px-4 text-slate-300 font-semibold">Paid</th>
+                      <th className="text-right py-3 px-4 text-slate-300 font-semibold">Balance Due</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {billingData
+                      .filter(b => parseFloat(b.balance_due || 0) > 0)
+                      .slice(0, 10)
+                      .map((row, idx) => (
+                        <tr key={idx} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+                          <td className="py-3 px-4 text-white font-medium">#{row.booking_id}</td>
+                          <td className="py-3 px-4 text-slate-200">{row.guest}</td>
+                          <td className="py-3 px-4 text-right text-slate-200">Rs {parseFloat(row.total_bill || 0).toLocaleString()}</td>
+                          <td className="py-3 px-4 text-right text-green-400">Rs {parseFloat(row.total_paid || 0).toLocaleString()}</td>
+                          <td className="py-3 px-4 text-right">
+                            <span className="text-red-400 font-bold text-lg">Rs {parseFloat(row.balance_due || 0).toLocaleString()}</span>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

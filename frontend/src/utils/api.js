@@ -38,7 +38,10 @@ class ApiService {
             : Object.values(data.errors).join(', ');
           throw new Error(errorMessages);
         }
-        throw new Error(data.error || `Request failed with status ${response.status}`);
+        // Include backend error details if available
+        const errorMsg = data.error || `Request failed with status ${response.status}`;
+        const errorDetails = data.details ? ` (${data.details})` : '';
+        throw new Error(errorMsg + errorDetails);
       }
       
       return data;
@@ -148,6 +151,13 @@ class ApiService {
   async createBranch(data) {
     return this.request('/api/branches', {
       method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateBranch(id, data) {
+    return this.request(`/api/branches/${id}`, {
+      method: 'PATCH',
       body: JSON.stringify(data),
     });
   }
@@ -803,6 +813,10 @@ class ApiService {
   }
 
   async getAllEmployees() {
+    return this.request('/api/employees');
+  }
+
+  async getEmployees() {
     return this.request('/api/employees');
   }
 

@@ -1051,7 +1051,14 @@ router.post('/users', requireAuth, requireRole('Admin'), async (req, res) => {
     }
   } catch (err) {
     console.error('Create user error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Error details:', {
+      message: err.message,
+      code: err.code,
+      detail: err.detail,
+      constraint: err.constraint,
+      stack: err.stack
+    });
+    res.status(500).json({ error: 'Internal server error', details: err.message });
   }
 });
 

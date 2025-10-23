@@ -12,8 +12,14 @@ import {
   DonutChart,
   SearchableDropdown,
 } from '../common';
+import { getDashboardConfig, shouldShowSection } from './dashboardConfig';
+import { QuickActions } from './QuickActions';
+import { CustomerDashboardSection, FinancialOverviewSection, OperationsDashboardSection } from './sections';
 
 const Dashboard = ({ user, onNavigate }) => {
+  // Get role-based dashboard configuration
+  const dashboardConfig = getDashboardConfig(user?.role || 'Customer');
+  
   const [stats, setStats] = useState({
     totalBookings: 0,
     activeBookings: 0,
@@ -626,6 +632,137 @@ const Dashboard = ({ user, onNavigate }) => {
   // Check if we have critical data
   const hasCriticalData = stats.totalBookings > 0 || stats.totalRooms > 0;
 
+  // Customer role gets a completely different dashboard
+  if (user?.role === 'Customer') {
+    return (
+      <div className="min-h-screen bg-surface-primary p-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Customer Header */}
+          <div className="card bg-gradient-to-r from-luxury-navy to-indigo-900 text-white relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute inset-0" style={{
+                backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
+                backgroundSize: '20px 20px'
+              }}></div>
+            </div>
+            <div className="relative z-10 p-8">
+              <h1 className="text-4xl font-display font-bold mb-2">
+                {dashboardConfig.title}
+              </h1>
+              <p className="text-indigo-200 text-lg">{dashboardConfig.subtitle}</p>
+            </div>
+          </div>
+
+          {/* Quick Actions for Customer */}
+          <QuickActions actions={dashboardConfig.quickActions} onNavigate={onNavigate} />
+
+          {/* Customer Dashboard Section */}
+          <CustomerDashboardSection user={user} onNavigate={onNavigate} />
+        </div>
+      </div>
+    );
+  }
+
+  // Accountant role gets financial-focused dashboard
+  if (user?.role === 'Accountant') {
+    return (
+      <div className="min-h-screen bg-surface-primary p-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Accountant Header */}
+          <div className="card bg-gradient-to-r from-luxury-navy to-indigo-900 text-white relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute inset-0" style={{
+                backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
+                backgroundSize: '20px 20px'
+              }}></div>
+            </div>
+            <div className="relative z-10 p-8">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4">
+                <div className="flex-1">
+                  <h1 className="text-4xl font-display font-bold mb-2">
+                    {dashboardConfig.title}
+                  </h1>
+                  <p className="text-indigo-200 text-lg">{dashboardConfig.subtitle}</p>
+                </div>
+                <button 
+                  onClick={handleRefresh}
+                  disabled={loading}
+                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg p-3 transition-all duration-300 disabled:opacity-50"
+                  title="Refresh Dashboard Data"
+                >
+                  <RefreshCw className={`w-6 h-6 text-white ${loading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Actions for Accountant */}
+          <QuickActions actions={dashboardConfig.quickActions} onNavigate={onNavigate} />
+
+          {/* Financial Overview Section */}
+          <FinancialOverviewSection 
+            user={user} 
+            filterByBranch={dashboardConfig.filterByBranch} 
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Receptionist role gets operations-focused dashboard
+  if (user?.role === 'Receptionist') {
+    return (
+      <div className="min-h-screen bg-surface-primary p-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Receptionist Header */}
+          <div className="card bg-gradient-to-r from-luxury-navy to-indigo-900 text-white relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute inset-0" style={{
+                backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
+                backgroundSize: '20px 20px'
+              }}></div>
+            </div>
+            <div className="relative z-10 p-8">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4">
+                <div className="flex-1">
+                  <h1 className="text-4xl font-display font-bold mb-2">
+                    {getGreeting()}, {user.username}! 👋
+                  </h1>
+                  <p className="text-indigo-200 text-lg">
+                    {format(new Date(), 'EEEE, MMMM do yyyy')}
+                    {lastUpdated && (
+                      <span className="text-indigo-300 text-sm ml-2">
+                        • Last updated: {format(lastUpdated, 'HH:mm:ss')}
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <button 
+                  onClick={handleRefresh}
+                  disabled={loading}
+                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg p-3 transition-all duration-300 disabled:opacity-50"
+                  title="Refresh Dashboard Data"
+                >
+                  <RefreshCw className={`w-6 h-6 text-white ${loading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Actions for Receptionist */}
+          <QuickActions actions={dashboardConfig.quickActions} onNavigate={onNavigate} />
+
+          {/* Operations Dashboard Section */}
+          <OperationsDashboardSection 
+            user={user} 
+            filterByBranch={dashboardConfig.filterByBranch} 
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Admin and Manager roles get full dashboard (existing layout)
   return (
     <div className="min-h-screen bg-surface-primary p-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -709,6 +846,9 @@ const Dashboard = ({ user, onNavigate }) => {
           </div>
         </div>
 
+        {/* Quick Actions (Role-Based) */}
+        <QuickActions actions={dashboardConfig.quickActions} onNavigate={onNavigate} />
+
         {/* 🎯 PHASE 2: Quick Stats Grid (Enhanced - 6 cards) */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <QuickStat icon={Bed} label="Available" value={stats.availableRooms} color="blue" />
@@ -753,68 +893,72 @@ const Dashboard = ({ user, onNavigate }) => {
         </div>
 
         {/* 📊 PHASE 1: Revenue Trend Chart + Alerts Panel */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Revenue Trend Chart (2/3 width) */}
-          <div className="lg:col-span-2 card">
-            <h3 className="text-lg font-semibold text-white dark:text-slate-100 mb-4">Revenue Trends (Last 7 Days)</h3>
-            <LineChart 
-              data={sparklineData.revenue}
-              labels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
-              dataKey="value"
-              xKey="label"
-              height={240}
-              color="#D4AF37"
-              strokeWidth={3}
-            />
-          </div>
-
-          {/* Alerts & Action Items Panel (1/3 width) */}
-          <div className="card border-l-4 border-orange-500">
-            <h3 className="text-lg font-semibold text-white dark:text-slate-100 mb-4 flex items-center">
-              <AlertCircle className="w-5 h-5 mr-2 text-orange-500" />
-              Attention Needed
-            </h3>
-            <div className="space-y-3">
-              {stats.pendingCheckIns > 0 && (
-                <AlertItem 
-                  icon={Calendar}
-                  color="blue"
-                  title={`${stats.pendingCheckIns} Pending Check-Ins`}
-                  action="View Details"
-                  onClick={() => onNavigate && onNavigate('bookings')}
-                />
-              )}
-              {departures.length > 0 && (
-                <AlertItem 
-                  icon={LogOut}
-                  color="purple"
-                  title={`${departures.length} Departures Today`}
-                  action="Process"
-                  onClick={() => onNavigate && onNavigate('bookings')}
-                />
-              )}
-              {paymentStats.overdue > 0 && (
-                <AlertItem 
-                  icon={CreditCard}
-                  color="red"
-                  title={`Rs ${paymentStats.overdue.toLocaleString()} Overdue`}
-                  action="Review"
-                  onClick={() => onNavigate && onNavigate('payments')}
-                />
-              )}
-              {alerts.map((alert, idx) => (
-                <AlertItem 
-                  key={idx}
-                  icon={alert.icon}
-                  color={alert.color}
-                  title={alert.title}
-                  action="View"
-                  onClick={() => onNavigate && onNavigate('reports')}
-                />
-              ))}
+        {shouldShowSection(user?.role, 'analytics') && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Revenue Trend Chart (2/3 width) */}
+            <div className="lg:col-span-2 card">
+              <h3 className="text-lg font-semibold text-white dark:text-slate-100 mb-4">Revenue Trends (Last 7 Days)</h3>
+              <LineChart 
+                data={sparklineData.revenue}
+                labels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
+                dataKey="value"
+                xKey="label"
+                height={240}
+                color="#D4AF37"
+                strokeWidth={3}
+              />
             </div>
+
+            {/* Alerts & Action Items Panel (1/3 width) */}
+            {shouldShowSection(user?.role, 'alerts') && (
+              <div className="card border-l-4 border-orange-500">
+                <h3 className="text-lg font-semibold text-white dark:text-slate-100 mb-4 flex items-center">
+                  <AlertCircle className="w-5 h-5 mr-2 text-orange-500" />
+                  Attention Needed
+                </h3>
+                <div className="space-y-3">
+                  {stats.pendingCheckIns > 0 && (
+                    <AlertItem 
+                      icon={Calendar}
+                      color="blue"
+                      title={`${stats.pendingCheckIns} Pending Check-Ins`}
+                      action="View Details"
+                      onClick={() => onNavigate && onNavigate('bookings')}
+                    />
+                  )}
+                  {departures.length > 0 && (
+                    <AlertItem 
+                      icon={LogOut}
+                      color="purple"
+                      title={`${departures.length} Departures Today`}
+                      action="Process"
+                      onClick={() => onNavigate && onNavigate('bookings')}
+                    />
+                  )}
+                  {paymentStats.overdue > 0 && (
+                    <AlertItem 
+                      icon={CreditCard}
+                      color="red"
+                      title={`Rs ${paymentStats.overdue.toLocaleString()} Overdue`}
+                      action="Review"
+                      onClick={() => onNavigate && onNavigate('payments')}
+                    />
+                  )}
+                  {alerts.map((alert, idx) => (
+                    <AlertItem 
+                      key={idx}
+                      icon={alert.icon}
+                      color={alert.color}
+                      title={alert.title}
+                      action="View"
+                      onClick={() => onNavigate && onNavigate('reports')}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        </div>
+        )}
 
         {/* Primary KPI Cards with Trend Indicators (ORIGINAL - Kept for reference) */}
         <div className="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -979,17 +1123,34 @@ const Dashboard = ({ user, onNavigate }) => {
         </div>
       </div>
 
+      {/* Operations Section (for Admin/Manager) */}
+      {shouldShowSection(user?.role, 'operations') && (
+        <OperationsDashboardSection 
+          user={user} 
+          filterByBranch={dashboardConfig.filterByBranch} 
+        />
+      )}
+
+      {/* Financial Section (for Admin/Manager with financial access) */}
+      {shouldShowSection(user?.role, 'financials') && (
+        <FinancialOverviewSection 
+          user={user} 
+          filterByBranch={dashboardConfig.filterByBranch} 
+        />
+      )}
+
       {/* Recent Bookings */}
-      <div className="card shadow-lg">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-white dark:text-slate-100">Recent Bookings</h2>
-          <button 
-            onClick={() => onNavigate && onNavigate('bookings')}
-            className="text-luxury-gold hover:text-luxury-darkGold font-medium text-sm transition-colors flex items-center"
-          >
-            View All →
-          </button>
-        </div>
+      {shouldShowSection(user?.role, 'recentBookings') && (
+        <div className="card shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-white dark:text-slate-100">Recent Bookings</h2>
+            <button 
+              onClick={() => onNavigate && onNavigate('bookings')}
+              className="text-luxury-gold hover:text-luxury-darkGold font-medium text-sm transition-colors flex items-center"
+            >
+              View All →
+            </button>
+          </div>
 
         {recentBookings.length === 0 ? (
           <div className="text-center py-12">
@@ -1036,14 +1197,18 @@ const Dashboard = ({ user, onNavigate }) => {
             </table>
           </div>
         )}
-      </div>
+        </div>
+      )}
 
       {/* Ops Mini Tables */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <MiniTable title="Arrivals Today" rows={arrivals} onOpen={()=>onNavigate && onNavigate('reports')} />
-        <MiniTable title="Departures Today" rows={departures} onOpen={()=>onNavigate && onNavigate('reports')} />
-        <MiniTable title="In-House Guests" rows={inHouse} onOpen={()=>onNavigate && onNavigate('reports')} />
-      </div>
+      {shouldShowSection(user?.role, 'operations') && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <MiniTable title="Arrivals Today" rows={arrivals} onOpen={()=>onNavigate && onNavigate('reports')} />
+          <MiniTable title="Departures Today" rows={departures} onOpen={()=>onNavigate && onNavigate('reports')} />
+          <MiniTable title="In-House Guests" rows={inHouse} onOpen={()=>onNavigate && onNavigate('reports')} />
+        </div>
+      )}
+      
       {showQuote && (
         <QuickQuoteModal onClose={()=>setShowQuote(false)} />
       )}

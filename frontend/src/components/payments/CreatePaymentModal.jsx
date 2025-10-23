@@ -84,11 +84,22 @@ export const CreatePaymentModal = ({ onClose, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate amount is positive
+    const amount = parseFloat(formData.amount);
+    if (isNaN(amount) || amount <= 0) {
+      alert('Payment amount must be a positive number greater than 0');
+      return;
+    }
+    
     setLoading(true);
     try {
       await api.request('/api/payments', {
         method: 'POST',
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          amount: Math.abs(amount) // Ensure positive
+        })
       });
       onSuccess();
     } catch (error) {
@@ -241,6 +252,7 @@ export const CreatePaymentModal = ({ onClose, onSuccess }) => {
             <input
               type="number"
               step="0.01"
+              min="0.01"
               value={formData.amount}
               onChange={(e) => setFormData({...formData, amount: e.target.value})}
               className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"

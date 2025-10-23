@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Building2, Plus, X, MapPin, Edit, Trash2 } from 'lucide-react';
 import api from '../../utils/api';
 import { LuxuryPageHeader, LoadingSpinner } from '../common';
@@ -79,7 +79,7 @@ const BranchesPage = () => {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {branches.map((branch) => (
-              <div key={branch.branch_id} className="border border-border dark:border-slate-700 rounded-lg p-6 hover:shadow-md transition-shadow bg-surface-secondary dark:bg-slate-800/80">
+              <div key={branch.branch_id} className="rounded-lg p-6 hover:shadow-lg transition-all bg-slate-800/60 border border-slate-700/50">
                 <div className="flex items-start gap-3 mb-4">
                   <div className="p-2 bg-luxury-gold/10 rounded-lg">
                     <Building2 className="w-6 h-6 text-luxury-gold" />
@@ -102,17 +102,17 @@ const BranchesPage = () => {
                     <span className="font-medium text-white">{branch.manager_name || 'N/A'}</span>
                   </div>
                 </div>
-                <div className="mt-4 pt-4 border-t border-border flex gap-2">
+                <div className="mt-4 pt-4 border-t border-slate-700/30 flex gap-3">
                   <button
                     onClick={() => handleEdit(branch)}
-                    className="flex-1 btn-secondary text-sm flex items-center justify-center gap-2"
+                    className="flex-1 bg-blue-500/15 text-blue-300 hover:bg-blue-500/25 hover:text-blue-200 px-4 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-all"
                   >
                     <Edit className="w-4 h-4" />
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(branch.branch_id)}
-                    className="flex-1 bg-red-900/20 text-red-600 hover:bg-red-800/30 dark:bg-red-900/200/15 dark:text-red-200 dark:hover:bg-red-900/200/25 px-3 py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors"
+                    className="flex-1 bg-red-500/15 text-red-300 hover:bg-red-500/25 hover:text-red-200 px-4 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-all"
                   >
                     <Trash2 className="w-4 h-4" />
                     Delete
@@ -164,6 +164,47 @@ const BranchModal = ({ branch, onClose, onSuccess }) => {
     manager_id: branch?.manager_id || '',
   });
   const [loading, setLoading] = useState(false);
+  const [managers, setManagers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    loadManagers();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const loadManagers = async () => {
+    try {
+      const response = await api.getEmployees();
+      // Handle both array and object responses
+      const employees = Array.isArray(response) ? response : (response.employees || []);
+      const managerList = employees.filter(emp => emp.role === 'Manager');
+      setManagers(managerList);
+    } catch (error) {
+      console.error('Failed to load managers:', error);
+    }
+  };
+
+  const filteredManagers = searchTerm.trim() === ''
+    ? managers
+    : managers.filter(manager =>
+        manager.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+  const selectedManager = managers.find(m => m.employee_id === formData.manager_id);
+
+  console.log('Debug - Managers:', managers.length, 'Filtered:', filteredManagers.length, 'ShowDropdown:', showDropdown);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -178,6 +219,7 @@ const BranchModal = ({ branch, onClose, onSuccess }) => {
           branch_code: formData.branch_code,
           address: formData.city, // Map city to address field
           contact_number: formData.phone, // Map phone to contact_number field
+          manager_id: formData.manager_id || null,
         };
         await api.createBranch(payload);
         alert('Branch created successfully!');
@@ -242,14 +284,64 @@ const BranchModal = ({ branch, onClose, onSuccess }) => {
               className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Manager ID</label>
-            <input
-              type="number"
-              value={formData.manager_id}
-              onChange={(e) => setFormData({...formData, manager_id: e.target.value})}
-              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
-            />
+          <div className="relative" ref={dropdownRef}>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Manager</label>
+            <div className="relative">
+              <input
+                type="text"
+                value={selectedManager ? selectedManager.name : searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setShowDropdown(true);
+                  if (!e.target.value) {
+                    setFormData({...formData, manager_id: ''});
+                  }
+                }}
+                onFocus={() => setShowDropdown(true)}
+                placeholder="Search for a manager..."
+                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400 w-full"
+              />
+              {showDropdown && managers.length > 0 && (
+                <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                  {filteredManagers.length > 0 ? (
+                    filteredManagers.map((manager) => (
+                      <button
+                        key={manager.employee_id}
+                        type="button"
+                        onClick={() => {
+                          setFormData({...formData, manager_id: manager.employee_id});
+                          setSearchTerm('');
+                          setShowDropdown(false);
+                        }}
+                        className="w-full text-left px-4 py-3 hover:bg-slate-700 text-white transition-colors border-b border-slate-700 last:border-b-0"
+                      >
+                        <div className="font-medium">{manager.name}</div>
+                        <div className="text-sm text-slate-400">ID: {manager.employee_id} • {manager.email}</div>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="px-4 py-3 text-slate-400 text-center">
+                      No managers found matching "{searchTerm}"
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            {selectedManager && (
+              <div className="mt-2 text-sm text-slate-400">
+                Selected: <span className="text-white font-medium">{selectedManager.name}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({...formData, manager_id: ''});
+                    setSearchTerm('');
+                  }}
+                  className="ml-2 text-red-400 hover:text-red-300"
+                >
+                  Clear
+                </button>
+              </div>
+            )}
           </div>
           <div className="flex gap-3 pt-4 border-t border-border">
             <button type="button" onClick={onClose} className="btn-secondary flex-1">

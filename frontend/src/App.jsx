@@ -75,11 +75,11 @@ const App = () => {
       />
 
       <main
-        className={`pt-24 transition-[margin] duration-300 ease-smooth ${
+        className={`pt-24 pb-8 px-2 sm:px-4 transition-[margin] duration-300 ease-smooth ${
           sidebarOpen ? 'lg:ml-64' : 'lg:ml-0'
         }`}
       >
-        <div className="mx-auto w-full max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl px-2 sm:px-4 lg:px-8">
           {currentPage === 'dashboard' && <Dashboard user={user} onNavigate={setCurrentPage} />}
           {currentPage === 'bookings' && <BookingsPage />}
           {currentPage === 'rooms' && <RoomsPage />}

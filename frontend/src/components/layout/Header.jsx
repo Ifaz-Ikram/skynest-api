@@ -127,7 +127,7 @@ export const Header = ({
               </button>
               {userMenuOpen && (
                 <div
-                  className="absolute right-1/2 transform translate-x-1/2 mt-2 w-56 overflow-hidden rounded-xl shadow-xl backdrop-blur-xl"
+                  className="absolute right-0 sm:right-1/2 sm:transform sm:translate-x-1/2 mt-2 w-56 overflow-hidden rounded-xl shadow-xl backdrop-blur-xl"
                   role="menu"
                   aria-label="User menu"
                   style={{ 
