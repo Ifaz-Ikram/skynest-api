@@ -1,8 +1,29 @@
-from pathlib import Path
-path = Path('2.md')
-text = path.read_text(encoding='utf-8')
-old = "| Deposit capture | dvance_payment stored manually during booking. No workflow. | Gateway preauth/capture, pay-by-link, deposit schedule, reminder emails, refund rules. | No payment integration; no deposit status indicator; no reminders. | Integrate payment gateway, send automatic deposit requests, track status flags. |\n| Receipts | Not generated. | PDF/email receipt with method, reference, amount, staff. | Guests/staff cannot confirm deposit. | Implement deposit receipts (HTML+PDF) and store reference numbers. |\n| Guarantee policy | Not tracked. | Guarantee type (CC, company, voucher), release rules. | Booking may remain unguaranteed. | Add guarantee fields, expiry rules, alerts for expiring/failed guarantees. |"
-new = "| Deposit capture | dvance_payment plus booking metadata now feed a deposit summary on every booking response (status, due vs collected, reminders). | Gateway preauth/capture, pay-by-link, deposit schedule, reminder emails, refund rules. | No payment gateway; reminders/manual outreach still manual. | Integrate payment gateway, automate deposit link delivery, escalate outstanding deposits. |\n| Receipts | /api/bookings/:id/deposit-receipt returns structured receipt data (amount, method, reference, timestamps) for emailing/PDF generation. | PDF/email receipt with method, reference, amount, staff. | No HTML/PDF rendering or templated email yet. | Layer PDF/email templates on top of the receipt payload; archive copies with staff signature. |\n| Guarantee policy | Booking metadata supports guarantee method, reference, expiry and notes (surfaced alongside deposit summary). | Guarantee type (CC, company, voucher), release rules. | No automated expiry alerts or validation checks. | Add scheduled checks for expiring/failed guarantees and UI alerts. |"
-if old not in text:
-    raise SystemExit('pattern not found in doc')
-path.write_text(text.replace(old, new), encoding='utf-8')
+data = [
+    (0.123, 2.45),
+    (1.582, 5.00),
+    (2.166, 8.15),
+    (0.500, 2.70),
+    (1.501, 5.45),
+    (2.112, 8.80),
+    (0.653, 2.90),
+    (1.737, 5.80),
+    (2.303, 9.10),
+    (0.558, 3.05),
+    (1.822, 6.00),
+    (2.294, 9.55),
+    (1.057, 3.40),
+    (1.866, 6.20),
+    (2.386, 9.70),
+    (1.137, 3.60),
+    (1.930, 6.35),
+    (2.236, 10.00),
+    (1.144, 3.95),
+    (1.800, 7.00),
+    (2.310, 10.20),
+    (1.194, 4.10),
+    (2.088, 7.40),
+    (1.562, 4.60),
+    (2.179, 7.85),
+]
+
+

@@ -462,6 +462,9 @@ async function createGroupBooking(req, res, picked) {
       };
       
       bookings.push(booking);
+
+      // Update each room's status to 'Booked'
+      await pool.query(`UPDATE room SET status = 'Booked' WHERE room_id = $1`, [room.room_id]);
       
       // Audit each booking
       logAudit(req, { 
@@ -569,6 +572,9 @@ async function createBooking(req, res) {
     // Deposit feature removed - not in schema
     // const summarySource = { ...raw, advance_payment: picked.advance_payment };
     // booking.deposit_summary = buildDepositSummary(summarySource, {});
+
+    // Update room status to 'Booked'
+    await pool.query(`UPDATE room SET status = 'Booked' WHERE room_id = $1`, [picked.room_id]);
 
     // audit
     logAudit(req, { action: 'create_booking', entity: 'booking', entityId: booking.booking_id, details: booking });
@@ -1442,6 +1448,9 @@ async function createBookingWithPayment(req, res) {
       };
     }
 
+    // Update room status to 'Booked' inside transaction
+    await client.query(`UPDATE room SET status = 'Booked' WHERE room_id = $1`, [core.room_id]);
+
     await client.query("COMMIT");
 
     // Deposit feature removed - not in schema
@@ -1525,6 +1534,17 @@ async function cancelBooking(req, res) {
       entityId: id,
       details: rows[0],
     });
+
+    // After cancellation, mark the room as Available (best-effort)
+    try {
+      await pool.query(
+        `UPDATE room SET status = 'Available' 
+         WHERE room_id = (SELECT room_id FROM booking WHERE booking_id = $1)`,
+        [id]
+      );
+    } catch {
+      // ignore best-effort update errors
+    }
 
     return res.json({ cancellation: rows[0] });
   } catch (err) {

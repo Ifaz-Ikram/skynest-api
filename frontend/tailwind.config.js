@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'class',
+  darkMode: false, // DISABLED: Force light mode only for SkyNest theme
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",

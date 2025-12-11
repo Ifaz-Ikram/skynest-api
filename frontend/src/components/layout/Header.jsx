@@ -12,12 +12,11 @@ export const Header = ({
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
   const isDark = theme === 'dark';
-  const containerBackground = isDark
-    ? 'linear-gradient(90deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)'
-    : 'linear-gradient(90deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.95) 100%)';
-  const controlBackground = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(15, 23, 42, 0.06)';
-  const controlBorder = isDark ? 'rgba(148, 163, 184, 0.25)' : 'rgba(148, 163, 184, 0.35)';
-  const accentBackground = isDark ? 'rgba(253, 184, 19, 0.18)' : 'rgba(212, 175, 55, 0.18)';
+  // SkyNest Theme Colors
+  const containerBackground = 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)';
+  const controlBackground = 'rgba(255, 255, 255, 0.15)';
+  const controlBorder = 'rgba(255, 255, 255, 0.3)';
+  const accentBackground = 'rgba(255, 255, 255, 0.2)';
   const avatarBackground = 'transparent';
 
   useEffect(() => {
@@ -43,10 +42,18 @@ export const Header = ({
               type="button"
               onClick={onToggleSidebar}
               aria-label="Toggle navigation menu"
-              className="relative flex h-10 w-10 items-center justify-center rounded-xl border text-white transition-all duration-200 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/60"
+              className="relative flex h-10 w-10 items-center justify-center rounded-xl text-white transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/60"
               style={{
-                backgroundColor: controlBackground,
-                borderColor: controlBorder,
+                background: 'rgba(255, 255, 255, 0.15)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)';
+                e.currentTarget.style.transform = 'scale(1.05)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                e.currentTarget.style.transform = 'scale(1)';
               }}
             >
               <span className="sr-only">Toggle sidebar</span>
@@ -74,17 +81,17 @@ export const Header = ({
 
             <div className="flex items-center gap-3">
               <div
-                className="flex h-12 w-12 items-center justify-center rounded-xl border"
+                className="flex h-12 w-12 items-center justify-center rounded-xl border shadow-lg"
                 style={{
                   backgroundColor: accentBackground,
                   borderColor: controlBorder,
                 }}
               >
-                <Hotel className="h-5 w-5 text-accent-primary" strokeWidth={1.4} />
+                <Hotel className="h-6 w-6 text-white" strokeWidth={2} />
               </div>
               <div>
-                <p className="text-sm font-semibold text-white sm:text-base">SkyNest Command</p>
-                <p className="text-xs text-slate-200">Luxury Hospitality Console</p>
+                <p className="text-sm font-bold text-white sm:text-base">SkyNest Hotels</p>
+                <p className="text-xs text-blue-200">Luxury Hospitality Management</p>
               </div>
             </div>
           </div>
@@ -96,17 +103,25 @@ export const Header = ({
                 aria-haspopup="true"
                 aria-expanded={userMenuOpen}
                 onClick={() => setUserMenuOpen((prev) => !prev)}
-                className="flex items-center gap-2 rounded-full border pl-2 pr-3 text-white transition-all duration-200 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/60"
+                className="flex items-center gap-2.5 rounded-xl pl-1.5 pr-3 py-1.5 text-white transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/60"
                 style={{
-                  backgroundColor: controlBackground,
-                  borderColor: controlBorder,
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)';
+                  e.currentTarget.style.transform = 'scale(1.02)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                  e.currentTarget.style.transform = 'scale(1)';
                 }}
               >
                 <span
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold text-white"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold"
                   style={{
-                    backgroundColor: avatarBackground,
-                    border: 'none',
+                    background: 'white',
+                    color: '#1a237e',
                   }}
                 >
                   {user?.username?.slice(0, 1)?.toUpperCase() ?? 'U'}
@@ -115,31 +130,26 @@ export const Header = ({
                   <span className="text-sm font-semibold leading-tight text-white">
                     {user?.username}
                   </span>
-                  <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                  <span className="text-xs font-medium uppercase tracking-wide" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>
                     {user?.role ?? 'Guest'}
                   </span>
                 </span>
                 <ChevronDown
-                  className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
+                  className={`h-4 w-4 transition-transform duration-200 ${
                     userMenuOpen ? 'rotate-180' : 'rotate-0'
                   }`}
+                  style={{ color: 'rgba(255, 255, 255, 0.8)' }}
                 />
               </button>
               {userMenuOpen && (
                 <div
-                  className="absolute right-0 sm:right-1/2 sm:transform sm:translate-x-1/2 mt-2 w-56 overflow-hidden rounded-xl shadow-xl backdrop-blur-xl"
+                  className="absolute right-0 sm:right-1/2 sm:transform sm:translate-x-1/2 mt-2 w-56 overflow-hidden rounded-xl shadow-2xl backdrop-blur-xl"
                   role="menu"
                   aria-label="User menu"
                   style={{ 
-                    background: isDark 
-                      ? 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)'
-                      : 'linear-gradient(135deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.95) 100%)',
-                    border: isDark 
-                      ? '1px solid rgba(148, 163, 184, 0.2)' 
-                      : '1px solid rgba(148, 163, 184, 0.3)',
-                    boxShadow: isDark 
-                      ? '0 20px 40px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)'
-                      : '0 20px 40px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)'
+                    background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                    border: '2px solid rgba(26, 35, 126, 0.1)',
+                    boxShadow: '0 20px 40px -12px rgba(26, 35, 126, 0.3), 0 0 0 1px rgba(26, 35, 126, 0.05)'
                   }}
                 >
                   {/* User Info Section */}
@@ -148,21 +158,21 @@ export const Header = ({
                       <div 
                         className="flex h-10 w-10 items-center justify-center rounded-lg text-base font-bold text-white shadow-md"
                         style={{
-                          background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)'
+                          background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)'
                         }}
                       >
                         {user?.username?.slice(0, 1)?.toUpperCase() ?? 'U'}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-white truncate">{user?.username}</p>
-                        <p className="text-xs text-slate-300 truncate">{user?.email ?? 'No email linked'}</p>
+                        <p className="text-sm font-bold truncate" style={{ color: '#1a237e' }}>{user?.username}</p>
+                        <p className="text-xs truncate" style={{ color: '#6c757d' }}>{user?.email ?? 'No email linked'}</p>
                         <div className="mt-1">
                           <span 
                             className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
                             style={{
-                              backgroundColor: isDark ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.1)',
-                              color: '#60a5fa',
-                              border: '1px solid rgba(59, 130, 246, 0.3)'
+                              backgroundColor: '#e3f2fd',
+                              color: '#0d47a1',
+                              border: '1px solid #90caf9'
                             }}
                           >
                             {user?.role ?? 'Guest'}
@@ -176,9 +186,7 @@ export const Header = ({
                   <div 
                     className="mx-4 h-px"
                     style={{
-                      background: isDark 
-                        ? 'linear-gradient(90deg, transparent 0%, rgba(148, 163, 184, 0.3) 50%, transparent 100%)'
-                        : 'linear-gradient(90deg, transparent 0%, rgba(148, 163, 184, 0.2) 50%, transparent 100%)'
+                      background: 'linear-gradient(90deg, transparent 0%, rgba(26, 35, 126, 0.2) 50%, transparent 100%)'
                     }}
                   ></div>
 

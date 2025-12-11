@@ -18,27 +18,29 @@
 :root {
   color-scheme: light;
 
-  /* Surfaces */
+  /* Surfaces - Sapphire Stream Whisper Light Mode */
   --bg-primary: #F8FAFC;
   --bg-secondary: #FFFFFF;
   --bg-tertiary: #F1F5F9;
 
   /* Typography - Much darker for better contrast in light mode */
-  --text-primary: #0F172A;
+  --text-primary: #1a2332;
   --text-secondary: #334155;
   --text-tertiary: #64748B;
 
-  /* Accents */
-  --accent-primary: #D4AF37;
-  --accent-primary-muted: #B8960F;
-  --accent-secondary: #3B82F6;
-  --accent-secondary-muted: #2563EB;
+  /* Accents - Sapphire Stream Whisper Palette */
+  --accent-primary: #ff6b6b;
+  --accent-primary-muted: #ff5252;
+  --accent-secondary: #a8dadc;
+  --accent-secondary-muted: #8ec5c7;
+  --accent-warm: #f4a261;
+  --accent-warm-muted: #e89350;
 
   /* States */
   --success: #059669;
-  --warning: #D97706;
-  --error: #DC2626;
-  --info: #2563EB;
+  --warning: #f4a261;
+  --error: #ff6b6b;
+  --info: #a8dadc;
   --muted: #64748B;
 
   /* Borders & shadows */
@@ -77,34 +79,33 @@
   --z-max: 2147483647;
 }
 
+/* DISABLED: Dark mode is not used in SkyNest light theme
 .dark {
   color-scheme: dark;
-
-  --bg-primary: #0F172A;
-  --bg-secondary: #1E293B;
-  --bg-tertiary: #334155;
-
+  --bg-primary: #1a2332;
+  --bg-secondary: #243447;
+  --bg-tertiary: #2e3f54;
   --text-primary: #FFFFFF;
   --text-secondary: #CBD5E1;
   --text-tertiary: #94A3B8;
-
-  --accent-primary: #FDB813;
-  --accent-primary-muted: #E29E0C;
-  --accent-secondary: #60A5FA;
-  --accent-secondary-muted: #3B82F6;
-
+  --accent-primary: #ff6b6b;
+  --accent-primary-muted: #ff8787;
+  --accent-secondary: #a8dadc;
+  --accent-secondary-muted: #c7eaeb;
+  --accent-warm: #f4a261;
+  --accent-warm-muted: #f7b883;
   --success: #34D399;
-  --warning: #FBBF24;
-  --error: #F87171;
-  --info: #60A5FA;
+  --warning: #f7b883;
+  --error: #ff8787;
+  --info: #c7eaeb;
   --muted: #94A3B8;
-
   --border: #475569;
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.25);
   --shadow-md: 0 4px 6px rgba(15, 23, 42, 0.3);
   --shadow-lg: 0 10px 15px rgba(15, 23, 42, 0.35);
   --shadow-xl: 0 20px 25px rgba(15, 23, 42, 0.4);
 }
+*/
 
 html {
   scroll-behavior: smooth;
@@ -196,12 +197,14 @@ a:hover {
   backdrop-filter: blur(10px);
 }
 
+/* DISABLED: Dark mode input styling
 .dark .input-field {
   background-color: rgba(255, 255, 255, 0.20) !important;
   border-color: rgba(203, 213, 225, 0.7) !important;
   color: rgb(255, 255, 255) !important;
   font-weight: 500;
 }
+*/
 
 .input-field:focus {
   outline: none;
@@ -210,11 +213,13 @@ a:hover {
   background-color: rgba(255, 255, 255, 0.12);
 }
 
+/* DISABLED: Dark mode input focus styling
 .dark .input-field:focus {
   background-color: rgba(255, 255, 255, 0.28) !important;
   border-color: rgb(96, 165, 250) !important;
   box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3) !important;
 }
+*/
 
 .input-field.error {
   border-color: var(--error);
@@ -222,7 +227,7 @@ a:hover {
 }
 
 .luxury-gradient {
-  background: radial-gradient(120% 120% at 80% 0%, rgba(212, 175, 55, 0.35) 0%, rgba(212, 175, 55, 0) 55%), linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(14, 165, 233, 0) 60%);
+  background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
 }
 
 .gold-gradient {
@@ -300,9 +305,11 @@ a:hover {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
 }
 
+/* DISABLED: Dark mode focus ring styling
 .dark .focus-ring {
   box-shadow: 0 0 0 2px rgba(253, 184, 19, 0.45);
 }
+*/
 
 @keyframes toast-in {
   0% {
@@ -321,6 +328,15 @@ a:hover {
 
 .animate-toast-in {
   animation: toast-in 0.35s ease forwards;
+}
+
+/* Override global button styles for dashboard buttons */
+.bg-\[\#1a237e\] {
+  background-color: #1a237e !important;
+}
+
+button.border-0 {
+  border: none !important;
 }
 
 /* ========================================
@@ -370,7 +386,7 @@ a:hover {
     color: rgb(17 24 39) !important;
   }
 
-  /* Dark mode - lighter text */
+  /* DISABLED: Dark mode text colors
   .dark .text-gray-50 {
     color: rgb(15 23 42) !important;
   }
@@ -410,6 +426,7 @@ a:hover {
   .dark .text-gray-900 {
     color: rgb(248 250 252) !important;
   }
+  */
 
   /* Indigo colors on dark backgrounds should stay light */
   [class*="bg-gradient"] .text-indigo-200,
@@ -425,6 +442,8 @@ a:hover {
    Professional form styling with excellent contrast
    ======================================== */
 
+/* DISABLED: All dark mode form styling has been removed to prevent conflicts with SkyNest light theme
+
 .dark input[type="text"],
 .dark input[type="email"],
 .dark input[type="password"],
@@ -437,7 +456,6 @@ a:hover {
 .dark input[type="url"],
 .dark select,
 .dark textarea {
-  /* Clean slate background with good contrast */
   background-color: rgb(51, 65, 85) !important;
   border: 2px solid rgb(100, 116, 139) !important;
   color: rgb(248, 250, 252) !important;
@@ -488,54 +506,880 @@ a:hover {
   opacity: 1;
 }
 
-/* Select dropdowns - ensure visible arrow */
-.dark select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23F8FAFC' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
-  background-position: right 0.5rem center;
-  background-repeat: no-repeat;
-  background-size: 1.5em 1.5em;
-  padding-right: 2.5rem;
-  appearance: none;
+END OF DISABLED DARK MODE STYLING - All dark mode styles above are commented out */
+
+/* ========================================
+   DASHBOARD BUTTON OVERRIDES
+   Force SkyNest theme buttons to display correctly
+   ======================================== */
+
+/* Target buttons with bg-[#1a237e] class */
+button.bg-\[\#1a237e\],
+button.bg-\[\#1a237e\]:hover,
+button.bg-\[\#1a237e\]:focus,
+button.bg-\[\#1a237e\]:active {
+  background-color: #1a237e !important;
+  background-image: none !important;
+  border-color: transparent !important;
 }
 
-/* Ensure buttons in forms are visible */
-.dark button[type="button"],
-.dark button[type="submit"] {
-  min-height: 2.5rem;
+/* Target buttons with text-white class */
+button.text-white,
+button.text-white:hover,
+button.text-white:focus,
+button.text-white:active {
+  color: #ffffff !important;
 }
 
-/* Fix SearchableDropdown button visibility in dark modals */
-.dark [class*="bg-surface"] button {
+/* Target buttons with border-0 class */
+button.border-0,
+button.border-0:hover,
+button.border-0:focus,
+button.border-0:active {
+  border: none !important;
+  border-width: 0 !important;
+}
+
+/* Gradient background for the Open button */
+button[class*="background:linear-gradient"],
+button.\[\background\:linear-gradient\(135deg\,\#1a237e_0\%\,\#0d47a1_100\%\)\] {
+  background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%) !important;
+  background-color: #1a237e !important;
+  border: none !important;
+}
+
+/* Override any Tailwind resets */
+@layer utilities {
+  .bg-\[\#1a237e\] {
+    background-color: #1a237e !important;
+  }
+  
+  .border-0 {
+    border-width: 0 !important;
+  }
+}
+
+/* CRITICAL: Force all dashboard action buttons to use consistent SkyNest navy blue */
+button[class*="bg-[#1a237e]"],
+button[class~="bg-[#1a237e]"] {
+  background-color: #1a237e !important;
+  background-image: none !important;
+  border: none !important;
+}
+
+button[class*="bg-[#1a237e]"]:hover,
+button[class~="bg-[#1a237e]"]:hover {
+  background-color: #0d47a1 !important;
+}
+
+/* Ensure white text on all these buttons */
+button[class*="text-white"],
+button[class~="text-white"] {
+  color: #ffffff !important;
+}
+
+/* FORCE OVERRIDE: All buttons with inline backgroundColor style */
+button[style*="backgroundColor"] {
+  background-image: none !important;
+}
+
+/* FORCE: Buttons with specific navy blue inline styles */
+button[style*="#1a237e"] {
+  background-color: #1a237e !important;
+  background-image: none !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+button[style*="#1565c0"] {
+  background-color: #1565c0 !important;
+  background-image: none !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+button[style*="#7b1fa2"] {
+  background-color: #7b1fa2 !important;
+  background-image: none !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+button[style*="#d32f2f"] {
+  background-color: #d32f2f !important;
+  background-image: none !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+button[style*="#f57c00"] {
+  background-color: #f57c00 !important;
+  background-image: none !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+/* Override ALL button elements with border-0 class */
+button.border-0,
+.border-0 {
+  border: none !important;
+  border-width: 0 !important;
+}
+
+/* ========================================
+   TAILWIND LAYER OVERRIDE
+   Use @layer to override Tailwind base styles
+   ======================================== */
+
+@layer components {
+  /* Dashboard button overrides with maximum specificity - EXCEPT gradients */
+  button[type="button"][style]:not([style*="linear-gradient"]) {
+    background-image: none !important;
+    border: none !important;
+  }
+  
+  button[type="button"].text-white {
+    color: #ffffff !important;
+  }
+  
+  button[type="button"].border-0 {
+    border: none !important;
+    border-width: 0 !important;
+  }
+  
+  /* Dark mode overrides removed - light theme only */
+}
+
+/* ========================================
+   ULTIMATE OVERRIDE - MAXIMUM SPECIFICITY
+   Nuclear option to force button colors
+   ======================================== */
+
+/* Dashboard buttons - use ID-like specificity - EXCEPT gradients */
+div button[type="button"].text-white:not([style*="linear-gradient"]) {
+  color: #ffffff !important;
+  border: none !important;
+}
+
+div button[type="button"][style*="backgroundColor"]:not([style*="linear-gradient"]) {
+  background-image: none !important;
+}
+
+/* Specific color overrides with maximum specificity - EXCEPT gradients */
+div.bg-white button[type="button"]:not([style*="linear-gradient"]) {
+  background-image: none !important;
+  border: none !important;
+}
+
+/* Alert buttons - EXCEPT gradients */
+div[class*="flex"] button[type="button"][class*="text-white"]:not([style*="linear-gradient"]) {
+  color: #ffffff !important;
+  border: none !important;
+}
+
+/* Target the specific dashboard container - EXCEPT gradients */
+.max-w-7xl button[type="button"]:not([style*="linear-gradient"]),
+div[class*="max-w"] button[type="button"]:not([style*="linear-gradient"]) {
+  background-image: none !important;
+}
+
+/* Force override with attribute selector - EXCEPT gradients */
+button[class*="font-bold"][type="button"]:not([style*="linear-gradient"]) {
+  background-image: none !important;
+  border: none !important;
+}
+
+/* ========================================
+   SEARCHABLE DROPDOWN OPTION STYLES
+   Allow dropdown options to have their own colors
+   ======================================== */
+
+/* Dropdown options should not be affected by global button styles */
+div[style*="z-index"] button[type="button"],
+.absolute button[type="button"] {
+  background: inherit !important;
+  color: inherit !important;
+  border: inherit !important;
+}
+
+/* Specifically target dropdown menu buttons */
+div[class*="absolute"][class*="mt-2"] button {
+  background: inherit !important;
+  color: inherit !important;
+}
+
+/* ========================================
+   SIDEBAR MENU HOVER OVERRIDES
+   Force sidebar menu items to show correct hover colors
+   ======================================== */
+
+.sidebar-menu-item {
+  background-image: none !important;
+}
+
+.sidebar-menu-item:hover {
+  background-image: none !important;
+}
+
+/* Force active sidebar item to have white text */
+.sidebar-menu-item[style*="linear-gradient(135deg, #1a237e"] svg,
+.sidebar-menu-item[style*="linear-gradient(135deg, #1a237e"] span {
+  color: #ffffff !important;
+}
+
+/* Force inactive sidebar items to have gray text */
+.sidebar-menu-item[style*="transparent"] svg,
+.sidebar-menu-item[style*="transparent"] span {
+  color: #495057 !important;
+}
+
+/* Use CSS classes for more reliable styling - MAXIMUM PRIORITY */
+.active-sidebar-icon,
+.active-sidebar-icon *,
+.active-sidebar-icon svg,
+.active-sidebar-icon path {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: none !important;
+}
+
+.active-sidebar-text,
+.active-sidebar-text * {
+  color: #ffffff !important;
+}
+
+.inactive-sidebar-icon,
+.inactive-sidebar-icon *,
+.inactive-sidebar-icon svg,
+.inactive-sidebar-icon path {
+  color: #495057 !important;
+  stroke: #495057 !important;
+  fill: none !important;
+}
+
+.inactive-sidebar-text,
+.inactive-sidebar-text * {
+  color: #495057 !important;
+}
+
+/* Additional targeting by parent button */
+.sidebar-menu-item[style*="linear-gradient(135deg, #1a237e"] .active-sidebar-icon,
+.sidebar-menu-item[style*="linear-gradient(135deg, #1a237e"] .active-sidebar-icon svg,
+.sidebar-menu-item[style*="linear-gradient(135deg, #1a237e"] .active-sidebar-icon path,
+.sidebar-menu-item[style*="linear-gradient(135deg, #1a237e"] .active-sidebar-text {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* ========================================
+   ABSOLUTE FINAL OVERRIDE - BEATS TAILWIND
+   This MUST be at the end of the file
+   ======================================== */
+
+/* Kill ALL Tailwind button defaults - EXCEPT dropdown buttons and gradients */
+button:not(.dropdown-option-button):not([style*="linear-gradient"]),
+button:where([type="button"]):not(.dropdown-option-button):not([style*="linear-gradient"]),
+button:where([type="submit"]):not(.dropdown-option-button):not([style*="linear-gradient"]),
+button:where([type="reset"]):not(.dropdown-option-button):not([style*="linear-gradient"]) {
+  background-image: none !important;
+  border-style: solid !important;
+}
+
+/* Force inline style colors to work - EXCEPT dropdown buttons and gradients */
+button[style]:not(.dropdown-option-button):not([style*="linear-gradient"]),
+button:where([style*="background"]):not(.dropdown-option-button):not([style*="linear-gradient"]),
+button:where([style*="border"]):not(.dropdown-option-button):not([style*="linear-gradient"]) {
+  background-image: none !important;
+}
+
+/* Specific button colors - MAXIMUM PRIORITY - EXCEPT dropdown buttons AND gradients */
+button:where([style*="rgb(26, 35, 126)"]):not(.dropdown-option-button):not([style*="linear-gradient"]),
+button:where([style*="#1a237e"]):not(.dropdown-option-button):not([style*="linear-gradient"]) {
+  background-color: rgb(26, 35, 126) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(21, 101, 192)"]):not(.dropdown-option-button):not([style*="linear-gradient"]),
+button:where([style*="#1565c0"]):not(.dropdown-option-button):not([style*="linear-gradient"]) {
+  background-color: rgb(21, 101, 192) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(123, 31, 162)"]):not(.dropdown-option-button):not([style*="linear-gradient"]),
+button:where([style*="#7b1fa2"]):not(.dropdown-option-button):not([style*="linear-gradient"]) {
+  background-color: rgb(123, 31, 162) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(211, 47, 47)"]):not(.dropdown-option-button):not([style*="linear-gradient"]),
+button:where([style*="#d32f2f"]):not(.dropdown-option-button):not([style*="linear-gradient"]) {
+  background-color: rgb(211, 47, 47) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(245, 124, 0)"]):not(.dropdown-option-button):not([style*="linear-gradient"]),
+button:where([style*="#f57c00"]):not(.dropdown-option-button):not([style*="linear-gradient"]) {
+  background-color: rgb(245, 124, 0) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(56, 142, 60)"]):not(.dropdown-option-button):not([style*="linear-gradient"]),
+button:where([style*="#388e3c"]):not(.dropdown-option-button):not([style*="linear-gradient"]) {
+  background-color: rgb(56, 142, 60) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(249, 168, 37)"]):not(.dropdown-option-button):not([style*="linear-gradient"]),
+button:where([style*="#f9a825"]):not(.dropdown-option-button):not([style*="linear-gradient"]) {
+  background-color: rgb(249, 168, 37) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(13, 71, 161)"]):not(.dropdown-option-button):not([style*="linear-gradient"]),
+button:where([style*="#0d47a1"]):not(.dropdown-option-button):not([style*="linear-gradient"]) {
+  background-color: rgb(13, 71, 161) !important;
+  border-color: transparent !important;
+}
+
+/* Also exclude dropdown buttons from color forcing on specific hex colors */
+button:where([style*="#f8f9fa"]):not(.dropdown-option-button) {
+  background-color: #f8f9fa !important;
+}
+
+button:where([style*="#495057"]):not(.dropdown-option-button) {
+  color: #495057 !important;
+}
+
+button:where([style*="#ffffff"]):not(.dropdown-option-button) {
+  color: #ffffff !important;
+}
+
+/* Ensure white text is always white */
+button:where([class*="text-white"]) {
+  color: rgb(255, 255, 255) !important;
+}
+
+/* Remove all borders from border-0 class */
+button:where([class*="border-0"]) {
+  border-width: 0 !important;
+  border-style: none !important;
+}
+
+/* ========================================
+   FINAL OVERRIDE FOR DROPDOWN BUTTONS
+   These rules MUST be last to override everything above
+   CRITICAL: Allow inline styles to work by NOT forcing colors
+   ======================================== */
+
+/* Dropdown options - ONLY remove background-image, nothing else */
+/* This allows inline background, color, border to work */
+button.dropdown-option-button[type="button"][style],
+button.dropdown-option-button[type="button"][style]:hover,
+button.dropdown-option-button[type="button"][style]:focus,
+button.dropdown-option-button[type="button"][style]:active {
+  background-image: none !important;
+  /* Ensure inline styles take precedence */
+  background-color: unset !important;
+  background: unset !important;
+  color: unset !important;
+  border-color: unset !important;
+}
+
+/* Submit buttons with inline styles should also not be forced */
+button.dropdown-option-button[type="submit"][style],
+button.dropdown-option-button[type="submit"][style]:hover,
+button.dropdown-option-button[type="submit"][style]:focus,
+button.dropdown-option-button[type="submit"][style]:active {
+  background-image: none !important;
+  background-color: unset !important;
+  background: unset !important;
+  color: unset !important;
+  border-color: unset !important;
+}
+
+
+ 
+
+
+
+/* ========================================
+
+   FORM ELEMENTS - UNIVERSAL FIX
+
+   Professional form styling with excellent contrast
+
+   ======================================== */
+
+
+
+/* DISABLED: All dark mode form styling has been removed to prevent conflicts with SkyNest light theme
+
+.dark input[type="text"],
+
+.dark input[type="email"],
+
+.dark input[type="password"],
+
+.dark input[type="number"],
+
+.dark input[type="date"],
+
+.dark input[type="datetime-local"],
+
+.dark input[type="time"],
+
+.dark input[type="search"],
+
+.dark input[type="tel"],
+
+.dark input[type="url"],
+
+.dark select,
+
+.dark textarea {
+
   background-color: rgb(51, 65, 85) !important;
-  border-color: rgb(100, 116, 139) !important;
-  color: rgb(248, 250, 252) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
 
-.dark [class*="bg-surface"] button:hover {
-  background-color: rgb(71, 85, 105) !important;
-  border-color: rgb(148, 163, 184) !important;
-}
-
-/* Ensure radio buttons and checkboxes are visible */
-.dark input[type="radio"],
-.dark input[type="checkbox"] {
-  width: 1.25rem;
-  height: 1.25rem;
-  background-color: rgb(51, 65, 85) !important;
   border: 2px solid rgb(100, 116, 139) !important;
-  cursor: pointer;
+
+  color: rgb(248, 250, 252) !important;
+
+  border-radius: 0.5rem;
+
+  padding: 0.75rem 1rem;
+
+  transition: all 0.15s ease;
+
+  font-weight: 400;
+
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+
 }
 
-.dark input[type="radio"]:checked,
-.dark input[type="checkbox"]:checked {
-  background-color: rgb(59, 130, 246) !important;
+
+
+.dark input[type="text"]:hover,
+
+.dark input[type="email"]:hover,
+
+.dark input[type="password"]:hover,
+
+.dark input[type="number"]:hover,
+
+.dark input[type="date"]:hover,
+
+.dark input[type="datetime-local"]:hover,
+
+.dark input[type="time"]:hover,
+
+.dark input[type="search"]:hover,
+
+.dark input[type="tel"]:hover,
+
+.dark input[type="url"]:hover,
+
+.dark select:hover,
+
+.dark textarea:hover {
+
+  border-color: rgb(148, 163, 184) !important;
+
+  background-color: rgb(71, 85, 105) !important;
+
+}
+
+
+
+.dark input[type="text"]:focus,
+
+.dark input[type="email"]:focus,
+
+.dark input[type="password"]:focus,
+
+.dark input[type="number"]:focus,
+
+.dark input[type="date"]:focus,
+
+.dark input[type="datetime-local"]:focus,
+
+.dark input[type="time"]:focus,
+
+.dark input[type="search"]:focus,
+
+.dark input[type="tel"]:focus,
+
+.dark input[type="url"]:focus,
+
+.dark select:focus,
+
+.dark textarea:focus {
+
+  background-color: rgb(71, 85, 105) !important;
+
   border-color: rgb(59, 130, 246) !important;
+
+  outline: none;
+
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25), 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+
 }
 
-/* Labels should be bright and readable */
-.dark label {
-  color: rgb(226, 232, 240) !important;
-  font-weight: 500;
+
+
+.dark input::placeholder,
+
+.dark textarea::placeholder {
+
+  color: rgb(148, 163, 184) !important;
+
+  opacity: 1;
+
 }
 
+
+
+END OF DISABLED DARK MODE STYLING - All dark mode styles above are commented out */
+
+/* ========================================
+   DASHBOARD BUTTON OVERRIDES
+   Force SkyNest theme buttons to display correctly
+   ======================================== */
+
+/* Target buttons with bg-[#1a237e] class */
+button.bg-\[\#1a237e\],
+button.bg-\[\#1a237e\]:hover,
+button.bg-\[\#1a237e\]:focus,
+button.bg-\[\#1a237e\]:active {
+  background-color: #1a237e !important;
+  background-image: none !important;
+  border-color: transparent !important;
+}
+
+/* Target buttons with text-white class */
+button.text-white,
+button.text-white:hover,
+button.text-white:focus,
+button.text-white:active {
+  color: #ffffff !important;
+}
+
+/* Target buttons with border-0 class */
+button.border-0,
+button.border-0:hover,
+button.border-0:focus,
+button.border-0:active {
+  border: none !important;
+  border-width: 0 !important;
+}
+
+/* Gradient background for the Open button */
+button[class*="background:linear-gradient"],
+button.\[\background\:linear-gradient\(135deg\,\#1a237e_0\%\,\#0d47a1_100\%\)\] {
+  background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%) !important;
+  background-color: #1a237e !important;
+  border: none !important;
+}
+
+/* Override any Tailwind resets */
+@layer utilities {
+  .bg-\[\#1a237e\] {
+    background-color: #1a237e !important;
+  }
+  
+  .border-0 {
+    border-width: 0 !important;
+  }
+}
+
+/* CRITICAL: Force all dashboard action buttons to use consistent SkyNest navy blue */
+button[class*="bg-[#1a237e]"],
+button[class~="bg-[#1a237e]"] {
+  background-color: #1a237e !important;
+  background-image: none !important;
+  border: none !important;
+}
+
+button[class*="bg-[#1a237e]"]:hover,
+button[class~="bg-[#1a237e]"]:hover {
+  background-color: #0d47a1 !important;
+}
+
+/* Ensure white text on all these buttons */
+button[class*="text-white"],
+button[class~="text-white"] {
+  color: #ffffff !important;
+}
+
+/* FORCE OVERRIDE: All buttons with inline backgroundColor style */
+button[style*="backgroundColor"] {
+  background-image: none !important;
+}
+
+/* FORCE: Buttons with specific navy blue inline styles */
+button[style*="#1a237e"] {
+  background-color: #1a237e !important;
+  background-image: none !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+button[style*="#1565c0"] {
+  background-color: #1565c0 !important;
+  background-image: none !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+button[style*="#7b1fa2"] {
+  background-color: #7b1fa2 !important;
+  background-image: none !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+button[style*="#d32f2f"] {
+  background-color: #d32f2f !important;
+  background-image: none !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+button[style*="#f57c00"] {
+  background-color: #f57c00 !important;
+  background-image: none !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+/* Override ALL button elements with border-0 class */
+button.border-0,
+.border-0 {
+  border: none !important;
+  border-width: 0 !important;
+}
+
+/* ========================================
+   TAILWIND LAYER OVERRIDE
+   Use @layer to override Tailwind base styles
+   ======================================== */
+
+@layer components {
+  /* Dashboard button overrides with maximum specificity */
+  button[type="button"][style] {
+    background-image: none !important;
+    border: none !important;
+  }
+  
+  button[type="button"].text-white {
+    color: #ffffff !important;
+  }
+  
+  button[type="button"].border-0 {
+    border: none !important;
+    border-width: 0 !important;
+  }
+  
+  /* Dark mode overrides removed - light theme only */
+}
+
+/* ========================================
+   ULTIMATE OVERRIDE - MAXIMUM SPECIFICITY
+   Nuclear option to force button colors
+   ======================================== */
+
+/* Dashboard buttons - use ID-like specificity */
+div button[type="button"].text-white {
+  color: #ffffff !important;
+  border: none !important;
+}
+
+div button[type="button"][style*="backgroundColor"] {
+  background-image: none !important;
+}
+
+/* Specific color overrides with maximum specificity */
+div.bg-white button[type="button"] {
+  background-image: none !important;
+  border: none !important;
+}
+
+/* Alert buttons */
+div[class*="flex"] button[type="button"][class*="text-white"] {
+  color: #ffffff !important;
+  border: none !important;
+}
+
+/* Target the specific dashboard container */
+.max-w-7xl button[type="button"],
+div[class*="max-w"] button[type="button"] {
+  background-image: none !important;
+}
+
+/* Force override with attribute selector */
+button[class*="font-bold"][type="button"] {
+  background-image: none !important;
+  border: none !important;
+}
+
+/* ========================================
+   SEARCHABLE DROPDOWN OPTION STYLES
+   Allow dropdown options to have their own colors
+   ======================================== */
+
+/* Dropdown options should not be affected by global button styles */
+div[style*="z-index"] button[type="button"],
+.absolute button[type="button"] {
+  background: inherit !important;
+  color: inherit !important;
+  border: inherit !important;
+}
+
+/* Specifically target dropdown menu buttons */
+div[class*="absolute"][class*="mt-2"] button {
+  background: inherit !important;
+  color: inherit !important;
+}
+
+/* ========================================
+   SIDEBAR MENU HOVER OVERRIDES
+   Force sidebar menu items to show correct hover colors
+   ======================================== */
+
+.sidebar-menu-item {
+  background-image: none !important;
+}
+
+.sidebar-menu-item:hover {
+  background-image: none !important;
+}
+
+/* Force active sidebar item to have white text */
+.sidebar-menu-item[style*="linear-gradient(135deg, #1a237e"] svg,
+.sidebar-menu-item[style*="linear-gradient(135deg, #1a237e"] span {
+  color: #ffffff !important;
+}
+
+/* Force inactive sidebar items to have gray text */
+.sidebar-menu-item[style*="transparent"] svg,
+.sidebar-menu-item[style*="transparent"] span {
+  color: #495057 !important;
+}
+
+/* Use CSS classes for more reliable styling - MAXIMUM PRIORITY */
+.active-sidebar-icon,
+.active-sidebar-icon *,
+.active-sidebar-icon svg,
+.active-sidebar-icon path {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: none !important;
+}
+
+.active-sidebar-text,
+.active-sidebar-text * {
+  color: #ffffff !important;
+}
+
+.inactive-sidebar-icon,
+.inactive-sidebar-icon *,
+.inactive-sidebar-icon svg,
+.inactive-sidebar-icon path {
+  color: #495057 !important;
+  stroke: #495057 !important;
+  fill: none !important;
+}
+
+.inactive-sidebar-text,
+.inactive-sidebar-text * {
+  color: #495057 !important;
+}
+
+/* Additional targeting by parent button */
+.sidebar-menu-item[style*="linear-gradient(135deg, #1a237e"] .active-sidebar-icon,
+.sidebar-menu-item[style*="linear-gradient(135deg, #1a237e"] .active-sidebar-icon svg,
+.sidebar-menu-item[style*="linear-gradient(135deg, #1a237e"] .active-sidebar-icon path,
+.sidebar-menu-item[style*="linear-gradient(135deg, #1a237e"] .active-sidebar-text {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* ========================================
+   ABSOLUTE FINAL OVERRIDE - BEATS TAILWIND
+   This MUST be at the end of the file
+   ======================================== */
+
+/* Kill ALL Tailwind button defaults */
+button,
+button:where([type="button"]),
+button:where([type="submit"]),
+button:where([type="reset"]) {
+  background-image: none !important;
+  border-style: solid !important;
+}
+
+/* Force inline style colors to work */
+button[style],
+button:where([style*="background"]),
+button:where([style*="border"]) {
+  background-image: none !important;
+}
+
+/* Specific button colors - MAXIMUM PRIORITY */
+button:where([style*="rgb(26, 35, 126)"]),
+button:where([style*="#1a237e"]) {
+  background-color: rgb(26, 35, 126) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(21, 101, 192)"]),
+button:where([style*="#1565c0"]) {
+  background-color: rgb(21, 101, 192) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(123, 31, 162)"]),
+button:where([style*="#7b1fa2"]) {
+  background-color: rgb(123, 31, 162) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(211, 47, 47)"]),
+button:where([style*="#d32f2f"]) {
+  background-color: rgb(211, 47, 47) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(245, 124, 0)"]),
+button:where([style*="#f57c00"]) {
+  background-color: rgb(245, 124, 0) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(56, 142, 60)"]),
+button:where([style*="#388e3c"]) {
+  background-color: rgb(56, 142, 60) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(249, 168, 37)"]),
+button:where([style*="#f9a825"]) {
+  background-color: rgb(249, 168, 37) !important;
+  border-color: transparent !important;
+}
+
+button:where([style*="rgb(13, 71, 161)"]),
+button:where([style*="#0d47a1"]) {
+  background-color: rgb(13, 71, 161) !important;
+  border-color: transparent !important;
+}
+
+/* Ensure white text is always white */
+button:where([class*="text-white"]) {
+  color: rgb(255, 255, 255) !important;
+}
+
+/* Remove all borders from border-0 class */
+button:where([class*="border-0"]) {
+  border-width: 0 !important;
+  border-style: none !important;
+}

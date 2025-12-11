@@ -249,6 +249,7 @@ export const RoomsPage = () => {
             </div>
           </div>
         </div>
+        </div>
 
         {/* View Mode Buttons */}
         <div className="bg-white rounded-xl shadow-lg p-6" style={{ border: '2px solid #e0e0e0' }}>
@@ -261,14 +262,14 @@ export const RoomsPage = () => {
               ].map(({ key, label }) => {
                 const isActive = viewMode === key;
                 return (
-                  <button
+              <button
                     key={key}
                     onClick={() => setViewMode(key)}
                     className="px-6 py-3 rounded-xl font-bold transition-all"
                     style={
                       isActive
-                        ? {
-                            background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                  ? {
+                      background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
                             color: '#ffffff',
                             boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)'
                           }
@@ -280,7 +281,7 @@ export const RoomsPage = () => {
                     }
                   >
                     {label}
-                  </button>
+              </button>
                 );
               })}
             </div>
@@ -289,8 +290,10 @@ export const RoomsPage = () => {
 
       {/* Create Room Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[99999] p-2 sm:p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] flex flex-col" style={{minWidth: '600px', border: '2px solid #e0e0e0'}}>
+        <div className="fixed inset-0 z-[99999]">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+          <div className="relative z-10 flex items-center justify-center w-full h-full p-2 sm:p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] flex flex-col overflow-hidden" style={{minWidth: '600px', border: '2px solid #e0e0e0'}}>
             <div className="px-6 py-5 flex-shrink-0 sticky top-0 z-10 rounded-t-2xl" style={{
               background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
             }}>
@@ -306,8 +309,8 @@ export const RoomsPage = () => {
                   className="text-white hover:bg-white/20 p-2 rounded-lg transition-all"
                   type="button"
                 >
-                  <X className="w-6 h-6" />
-                </button>
+                <X className="w-6 h-6" />
+              </button>
               </div>
             </div>
             <CreateRoomForm
@@ -320,6 +323,7 @@ export const RoomsPage = () => {
                 await loadRooms(pagination.page);
               }}
             />
+          </div>
           </div>
         </div>
       )}
@@ -342,145 +346,106 @@ export const RoomsPage = () => {
         />
       )}
 
-      {/* Branch Filter - Themed */}
-      <div className="bg-white rounded-2xl shadow-xl overflow-visible" style={{ border: '2px solid #e0e0e0', zIndex: 1200 }}>
-        <div className="p-6 rounded-t-2xl" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
-          <div className="flex items-center justify-between text-white">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                <Building2 className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold">Branch Location</h3>
-                <p className="text-sm mt-1" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Filter rooms by hotel branch</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="p-6 overflow-visible">
-          <div className="flex items-center gap-4 w-full">
-            <div className="flex-1 min-w-0">
-              <SearchableDropdown
-                options={branches}
-                value={selectedBranch}
-                onChange={setSelectedBranch}
-                placeholder="All Branches"
-                searchPlaceholder="Search branches..."
-                displayKey="branch_name"
-                valueKey="branch_id"
-                searchKeys={['branch_name', 'branch_code']}
-                renderOption={(branch) => branch.branch_name}
-                className="min-w-[200px]"
-              />
-            </div>
-            {selectedBranch && (
-              <button
-                onClick={() => setSelectedBranch('')}
-                className="px-5 py-2.5 rounded-xl font-bold text-white transition-all"
-                style={{
-                  background: 'linear-gradient(135deg, #e53935 0%, #d32f2f 100%)',
-                  boxShadow: '0 4px 12px rgba(229, 57, 53, 0.3)'
-                }}
-              >
-                Clear
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Room Type Filter - Themed */}
-      <div className="bg-white rounded-2xl shadow-xl overflow-visible" style={{ border: '2px solid #e0e0e0', zIndex: 1150 }}>
+      {/* Combined Filters */}
+      <div className="bg-white rounded-2xl shadow-xl overflow-visible" style={{ border: '2px solid #e0e0e0' }}>
         <div className="p-6 rounded-t-2xl" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
           <div className="flex items-center gap-3 text-white">
             <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-              <Bed className="w-6 h-6" />
-            </div>
+              <Building2 className="w-6 h-6" />
+          </div>
             <div>
-              <h3 className="text-2xl font-bold">Room Type</h3>
-              <p className="text-sm mt-1" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Filter rooms by type and rate</p>
+              <h3 className="text-2xl font-bold">Filters</h3>
+              <p className="text-sm mt-1" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Branch, room type and quick room search</p>
             </div>
           </div>
         </div>
         <div className="p-6 overflow-visible">
-          <div className="flex items-center gap-4 w-full">
-            <div className="flex-1 min-w-0">
-              <SearchableDropdown
-                options={roomTypes}
-                value={selectedRoomType}
-                onChange={setSelectedRoomType}
-                placeholder="All Room Types"
-                searchPlaceholder="Search room types..."
-                displayKey="name"
-                valueKey="room_type_id"
-                searchKeys={['name']}
-                renderOption={(roomType) => `${roomType.name} - Rs.${parseFloat(roomType.daily_rate || 0).toFixed(2)}/night`}
-                className="min-w-[250px]"
-              />
-            </div>
-            {selectedRoomType && (
-              <button
-                onClick={() => setSelectedRoomType('')}
-                className="px-5 py-2.5 rounded-xl font-bold text-white transition-all"
-                style={{
-                  background: 'linear-gradient(135deg, #e53935 0%, #d32f2f 100%)',
-                  boxShadow: '0 4px 12px rgba(229, 57, 53, 0.3)'
-                }}
-              >
-                Clear
-              </button>
-            )}
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+            {/* Branch */}
+            <div className="flex items-center gap-3 min-w-0 lg:col-span-4">
+              <div className="flex items-center gap-2 shrink-0" style={{ color: '#1a237e' }}>
+                <Building2 className="w-5 h-5" />
+                <span className="font-semibold">Branch:</span>
+              </div>
+              <div className="flex-1 min-w-0 flex items-center gap-2">
+            <SearchableDropdown
+              options={branches}
+              value={selectedBranch}
+              onChange={setSelectedBranch}
+              placeholder="All Branches"
+              searchPlaceholder="Search branches..."
+              displayKey="branch_name"
+              valueKey="branch_id"
+              searchKeys={['branch_name', 'branch_code']}
+              renderOption={(branch) => branch.branch_name}
+                  buttonClassName="!w-full !px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 !truncate text-ellipsis focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
+                  dropdownClassName="!border-gray-300"
+                />
         </div>
       </div>
 
-      {/* Room Search Filter - Themed */}
-      <div className="bg-white rounded-2xl shadow-xl overflow-visible" style={{ border: '2px solid #e0e0e0', zIndex: 1100 }}>
-        <div className="p-6 rounded-t-2xl" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
-          <div className="flex items-center gap-3 text-white">
-            <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-              <Bed className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold">Search Room</h3>
-              <p className="text-sm mt-1" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Quickly find a specific room</p>
-            </div>
+            {/* Room Type */}
+            <div className="flex items-center gap-3 min-w-0 lg:col-span-4">
+              <div className="flex items-center gap-2 shrink-0" style={{ color: '#1a237e' }}>
+                <Bed className="w-5 h-5" />
+                <span className="font-semibold">Room Type:</span>
           </div>
+              <div className="flex-1 min-w-0 flex items-center gap-2">
+            <SearchableDropdown
+              options={roomTypes}
+              value={selectedRoomType}
+              onChange={setSelectedRoomType}
+              placeholder="All Room Types"
+              searchPlaceholder="Search room types..."
+              displayKey="name"
+              valueKey="room_type_id"
+              searchKeys={['name']}
+              renderOption={(roomType) => `${roomType.name} - Rs.${parseFloat(roomType.daily_rate || 0).toFixed(2)}/night`}
+                  buttonClassName="!w-full !px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 !truncate text-ellipsis focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
+                  dropdownClassName="!border-gray-300"
+                />
         </div>
-        <div className="p-6 overflow-visible">
-          <div className="flex items-center gap-4 w-full">
-            <div className="flex-1 min-w-0">
-              <SearchableDropdown
-                options={displayRooms.map(room => ({
-                  room_id: room.room_id,
-                  room_number: room.room_number,
-                  room_type: room.room_type_name,
-                  status: room.status,
-                  display_text: `Room ${room.room_number} - ${room.room_type_name} (${room.status})`
-                }))}
-                value={selectedRoom}
-                onChange={setSelectedRoom}
-                placeholder="All Rooms"
-                searchPlaceholder="Search rooms..."
-                displayKey="display_text"
-                valueKey="room_id"
-                searchKeys={['room_number', 'room_type', 'status']}
-                renderOption={(room) => room.display_text}
-                className="min-w-[300px]"
-              />
-            </div>
-            {selectedRoom && (
-              <button
-                onClick={() => setSelectedRoom('')}
-                className="px-5 py-2.5 rounded-xl font-bold text-white transition-all"
-                style={{
-                  background: 'linear-gradient(135deg, #e53935 0%, #d32f2f 100%)',
-                  boxShadow: '0 4px 12px rgba(229, 57, 53, 0.3)'
-                }}
+      </div>
+
+            {/* Actions (single Clear button) */}
+            <div className="flex items-center justify-end lg:col-span-4">
+            <button
+                onClick={() => { setSelectedBranch(''); setSelectedRoomType(''); setSelectedRoom(''); }}
+                className="px-6 py-3 rounded-xl font-bold text-white transition-all"
+                style={{ background: 'linear-gradient(135deg, #e53935 0%, #d32f2f 100%)' }}
               >
                 Clear
-              </button>
-            )}
+            </button>
+            </div>
+
+            {/* Search Room (moved to second row, full width) */}
+            <div className="flex items-center gap-3 min-w-0 lg:col-span-12">
+              <div className="flex items-center gap-2 shrink-0" style={{ color: '#1a237e' }}>
+                <Bed className="w-5 h-5" />
+                <span className="font-semibold">Room:</span>
+              </div>
+              <div className="flex-1 min-w-0 flex items-center gap-2">
+                <SearchableDropdown
+                  options={displayRooms.map(room => ({
+                    room_id: room.room_id,
+                    room_number: room.room_number,
+                    room_type: room.room_type_name,
+                    status: room.status,
+                    display_text: `Room ${room.room_number} - ${room.room_type_name} (${room.status})`
+                  }))}
+                  value={selectedRoom}
+                  onChange={setSelectedRoom}
+                  placeholder="All Rooms"
+                  searchPlaceholder="Search rooms..."
+                  displayKey="display_text"
+                  valueKey="room_id"
+                  searchKeys={['room_number', 'room_type', 'status']}
+                  renderOption={(room) => room.display_text}
+                  buttonClassName="!w-full !px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 !truncate text-ellipsis focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
+                  dropdownClassName="!border-gray-300"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -506,17 +471,20 @@ export const RoomsPage = () => {
                 </div>
                 <span 
                   className="px-3 py-1 rounded-full text-xs font-bold"
-                  style={
-                    room.status === 'Available'
-                      ? { background: 'linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%)', color: '#2e7d32', border: '2px solid #81c784' }
-                      : room.status === 'Occupied'
-                        ? { background: 'linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%)', color: '#c62828', border: '2px solid #e57373' }
-                        : room.status === 'Maintenance'
-                          ? { background: 'linear-gradient(135deg, #fff9c4 0%, #fff59d 100%)', color: '#f57f17', border: '2px solid #ffee58' }
-                          : { background: 'linear-gradient(135deg, #bbdefb 0%, #90caf9 100%)', color: '#0d47a1', border: '2px solid #64b5f6' }
-                  }
+                  style={(function(){
+                    const s = String(room.status || '').toLowerCase();
+                    if (s.startsWith('avail')) return { background: 'linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%)', color: '#2e7d32', border: '2px solid #81c784' };
+                    if (s.includes('occup') || s.includes('unavail')) return { background: 'linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%)', color: '#c62828', border: '2px solid #e57373' };
+                    if (s.startsWith('maint')) return { background: 'linear-gradient(135deg, #fff9c4 0%, #fff59d 100%)', color: '#f57f17', border: '2px solid #ffee58' };
+                    if (s.startsWith('reserv')) return { background: 'linear-gradient(135deg, #bbdefb 0%, #90caf9 100%)', color: '#0d47a1', border: '2px solid #64b5f6' };
+                    return { background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)', color: '#0d47a1', border: '2px solid #64b5f6' };
+                  })()}
                 >
-                  {room.status}
+                  {(function(){
+                    const s = String(room.status || '').toLowerCase();
+                    if (s.includes('unavail')) return 'Occupied';
+                    return room.status;
+                  })()}
                 </span>
               </div>
               <div className="space-y-2 text-sm">
@@ -544,7 +512,7 @@ export const RoomsPage = () => {
                   <button
                     onClick={() => handleEdit(room)}
                     className="px-4 py-2 rounded-lg font-bold text-white transition-all"
-                    style={{
+                    style={{ 
                       background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
                       boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)'
                     }}
@@ -555,7 +523,7 @@ export const RoomsPage = () => {
                   <button
                     onClick={() => handleDelete(room.room_id)}
                     className="px-4 py-2 rounded-lg font-bold text-white transition-all"
-                    style={{
+                    style={{ 
                       background: 'linear-gradient(135deg, #e53935 0%, #d32f2f 100%)',
                       boxShadow: '0 4px 12px rgba(229, 57, 53, 0.3)'
                     }}
@@ -655,7 +623,6 @@ export const RoomsPage = () => {
           </div>
         </div>
       )}
-      </div>
     </div>
   );
 };
@@ -684,101 +651,101 @@ const CreateRoomForm = ({ branches, roomTypes, loading, onCancel, onCreated }) =
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ background: '#f8f9fa' }}>
-      <form onSubmit={submit} className="p-6 space-y-4">
-        <div className="relative z-30">
+    <form onSubmit={submit} className="p-6 space-y-4">
+        <div className="relative z-[100004]">
           <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Room Type</label>
-          <SearchableDropdown
-            options={roomTypes}
-            value={form.room_type_id}
-            onChange={(value) => setForm({...form, room_type_id: value})}
+        <SearchableDropdown
+          options={roomTypes}
+          value={form.room_type_id}
+          onChange={(value) => setForm({...form, room_type_id: value})}
             placeholder="Select room type"
-            searchPlaceholder="Search room types..."
-            required
-            displayKey="name"
-            valueKey="room_type_id"
-            searchKeys={['name']}
-            renderOption={(roomType) => (
-              <div className="flex justify-between items-center w-full">
-                <div>
+          searchPlaceholder="Search room types..."
+          required
+          displayKey="name"
+          valueKey="room_type_id"
+          searchKeys={['name']}
+          renderOption={(roomType) => (
+            <div className="flex justify-between items-center w-full">
+              <div>
                   <div className="font-semibold" style={{ color: '#1a237e' }}>{roomType.name}</div>
                   <div className="text-sm" style={{ color: '#495057' }}>
-                    Capacity: {roomType.capacity} | Rs {parseFloat(roomType.daily_rate).toFixed(2)}/night
-                  </div>
+                  Capacity: {roomType.capacity} | Rs {parseFloat(roomType.daily_rate).toFixed(2)}/night
                 </div>
               </div>
-            )}
-            renderSelected={(roomType) => `${roomType.name} Rs ${parseFloat(roomType.daily_rate).toFixed(2)}/night`}
-            emptyMessage="No room types found"
+            </div>
+          )}
+          renderSelected={(roomType) => `${roomType.name} Rs ${parseFloat(roomType.daily_rate).toFixed(2)}/night`}
+          emptyMessage="No room types found"
             buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
-            dropdownClassName="!border-gray-300 !bg-white !text-gray-900 !z-[100001]"
+            dropdownClassName="!border-gray-300 !bg-white !text-gray-900 !z-[100005]"
             inputClassName="!text-gray-900 !placeholder-gray-500"
-          />
-        </div>
-        <div className="relative z-20">
+        />
+      </div>
+        <div className="relative z-[100003]">
           <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Branch</label>
-          <SearchableDropdown
-            options={branches}
-            value={form.branch_id}
-            onChange={(value) => setForm({...form, branch_id: value})}
+        <SearchableDropdown
+          options={branches}
+          value={form.branch_id}
+          onChange={(value) => setForm({...form, branch_id: value})}
             placeholder="Select branch"
-            searchPlaceholder="Search branches..."
-            required
-            displayKey="branch_name"
-            valueKey="branch_id"
-            searchKeys={['branch_name', 'branch_code']}
-            renderOption={(branch) => (
-              <div className="flex justify-between items-center w-full">
-                <div>
+          searchPlaceholder="Search branches..."
+          required
+          displayKey="branch_name"
+          valueKey="branch_id"
+          searchKeys={['branch_name', 'branch_code']}
+          renderOption={(branch) => (
+            <div className="flex justify-between items-center w-full">
+              <div>
                   <div className="font-semibold" style={{ color: '#1a237e' }}>{branch.branch_name}</div>
                   <div className="text-sm" style={{ color: '#495057' }}>
-                    {branch.branch_code} | {branch.address}
-                  </div>
+                  {branch.branch_code} | {branch.address}
                 </div>
               </div>
-            )}
-            renderSelected={(branch) => `${branch.branch_name} ${branch.branch_code}`}
-            emptyMessage="No branches found"
+            </div>
+          )}
+          renderSelected={(branch) => `${branch.branch_name} ${branch.branch_code}`}
+          emptyMessage="No branches found"
             buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
-            dropdownClassName="!border-gray-300 !bg-white !text-gray-900 !z-[100001]"
+            dropdownClassName="!border-gray-300 !bg-white !text-gray-900 !z-[100004]"
             inputClassName="!text-gray-900 !placeholder-gray-500"
-          />
-        </div>
-        <div className="relative z-10">
+        />
+      </div>
+        <div className="relative z-[100002]">
           <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Status</label>
-          <SearchableDropdown
-            options={[
-              { value: 'Available', label: 'Available' },
-              { value: 'Occupied', label: 'Occupied' },
-              { value: 'Maintenance', label: 'Maintenance' },
-              { value: 'Reserved', label: 'Reserved' }
-            ]}
-            value={form.status}
-            onChange={(value) => setForm({...form, status: value})}
+        <SearchableDropdown
+          options={[
+            { value: 'Available', label: 'Available' },
+            { value: 'Occupied', label: 'Occupied' },
+            { value: 'Maintenance', label: 'Maintenance' },
+            { value: 'Reserved', label: 'Reserved' }
+          ]}
+          value={form.status}
+          onChange={(value) => setForm({...form, status: value})}
             placeholder="Select status"
-            searchPlaceholder="Search status..."
-            displayKey="label"
-            valueKey="value"
-            searchKeys={['label']}
-            renderOption={(status) => (
-              <div className="flex justify-between items-center w-full">
-                <div>
+          searchPlaceholder="Search status..."
+          displayKey="label"
+          valueKey="value"
+          searchKeys={['label']}
+          renderOption={(status) => (
+            <div className="flex justify-between items-center w-full">
+              <div>
                   <div className="font-semibold" style={{ color: '#1a237e' }}>{status.label}</div>
-                </div>
               </div>
-            )}
-            renderSelected={(status) => (
-              <div className="flex justify-between items-center w-full">
-                <span className="font-medium">{status.label}</span>
-              </div>
-            )}
-            emptyMessage="No status options found"
+            </div>
+          )}
+          renderSelected={(status) => (
+            <div className="flex justify-between items-center w-full">
+              <span className="font-medium">{status.label}</span>
+            </div>
+          )}
+          emptyMessage="No status options found"
             buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
-            dropdownClassName="!border-gray-300 !bg-white !text-gray-900 !z-[100001]"
+            dropdownClassName="!border-gray-300 !bg-white !text-gray-900 !z-[100003]"
             inputClassName="!text-gray-900 !placeholder-gray-500"
-          />
-        </div>
+        />
+      </div>
 
-        <div className="px-6 py-5 flex-shrink-0 sticky bottom-0 z-10 -mx-6 -mb-6" style={{ 
+        <div className="px-6 py-5 flex-shrink-0 sticky bottom-0 z-10 rounded-b-2xl" style={{ 
           background: 'white',
           borderTop: '2px solid #e0e0e0'
         }}>
@@ -793,6 +760,16 @@ const CreateRoomForm = ({ branches, roomTypes, loading, onCancel, onCreated }) =
                 color: '#1a237e',
                 boxShadow: '0 2px 8px rgba(26, 35, 126, 0.15)',
               }}
+              onMouseEnter={(e) => {
+                e.target.style.setProperty('background', 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)', 'important');
+                e.target.style.setProperty('color', 'white', 'important');
+                e.target.style.setProperty('box-shadow', '0 4px 12px rgba(26, 35, 126, 0.3)', 'important');
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.setProperty('background', 'white', 'important');
+                e.target.style.setProperty('color', '#1a237e', 'important');
+                e.target.style.setProperty('box-shadow', '0 2px 8px rgba(26, 35, 126, 0.15)', 'important');
+              }}
             >
               Cancel
             </button>
@@ -801,10 +778,10 @@ const CreateRoomForm = ({ branches, roomTypes, loading, onCancel, onCreated }) =
               className="dropdown-option-button px-6 py-3 font-bold rounded-xl transition-all flex-1"
               disabled={loading || submitting}
               style={{
-                background: 'white',
-                color: '#1a237e',
+                background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                color: 'white',
                 border: '2px solid transparent',
-                boxShadow: '0 10px 25px rgba(26, 35, 126, 0.12), 0 2px 8px rgba(26, 35, 126, 0.08)',
+                boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
                 opacity: (loading || submitting) ? 0.5 : 1,
                 cursor: (loading || submitting) ? 'not-allowed' : 'pointer',
               }}
@@ -812,11 +789,13 @@ const CreateRoomForm = ({ branches, roomTypes, loading, onCancel, onCreated }) =
               {submitting ? 'Creating...' : 'Create Room'}
             </button>
           </div>
-        </div>
-      </form>
+      </div>
+    </form>
     </div>
   );
 };
+
+
 
 // Edit Room Modal Component
 const EditRoomModal = ({ room, branches, roomTypes, onClose, onSuccess }) => {
@@ -857,21 +836,20 @@ const EditRoomModal = ({ room, branches, roomTypes, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 99999 }}>
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" style={{minWidth: '600px'}}>
-        <div className="px-6 py-5 border-b border-gray-200 sticky top-0 flex justify-between items-center" style={{ 
-          background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
-          zIndex: 'var(--z-sticky)' 
+    <div className="fixed inset-0 z-[99999]">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+      <div className="relative z-10 flex items-center justify-center w-full h-full p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] flex flex-col overflow-hidden" style={{minWidth: '600px', border: '2px solid #e0e0e0'}}>
+        <div className="px-6 py-5 sticky top-0 z-10 rounded-t-2xl flex justify-between items-center" style={{ 
+          background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)'
         }}>
-          <h2 className="text-2xl font-display font-bold text-white">
-            Edit Room
-          </h2>
-          <button onClick={onClose} className="text-white hover:text-gray-200">
+          <h2 className="text-xl sm:text-2xl font-bold text-white">Edit Room</h2>
+          <button onClick={onClose} className="text-white hover:bg-white/20 p-2 rounded-lg transition-all">
             <X className="w-6 h-6" />
           </button>
         </div>
-        <form onSubmit={submit} className="p-6 space-y-4">
-          <div className="relative z-30">
+        <form onSubmit={submit} className="flex-1 overflow-y-auto p-6 space-y-4" style={{ background: '#f8f9fa' }}>
+          <div className="relative z-[100004]">
             <label className="block text-sm font-medium text-slate-700 mb-2">Room Type *</label>
             <SearchableDropdown
               options={roomTypes}
@@ -881,7 +859,7 @@ const EditRoomModal = ({ room, branches, roomTypes, onClose, onSuccess }) => {
               searchPlaceholder="Search room types..."
               className="input-field bg-white border-2 border-gray-300 text-slate-700 placeholder-slate-400"
               buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
-              dropdownClassName="!border-gray-300 !bg-white !text-gray-900"
+              dropdownClassName="!border-gray-300 !bg-white !text-gray-900 !z-[100005]"
               inputClassName="!text-gray-900 !placeholder-gray-500"
               displayKey="name"
               valueKey="room_type_id"
@@ -899,7 +877,7 @@ const EditRoomModal = ({ room, branches, roomTypes, onClose, onSuccess }) => {
             />
           </div>
           
-          <div className="relative z-20">
+          <div className="relative z-[100003]">
             <label className="block text-sm font-medium text-slate-700 mb-2">Branch *</label>
             <SearchableDropdown
               options={branches}
@@ -909,7 +887,7 @@ const EditRoomModal = ({ room, branches, roomTypes, onClose, onSuccess }) => {
               searchPlaceholder="Search branches..."
               className="input-field bg-white border-2 border-gray-300 text-slate-700 placeholder-slate-400"
               buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
-              dropdownClassName="!border-gray-300 !bg-white !text-gray-900"
+              dropdownClassName="!border-gray-300 !bg-white !text-gray-900 !z-[100004]"
               inputClassName="!text-gray-900 !placeholder-gray-500"
               displayKey="branch_name"
               valueKey="branch_id"
@@ -931,7 +909,7 @@ const EditRoomModal = ({ room, branches, roomTypes, onClose, onSuccess }) => {
             />
           </div>
           
-          <div className="relative z-10">
+          <div className="relative z-[100002]">
             <label className="block text-sm font-medium text-slate-700 mb-2">Status</label>
             <SearchableDropdown
               options={[
@@ -946,7 +924,7 @@ const EditRoomModal = ({ room, branches, roomTypes, onClose, onSuccess }) => {
               searchPlaceholder="Search status..."
               className="input-field bg-white border-2 border-gray-300 text-slate-700 placeholder-slate-400"
               buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
-              dropdownClassName="!border-gray-300 !bg-white !text-gray-900"
+              dropdownClassName="!border-gray-300 !bg-white !text-gray-900 !z-[100003]"
               inputClassName="!text-gray-900 !placeholder-gray-500"
               displayKey="label"
               valueKey="value"
@@ -967,20 +945,55 @@ const EditRoomModal = ({ room, branches, roomTypes, onClose, onSuccess }) => {
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-border dark:border-slate-700">
+        </form>
+        <div className="px-6 py-5 flex-shrink-0 sticky bottom-0 z-10 rounded-b-2xl" style={{ 
+          background: 'white',
+          borderTop: '2px solid #e0e0e0'
+        }}>
+          <div className="flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="btn-secondary"
+              className="dropdown-option-button px-6 py-3 font-semibold rounded-xl transition-all duration-200"
+              style={{
+                background: 'white',
+                border: '2px solid #1a237e',
+                color: '#1a237e',
+                boxShadow: '0 2px 8px rgba(26, 35, 126, 0.15)'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.setProperty('background', 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)', 'important');
+                e.target.style.setProperty('color', 'white', 'important');
+                e.target.style.setProperty('box-shadow', '0 4px 12px rgba(26, 35, 126, 0.3)', 'important');
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.setProperty('background', 'white', 'important');
+                e.target.style.setProperty('color', '#1a237e', 'important');
+                e.target.style.setProperty('box-shadow', '0 2px 8px rgba(26, 35, 126, 0.15)', 'important');
+              }}
               disabled={submitting}
             >
               Cancel
             </button>
-            <button type="submit" className="btn-primary" disabled={submitting}>
+            <button
+              type="submit"
+              onClick={submit}
+              className="dropdown-option-button px-6 py-3 font-bold rounded-xl transition-all"
+              disabled={submitting}
+              style={{
+                background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                color: 'white',
+                border: '2px solid transparent',
+                boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+                opacity: submitting ? 0.5 : 1,
+                cursor: submitting ? 'not-allowed' : 'pointer'
+              }}
+            >
               {submitting ? 'Updating...' : 'Update Room'}
             </button>
           </div>
-        </form>
+        </div>
+      </div>
       </div>
     </div>
   );

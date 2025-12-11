@@ -104,21 +104,28 @@ export const Sidebar = ({ user, currentPage, onNavigate, isOpen }) => {
       )}
       
       {/* Sidebar */}
-      <aside className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-surface-secondary/95 dark:bg-slate-900/95 backdrop-blur-sm border-r border-border dark:border-slate-800 shadow-lg transition-all duration-300 ${
-        isOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64 lg:w-0'
-      } lg:translate-x-0`} style={{ zIndex: 'var(--z-sidebar)' }}>
-      <nav className="h-full overflow-y-auto py-4">
+      <aside 
+        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-sm shadow-lg transition-all duration-300 ${
+          isOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64 lg:w-0'
+        } lg:translate-x-0`} 
+        style={{ 
+          zIndex: 'var(--z-sidebar)',
+          background: 'linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%)',
+          borderRight: '1px solid #e0e0e0',
+        }}
+      >
+      <nav className="h-full overflow-y-auto py-4 px-3">
         {menuSections.map((section, sectionIndex) => (
-          <div key={section.title} className="mb-6">
+          <div key={section.title} className="mb-5">
             {/* Section Header */}
-            <div className="px-6 mb-2">
-              <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            <div className="px-3 mb-2">
+              <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#6c757d' }}>
                 {section.title}
               </h3>
             </div>
 
             {/* Section Items */}
-            <div className="px-3 space-y-1">
+            <div className="space-y-1">
               {section.items.map(item => {
                 const Icon = item.icon;
                 const isActive = currentPage === item.id;
@@ -127,16 +134,83 @@ export const Sidebar = ({ user, currentPage, onNavigate, isOpen }) => {
                     key={item.id}
                     onClick={() => onNavigate(item.id)}
                     title={item.description}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group ${
-                      isActive 
-                        ? 'bg-luxury-gold text-white shadow-md scale-[1.02]' 
-                        : 'text-slate-300 dark:text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-800 hover:shadow-sm'
-                    }`}
+                    className="dropdown-option-button w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group sidebar-menu-item"
+                    style={{
+                      background: isActive 
+                        ? 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' 
+                        : 'transparent',
+                      fontWeight: isActive ? '600' : '500',
+                      boxShadow: isActive ? '0 4px 12px rgba(26, 35, 126, 0.3)' : 'none',
+                      transform: 'translateX(0)',
+                    }}
+                    ref={(el) => {
+                      if (el) {
+                        // Force reset styles when not active
+                        if (!isActive) {
+                          el.style.setProperty('background', 'transparent', 'important');
+                          el.style.fontWeight = '500';
+                          el.style.boxShadow = 'none';
+                          el.style.transform = 'translateX(0)';
+                        } else {
+                          el.style.setProperty('background', 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)', 'important');
+                        }
+                      }
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.setProperty('background', 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)', 'important');
+                        e.currentTarget.style.fontWeight = '600';
+                        e.currentTarget.style.transform = 'translateX(4px)';
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(26, 35, 126, 0.15)';
+                        // Update icon and text colors
+                        const icon = e.currentTarget.querySelector('svg');
+                        const text = e.currentTarget.querySelector('span');
+                        if (icon) icon.style.color = '#1a237e';
+                        if (text) text.style.color = '#1a237e';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.setProperty('background', 'transparent', 'important');
+                        e.currentTarget.style.fontWeight = '500';
+                        e.currentTarget.style.transform = 'translateX(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                        // Reset icon and text colors
+                        const icon = e.currentTarget.querySelector('svg');
+                        const text = e.currentTarget.querySelector('span');
+                        if (icon) icon.style.color = '#495057';
+                        if (text) text.style.color = '#495057';
+                      }
+                    }}
                   >
-                    <Icon className={`w-5 h-5 transition-transform ${
-                      isActive ? '' : 'group-hover:scale-110'
-                    }`} />
-                    <span className="font-medium text-sm">{item.name}</span>
+                    <Icon 
+                      className={`w-5 h-5 transition-transform group-hover:scale-110 ${isActive ? 'active-sidebar-icon' : 'inactive-sidebar-icon'}`}
+                      ref={(el) => {
+                        if (el) {
+                          if (isActive) {
+                            el.style.color = '#ffffff';
+                            el.style.stroke = '#ffffff';
+                          } else {
+                            el.style.color = '#495057';
+                            el.style.stroke = '#495057';
+                          }
+                        }
+                      }}
+                    />
+                    <span 
+                      className={`text-sm ${isActive ? 'active-sidebar-text' : 'inactive-sidebar-text'}`}
+                      ref={(el) => {
+                        if (el) {
+                          if (isActive) {
+                            el.style.color = '#ffffff';
+                          } else {
+                            el.style.color = '#495057';
+                          }
+                        }
+                      }}
+                    >
+                      {item.name}
+                    </span>
                   </button>
                 );
               })}
@@ -144,7 +218,7 @@ export const Sidebar = ({ user, currentPage, onNavigate, isOpen }) => {
 
             {/* Section Divider */}
             {sectionIndex < menuSections.length - 1 && (
-              <div className="mx-6 mt-4 border-t border-border" />
+              <div className="mx-3 mt-4" style={{ borderTop: '1px solid #e9ecef' }} />
             )}
           </div>
         ))}

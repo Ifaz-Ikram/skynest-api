@@ -255,10 +255,10 @@ async function processCheckout(req, res) {
       `;
       await pool.query(updateBookingQuery, [booking_id]);
       
-      // Set room status to Maintenance (for cleaning) and create housekeeping task
+      // Set room status to Available after checkout
       const roomUpdateQuery = `
         UPDATE room 
-        SET status = 'Maintenance'
+        SET status = 'Available'
         WHERE room_id = $1
       `;
       await pool.query(roomUpdateQuery, [booking.room_id]);
@@ -488,10 +488,10 @@ async function autoCheckoutPastBookings(req, res) {
         `;
         await pool.query(updateBookingQuery, [booking.booking_id]);
         
-        // Set room status to Maintenance (for cleaning)
+        // Set room status to Available after checkout
         const updateRoomQuery = `
           UPDATE room 
-          SET status = 'Maintenance'
+          SET status = 'Available'
           WHERE room_id = $1
         `;
         await pool.query(updateRoomQuery, [booking.room_id]);

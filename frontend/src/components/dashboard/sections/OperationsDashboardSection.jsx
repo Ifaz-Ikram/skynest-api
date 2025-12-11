@@ -107,7 +107,7 @@ export const OperationsDashboardSection = ({ user, filterByBranch = false }) => 
   if (loading) {
     return (
       <div className="flex items-center justify-center p-12">
-        <div className="text-white">Loading operations data...</div>
+        <div style={{ color: '#1a237e' }} className="font-semibold">Loading operations data...</div>
       </div>
     );
   }
@@ -143,8 +143,8 @@ export const OperationsDashboardSection = ({ user, filterByBranch = false }) => 
       </div>
 
       {/* Room Status Overview */}
-      <div className="bg-slate-800/60 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50">
-        <h3 className="text-xl font-bold text-white mb-4">Room Status</h3>
+      <div className="bg-white rounded-2xl shadow-lg p-6" style={{ border: '2px solid #e0e0e0' }}>
+        <h3 className="text-xl font-bold mb-4" style={{ color: '#1a237e' }}>Room Status</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <RoomStatusCard
             label="Available"
@@ -168,17 +168,17 @@ export const OperationsDashboardSection = ({ user, filterByBranch = false }) => 
       </div>
 
       {/* Today's Arrivals */}
-      <div className="bg-slate-800/60 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50">
+      <div className="bg-white rounded-2xl shadow-lg p-6" style={{ border: '2px solid #e0e0e0' }}>
         <div className="flex items-center gap-2 mb-4">
-          <LogIn className="w-5 h-5 text-green-400" />
-          <h3 className="text-xl font-bold text-white">Today's Arrivals</h3>
-          <span className="text-sm text-slate-400">({operationsData.arrivals.length})</span>
+          <LogIn className="w-5 h-5" style={{ color: '#198754' }} />
+          <h3 className="text-xl font-bold" style={{ color: '#1a237e' }}>Today's Arrivals</h3>
+          <span className="text-sm" style={{ color: '#6c757d' }}>({operationsData.arrivals.length})</span>
         </div>
         
         {operationsData.arrivals.length === 0 ? (
           <div className="text-center py-8">
-            <Calendar className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-            <p className="text-slate-400">No arrivals scheduled for today</p>
+            <Calendar className="w-12 h-12 mx-auto mb-3" style={{ color: '#adb5bd' }} />
+            <p style={{ color: '#6c757d' }}>No arrivals scheduled for today</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -197,17 +197,17 @@ export const OperationsDashboardSection = ({ user, filterByBranch = false }) => 
       </div>
 
       {/* Today's Departures */}
-      <div className="bg-slate-800/60 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50">
+      <div className="bg-white rounded-2xl shadow-lg p-6" style={{ border: '2px solid #e0e0e0' }}>
         <div className="flex items-center gap-2 mb-4">
-          <LogOut className="w-5 h-5 text-orange-400" />
-          <h3 className="text-xl font-bold text-white">Today's Departures</h3>
-          <span className="text-sm text-slate-400">({operationsData.departures.length})</span>
+          <LogOut className="w-5 h-5" style={{ color: '#fd7e14' }} />
+          <h3 className="text-xl font-bold" style={{ color: '#1a237e' }}>Today's Departures</h3>
+          <span className="text-sm" style={{ color: '#6c757d' }}>({operationsData.departures.length})</span>
         </div>
         
         {operationsData.departures.length === 0 ? (
           <div className="text-center py-8">
-            <Calendar className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-            <p className="text-slate-400">No departures scheduled for today</p>
+            <Calendar className="w-12 h-12 mx-auto mb-3" style={{ color: '#adb5bd' }} />
+            <p style={{ color: '#6c757d' }}>No departures scheduled for today</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -226,17 +226,17 @@ export const OperationsDashboardSection = ({ user, filterByBranch = false }) => 
       </div>
 
       {/* In-House Guests */}
-      <div className="bg-slate-800/60 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50">
+      <div className="bg-white rounded-2xl shadow-lg p-6" style={{ border: '2px solid #e0e0e0' }}>
         <div className="flex items-center gap-2 mb-4">
-          <Home className="w-5 h-5 text-blue-400" />
-          <h3 className="text-xl font-bold text-white">In-House Guests</h3>
-          <span className="text-sm text-slate-400">({operationsData.inHouse.length})</span>
+          <Home className="w-5 h-5" style={{ color: '#0d6efd' }} />
+          <h3 className="text-xl font-bold" style={{ color: '#1a237e' }}>In-House Guests</h3>
+          <span className="text-sm" style={{ color: '#6c757d' }}>({operationsData.inHouse.length})</span>
         </div>
         
         {operationsData.inHouse.length === 0 ? (
           <div className="text-center py-8">
-            <Users className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-            <p className="text-slate-400">No guests currently in-house</p>
+            <Users className="w-12 h-12 mx-auto mb-3" style={{ color: '#adb5bd' }} />
+            <p style={{ color: '#6c757d' }}>No guests currently in-house</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -256,11 +256,11 @@ export const OperationsDashboardSection = ({ user, filterByBranch = false }) => 
 
       {/* Pending Check-Ins Alert */}
       {operationsData.pendingCheckIns > 0 && (
-        <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-4 flex items-start gap-3">
-          <Clock className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+        <div className="rounded-lg p-4 flex items-start gap-3 shadow-md" style={{ backgroundColor: '#fff3cd', border: '2px solid #ffc107' }}>
+          <Clock className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#856404' }} />
           <div>
-            <h3 className="text-yellow-200 font-semibold mb-1">Pending Check-Ins</h3>
-            <p className="text-yellow-300 text-sm">
+            <h3 className="font-bold mb-1" style={{ color: '#856404' }}>Pending Check-Ins</h3>
+            <p className="text-sm" style={{ color: '#664d03' }}>
               {operationsData.pendingCheckIns} booking{operationsData.pendingCheckIns > 1 ? 's' : ''} waiting to be checked in
             </p>
           </div>
@@ -271,20 +271,22 @@ export const OperationsDashboardSection = ({ user, filterByBranch = false }) => 
 };
 
 const OpsStatCard = ({ icon: Icon, label, value, color }) => {
-  const colorClasses = {
-    green: 'from-green-500/20 to-green-600/10 border-green-500/30 text-green-400',
-    orange: 'from-orange-500/20 to-orange-600/10 border-orange-500/30 text-orange-400',
-    blue: 'from-blue-500/20 to-blue-600/10 border-blue-500/30 text-blue-400',
-    purple: 'from-purple-500/20 to-purple-600/10 border-purple-500/30 text-purple-400',
+  const colorStyles = {
+    green: { bg: 'linear-gradient(135deg, #d1e7dd 0%, #badbcc 100%)', border: '#198754', icon: '#198754', text: '#0a5029' },
+    orange: { bg: 'linear-gradient(135deg, #ffe5d0 0%, #fed9bb 100%)', border: '#fd7e14', icon: '#fd7e14', text: '#8b4513' },
+    blue: { bg: 'linear-gradient(135deg, #cfe2ff 0%, #b6d4fe 100%)', border: '#0d6efd', icon: '#0d6efd', text: '#084298' },
+    purple: { bg: 'linear-gradient(135deg, #e0cffc 0%, #d4bbfc 100%)', border: '#6f42c1', icon: '#6f42c1', text: '#4a1d8f' },
   };
 
+  const style = colorStyles[color] || colorStyles.blue;
+
   return (
-    <div className={`bg-gradient-to-br ${colorClasses[color]} backdrop-blur-xl rounded-xl p-4 border`}>
+    <div className="rounded-xl p-4 border-2 shadow-md" style={{ background: style.bg, borderColor: style.border }}>
       <div className="flex items-center gap-3 mb-2">
-        <Icon className="w-5 h-5" />
-        <span className="text-sm text-slate-300">{label}</span>
+        <Icon className="w-5 h-5" style={{ color: style.icon }} />
+        <span className="text-sm font-semibold" style={{ color: style.text }}>{label}</span>
       </div>
-      <div className="text-2xl font-bold text-white">{value}</div>
+      <div className="text-2xl font-bold" style={{ color: style.text }}>{value}</div>
     </div>
   );
 };
@@ -292,40 +294,44 @@ const OpsStatCard = ({ icon: Icon, label, value, color }) => {
 const RoomStatusCard = ({ label, count, total, color }) => {
   const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
   
-  const colorClasses = {
-    green: 'bg-green-500/20 border-green-500/30 text-green-300',
-    blue: 'bg-blue-500/20 border-blue-500/30 text-blue-300',
-    red: 'bg-red-500/20 border-red-500/30 text-red-300',
+  const colorStyles = {
+    green: { bg: '#d4edda', border: '#198754', text: '#0a5029' },
+    blue: { bg: '#cfe2ff', border: '#0d6efd', text: '#084298' },
+    red: { bg: '#f8d7da', border: '#dc3545', text: '#721c24' },
   };
 
+  const style = colorStyles[color] || colorStyles.blue;
+
   return (
-    <div className={`rounded-lg p-4 border ${colorClasses[color]}`}>
-      <div className="text-sm mb-2">{label}</div>
-      <div className="text-3xl font-bold mb-2">{count}</div>
-      <div className="text-xs opacity-75">{percentage}% of total</div>
+    <div className="rounded-lg p-4 border-2" style={{ backgroundColor: style.bg, borderColor: style.border }}>
+      <div className="text-sm font-semibold mb-2" style={{ color: style.text }}>{label}</div>
+      <div className="text-3xl font-bold mb-2" style={{ color: style.text }}>{count}</div>
+      <div className="text-xs" style={{ color: style.text, opacity: 0.75 }}>{percentage}% of total</div>
     </div>
   );
 };
 
 const OperationCard = ({ guestName, roomNumber, branchName, icon: Icon, color }) => {
-  const colorClasses = {
-    green: 'border-green-500/30 hover:border-green-500/50',
-    orange: 'border-orange-500/30 hover:border-orange-500/50',
-    blue: 'border-blue-500/30 hover:border-blue-500/50',
+  const colorStyles = {
+    green: { bg: '#f1f9f3', border: '#c3e6cb', icon: '#198754' },
+    orange: { bg: '#fff5ed', border: '#fed9bb', icon: '#fd7e14' },
+    blue: { bg: '#f0f7ff', border: '#b6d4fe', icon: '#0d6efd' },
   };
 
+  const style = colorStyles[color] || colorStyles.blue;
+
   return (
-    <div className={`bg-slate-900/40 rounded-lg p-3 border ${colorClasses[color]} transition-colors`}>
+    <div className="rounded-lg p-3 border-2 transition-all hover:shadow-md" style={{ backgroundColor: style.bg, borderColor: style.border }}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Icon className={`w-4 h-4 ${color === 'green' ? 'text-green-400' : color === 'orange' ? 'text-orange-400' : 'text-blue-400'}`} />
+          <Icon className="w-4 h-4" style={{ color: style.icon }} />
           <div>
-            <p className="text-white font-medium">{guestName || 'Guest'}</p>
-            <p className="text-sm text-slate-400">Room {roomNumber || 'N/A'}</p>
+            <p className="font-semibold" style={{ color: '#212529' }}>{guestName || 'Guest'}</p>
+            <p className="text-sm" style={{ color: '#6c757d' }}>Room {roomNumber || 'N/A'}</p>
           </div>
         </div>
         {branchName && (
-          <span className="text-xs text-slate-500">{branchName}</span>
+          <span className="text-xs font-medium" style={{ color: '#6c757d' }}>{branchName}</span>
         )}
       </div>
     </div>

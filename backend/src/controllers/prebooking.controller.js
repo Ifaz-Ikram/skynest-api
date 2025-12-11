@@ -178,7 +178,12 @@ async function createPreBooking(req, res) {
     // Validation - adjust based on available columns
     const requiredFields = ['capacity', 'prebooking_method', 'expected_check_in', 'expected_check_out'];
     if (hasCustomerId) requiredFields.push('customer_id');
-    if (hasRoomTypeId) requiredFields.push('room_type_id');
+    // Enforce 1:1 allocation policy: either room_type_id (+quantity) or specific room_id required
+    if (!room_id && !(hasRoomTypeId && room_type_id)) {
+      return res.status(400).json({
+        error: 'Either room_type_id (with number_of_rooms) or room_id is required to reserve inventory.'
+      });
+    }
     
     const missingFields = requiredFields.filter(field => !req.body[field]);
     if (missingFields.length > 0) {
@@ -233,6 +238,7 @@ async function createPreBooking(req, res) {
         SELECT COUNT(*) as available_count
         FROM room r
         WHERE r.room_type_id = $1
+        AND ($4::int IS NULL OR r.branch_id = $4)
         AND r.status = 'Available'
         AND NOT EXISTS (
           SELECT 1 FROM booking b 
@@ -255,7 +261,7 @@ async function createPreBooking(req, res) {
             (pb.expected_check_in >= $2 AND pb.expected_check_out <= $3)
           )
         )
-      `, [room_type_id, expected_check_in, expected_check_out]);
+      `, [room_type_id, expected_check_in, expected_check_out, branch_id || null]);
       
       const availableCount = parseInt(availabilityCheck.rows[0].available_count);
       
@@ -274,6 +280,7 @@ async function createPreBooking(req, res) {
           SELECT r.room_id, r.room_number
           FROM room r
           WHERE r.room_type_id = $1
+          AND ($4::int IS NULL OR r.branch_id = $4)
           AND r.status = 'Available'
           AND NOT EXISTS (
             SELECT 1 FROM booking b 
@@ -296,8 +303,8 @@ async function createPreBooking(req, res) {
               (pb.expected_check_in >= $2 AND pb.expected_check_out <= $3)
             )
           )
-          LIMIT $4
-        `, [room_type_id, expected_check_in, expected_check_out, number_of_rooms]);
+          LIMIT $5
+        `, [room_type_id, expected_check_in, expected_check_out, branch_id || null, number_of_rooms]);
         
         if (roomsToReserve.rows.length < number_of_rooms) {
           return res.status(400).json({ 
@@ -322,6 +329,35 @@ async function createPreBooking(req, res) {
           error: 'Failed to reserve rooms for pre-booking' 
         });
       }
+    }
+
+    // If a specific room_id is provided (legacy flow or explicit selection), reserve that room
+    if (room_id) {
+      // Ensure the specified room is available for the requested range
+      const singleRoomCheck = await pool.query(`
+        SELECT r.room_id
+        FROM room r
+        WHERE r.room_id = $1
+          AND r.status IN ('Available','Reserved')
+          AND NOT EXISTS (
+            SELECT 1 FROM booking b 
+            WHERE b.room_id = r.room_id 
+              AND b.status IN ('Booked', 'Checked-In')
+              AND (
+                (b.check_in_date <= $2 AND b.check_out_date > $2) OR
+                (b.check_in_date < $3 AND b.check_out_date >= $3) OR
+                (b.check_in_date >= $2 AND b.check_out_date <= $3)
+              )
+          )
+      `, [room_id, expected_check_in, expected_check_out]);
+
+      if (singleRoomCheck.rows.length === 0) {
+        return res.status(400).json({ error: 'Selected room is not available to reserve' });
+      }
+
+      // Mark the room as Reserved
+      await pool.query(`UPDATE room SET status = 'Reserved' WHERE room_id = $1`, [room_id]);
+      reservedRooms.push({ room_id });
     }
     
     // Get employee_id from authenticated user
@@ -561,7 +597,7 @@ async function convertPreBookingToBooking(req, res) {
         `SELECT r.room_id, r.room_type_id, rt.name as room_type_name 
          FROM room r
          JOIN room_type rt ON rt.room_type_id = r.room_type_id
-         WHERE r.room_id = $1 AND r.status = 'Available'`,
+         WHERE r.room_id = $1 AND r.status IN ('Available','Reserved')`,
         [room_id]
       );
       
@@ -597,6 +633,12 @@ async function convertPreBookingToBooking(req, res) {
           advance_payment,
           false  // is_group_booking = false for individual bookings
         ]
+      );
+
+      // Update room status to 'Booked'
+      await client.query(
+        `UPDATE room SET status = 'Booked' WHERE room_id = $1`,
+        [room_id]
       );
       
       // Update pre-booking status to 'Converted'
@@ -785,6 +827,150 @@ async function deletePreBooking(req, res) {
   }
 }
 
+/**
+ * POST /pre-bookings/allocate-pending
+ * Allocate and reserve rooms for all Pending pre-bookings that lack reservations
+ */
+async function allocatePendingReservations(req, res) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // Find pending pre-bookings with room_type_id
+    const { rows: pending } = await client.query(`
+      SELECT pre_booking_id, room_type_id, number_of_rooms, expected_check_in, expected_check_out, branch_id
+      FROM pre_booking
+      WHERE status IN ('Pending','Confirmed')
+        AND room_type_id IS NOT NULL
+        AND number_of_rooms > 0
+    `);
+
+    let reservedTotal = 0;
+    const details = [];
+
+    // Build an in-memory reserved count per (type, branch) so we don't over-reserve within this run
+    const reservedMap = new Map(); // key: `${typeId}-${branchId}` -> count
+    const curReservedRows = await client.query(`
+      SELECT room_type_id, branch_id, COUNT(*)::int AS cnt
+      FROM room
+      WHERE status = 'Reserved'
+      GROUP BY room_type_id, branch_id
+    `);
+    for (const row of curReservedRows.rows) {
+      const key = `${row.room_type_id}-${row.branch_id}`;
+      reservedMap.set(key, (reservedMap.get(key) || 0) + (row.cnt || 0));
+    }
+
+    for (const pb of pending) {
+      const key = `${pb.room_type_id}-${pb.branch_id || 'null'}`;
+      const alreadyReserved = reservedMap.get(key) || 0;
+      const needed = Math.max((pb.number_of_rooms || 0) - alreadyReserved, 0);
+
+      if (needed <= 0) {
+        details.push({ pre_booking_id: pb.pre_booking_id, reserved: 0, reason: 'Already reserved required quantity for this branch/type' });
+        continue;
+      }
+
+      // Reserve up to "needed" Available rooms of the requested type for the period and branch
+      const findRooms = await client.query(`
+        SELECT r.room_id
+        FROM room r
+        WHERE r.room_type_id = $1
+          AND ($4::int IS NULL OR r.branch_id = $4)
+          AND r.status = 'Available'
+          AND NOT EXISTS (
+            SELECT 1 FROM booking b 
+            WHERE b.room_id = r.room_id 
+              AND b.status IN ('Booked','Checked-In')
+              AND (
+                (b.check_in_date <= $2 AND b.check_out_date > $2) OR
+                (b.check_in_date < $3 AND b.check_out_date >= $3) OR
+                (b.check_in_date >= $2 AND b.check_out_date <= $3)
+              )
+          )
+        LIMIT $5
+      `, [pb.room_type_id, pb.expected_check_in, pb.expected_check_out, pb.branch_id || null, needed]);
+
+      const roomIds = findRooms.rows.map(r => r.room_id);
+      if (roomIds.length > 0) {
+        await client.query(`UPDATE room SET status = 'Reserved' WHERE room_id = ANY($1)`, [roomIds]);
+        reservedTotal += roomIds.length;
+        reservedMap.set(key, (reservedMap.get(key) || 0) + roomIds.length);
+        details.push({ pre_booking_id: pb.pre_booking_id, reserved: roomIds.length });
+      } else {
+        details.push({ pre_booking_id: pb.pre_booking_id, reserved: 0, reason: 'No available rooms of type in selected branch for date range' });
+      }
+    }
+
+    await client.query('COMMIT');
+    return res.json({ success: true, reserved: reservedTotal, processed: pending.length, details });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error('allocatePendingReservations error:', err);
+    return res.status(500).json({ success: false, error: 'Failed to allocate reservations' });
+  } finally {
+    client.release();
+  }
+}
+
+/**
+ * POST /pre-bookings/reconcile-reservations
+ * Release extra Reserved rooms so that, per (room_type, branch),
+ * total Reserved equals total required (sum of number_of_rooms for Pending/Confirmed).
+ */
+async function reconcileReservations(req, res) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // Required per (type, branch)
+    const { rows: requiredRows } = await client.query(`
+      SELECT room_type_id, branch_id, COALESCE(SUM(number_of_rooms),0)::int AS required
+      FROM pre_booking
+      WHERE status IN ('Pending','Confirmed')
+      GROUP BY room_type_id, branch_id
+    `);
+
+    const details = [];
+    let releasedTotal = 0;
+
+    for (const row of requiredRows) {
+      const typeId = row.room_type_id;
+      const branchId = row.branch_id;
+      const required = row.required || 0;
+
+      const { rows: reservedRooms } = await client.query(`
+        SELECT room_id
+        FROM room
+        WHERE status = 'Reserved'
+          AND room_type_id = $1
+          AND ($2::int IS NULL OR branch_id = $2)
+        ORDER BY room_id DESC
+      `, [typeId, branchId || null]);
+
+      const current = reservedRooms.length;
+      const extra = Math.max(current - required, 0);
+      if (extra > 0) {
+        const toRelease = reservedRooms.slice(0, extra).map(r => r.room_id);
+        await client.query(`UPDATE room SET status = 'Available' WHERE room_id = ANY($1)`, [toRelease]);
+        releasedTotal += toRelease.length;
+        details.push({ room_type_id: typeId, branch_id: branchId, released: toRelease.length });
+      } else {
+        details.push({ room_type_id: typeId, branch_id: branchId, released: 0 });
+      }
+    }
+
+    await client.query('COMMIT');
+    return res.json({ success: true, released: releasedTotal, groups: details });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error('reconcileReservations error:', err);
+    return res.status(500).json({ success: false, error: 'Failed to reconcile reservations' });
+  } finally {
+    client.release();
+  }
+}
+
 module.exports = {
   listPreBookings,
   getPreBookingById,
@@ -792,4 +978,6 @@ module.exports = {
   updatePreBooking,
   deletePreBooking,
   convertPreBookingToBooking,
+  allocatePendingReservations,
+  reconcileReservations,
 };

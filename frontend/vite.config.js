@@ -6,7 +6,7 @@ export default defineConfig({
   // Use base '/app/' for production only, '/' for development
   base: process.env.NODE_ENV === 'production' ? (process.env.VITE_BASE || '/app/') : '/',
   server: {
-    host: '127.0.0.1',
+    host: '::1',
     port: 3000,
     proxy: {
       '/api': {

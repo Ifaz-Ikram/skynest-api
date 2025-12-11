@@ -7,12 +7,8 @@ export const ReportsPage = () => {
   const [selectedReport, setSelectedReport] = useState(null);
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [dateRange, setDateRange] = useState({
-    start_date: '',
-    end_date: ''
-  });
+  const [dateRange, setDateRange] = useState({ start_date: '', end_date: '' });
 
-  // Ops widgets
   const [arrivals, setArrivals] = useState(null);
   const [departures, setDepartures] = useState(null);
   const [inHouse, setInHouse] = useState(null);
@@ -28,7 +24,7 @@ export const ReportsPage = () => {
         setArrivals(a);
         setDepartures(d);
         setInHouse(i);
-      } catch (_) {}
+      } catch (_) { }
     })();
   }, []);
 
@@ -50,34 +46,23 @@ export const ReportsPage = () => {
   const loadReport = async (reportId) => {
     setLoading(true);
     try {
-      // Map report IDs to actual API endpoints
       const reportEndpoints = {
         'occupancy': '/api/reports/occupancy-by-day',
-        'revenue': '/api/reports/billing-summary', 
-        'bookings': '/api/reports/billing-summary', // Using billing summary for bookings
+        'revenue': '/api/reports/billing-summary',
+        'bookings': '/api/reports/billing-summary',
         'payments': '/api/reports/payments-ledger',
-        'customers': '/api/reports/billing-summary', // Using billing summary for customers
+        'customers': '/api/reports/billing-summary',
         'services': '/api/reports/service-usage-detail'
       };
-      
+
       const endpoint = reportEndpoints[reportId];
-      if (!endpoint) {
-        throw new Error('Report not found');
-      }
-      
-      // Build query parameters for date range - backend expects 'from' and 'to'
+      if (!endpoint) throw new Error('Report not found');
+
       const params = new URLSearchParams();
-      if (dateRange.start_date) {
-        params.append('from', dateRange.start_date);
-        console.log('Adding start date filter (from):', dateRange.start_date);
-      }
-      if (dateRange.end_date) {
-        params.append('to', dateRange.end_date);
-        console.log('Adding end date filter (to):', dateRange.end_date);
-      }
-      
+      if (dateRange.start_date) params.append('from', dateRange.start_date);
+      if (dateRange.end_date) params.append('to', dateRange.end_date);
+
       const url = `${endpoint}${params.toString() ? `?${params.toString()}` : ''}`;
-      console.log('Loading report from:', url);
       const data = await api.request(url);
       setReportData(data);
       setSelectedReport(reportId);
@@ -89,16 +74,13 @@ export const ReportsPage = () => {
   };
 
   const exportReportToCSV = () => {
-    if (!reportData || !reportData.length) {
-      alert('No data to export');
-      return;
-    }
-    
+    if (!reportData || !reportData.length) return alert('No data to export');
+
     const csv = [
       Object.keys(reportData[0]).join(','),
       ...reportData.map(row => Object.values(row).join(','))
     ].join('\n');
-    
+
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -111,30 +93,26 @@ export const ReportsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-surface-primary dark:bg-slate-950 p-6 transition-colors">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen p-6" style={{ backgroundColor: '#f8f9fa' }}>
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Hero Header */}
-        <div className="bg-gradient-to-r from-luxury-navy to-indigo-900 rounded-2xl shadow-2xl p-8 text-white relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0" style={{
-              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
-              backgroundSize: '20px 20px'
-            }}></div>
-          </div>
+        <div className="rounded-2xl shadow-2xl p-8 text-white relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
+          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
           <div className="relative z-10 flex items-center justify-between">
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <FileText className="w-10 h-10" />
                 <h1 className="text-4xl font-bold">Reports & Analytics</h1>
               </div>
-              <p className="text-indigo-200 text-lg">
+              <p style={{ color: '#90caf9' }}>
                 {format(new Date(), 'EEEE, MMMM do yyyy')} • Comprehensive business insights
               </p>
             </div>
             {reportData && (
               <button
                 onClick={exportReportToCSV}
-                className="bg-slate-800/90 backdrop-blur-xl text-white px-6 py-3 rounded-xl font-semibold hover:bg-slate-700 transition-all flex items-center gap-2 shadow-lg border border-slate-700/50"
+                className="px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2"
+                style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}
               >
                 <Download className="w-5 h-5" />
                 Export CSV
@@ -143,90 +121,53 @@ export const ReportsPage = () => {
           </div>
         </div>
 
-        {/* Today's Operations - Premium Cards */}
+        {/* Today's Operations */}
         <div>
-          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            <TrendingUp className="w-7 h-7 text-luxury-gold" />
+          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2" style={{ color: '#1a237e' }}>
+            <TrendingUp className="w-7 h-7" style={{ color: '#0d47a1' }} />
             Today's Operations
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <OpsCard
-              title={<>Arrivals<br/>Today</>}
-              icon={LogIn}
-              count={Array.isArray(arrivals) ? arrivals.length : 0}
-              data={Array.isArray(arrivals) ? arrivals : []}
-              onView={() => setReportFromList('Arrivals Today', arrivals)}
-              color="green"
-            />
-            <OpsCard
-              title={<>Departures<br/>Today</>}
-              icon={LogOut}
-              count={Array.isArray(departures) ? departures.length : 0}
-              data={Array.isArray(departures) ? departures : []}
-              onView={() => setReportFromList('Departures Today', departures)}
-              color="orange"
-            />
-            <OpsCard
-              title={<>In-House<br/>Guests</>}
-              icon={Building2}
-              count={Array.isArray(inHouse) ? inHouse.length : 0}
-              data={Array.isArray(inHouse) ? inHouse : []}
-              onView={() => setReportFromList('In-House', inHouse)}
-              color="blue"
-            />
+            <OpsCard title="Arrivals Today" icon={LogIn} count={Array.isArray(arrivals) ? arrivals.length : 0} data={Array.isArray(arrivals) ? arrivals : []} onView={() => setReportFromList('Arrivals Today', arrivals)} color="green" />
+            <OpsCard title="Departures Today" icon={LogOut} count={Array.isArray(departures) ? departures.length : 0} data={Array.isArray(departures) ? departures : []} onView={() => setReportFromList('Departures Today', departures)} color="orange" />
+            <OpsCard title="In-House Guests" icon={Building2} count={Array.isArray(inHouse) ? inHouse.length : 0} data={Array.isArray(inHouse) ? inHouse : []} onView={() => setReportFromList('In-House', inHouse)} color="blue" />
           </div>
         </div>
 
-        {/* Date Range Filter - Beautiful Card */}
-        <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50">
-          <div className="flex items-center gap-2 mb-6">
-            <Filter className="w-6 h-6 text-luxury-gold" />
-            <h3 className="text-xl font-bold text-white">Date Range Filter</h3>
+        {/* Date Range Filter */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Filter className="w-6 h-6" style={{ color: '#0d47a1' }} />
+            <h3 className="text-xl font-bold" style={{ color: '#1a237e' }}>Date Range Filter</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-slate-400" />
-                Start Date
-                <span className="block text-xs font-normal text-slate-400 mt-0.5">
-                  {dateRange.end_date ? 'Reports from this date...' : 'Reports from this date onwards'}
-                </span>
-              </label>
+              <label className="block text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>Start Date</label>
               <input
                 type="date"
                 value={dateRange.start_date}
-                onChange={(e) => {
-                  console.log('Start date changed to:', e.target.value);
-                  setDateRange({...dateRange, start_date: e.target.value});
-                }}
-                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400-2 border-border rounded-xl focus:border-luxury-gold focus:ring-2 focus:ring-luxury-gold/20 transition-all"
+                onChange={(e) => setDateRange({ ...dateRange, start_date: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:border-blue-500"
+                style={{ borderColor: '#e9ecef', color: '#333' }}
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-slate-400" />
-                End Date
-                <span className="block text-xs font-normal text-slate-400 mt-0.5">
-                  {dateRange.start_date ? '...to this date' : 'Reports up to this date'}
-                </span>
-              </label>
+              <label className="block text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>End Date</label>
               <input
                 type="date"
                 value={dateRange.end_date}
-                onChange={(e) => {
-                  console.log('End date changed to:', e.target.value);
-                  setDateRange({...dateRange, end_date: e.target.value});
-                }}
-                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400-2 border-border rounded-xl focus:border-luxury-gold focus:ring-2 focus:ring-luxury-gold/20 transition-all"
+                onChange={(e) => setDateRange({ ...dateRange, end_date: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:border-blue-500"
+                style={{ borderColor: '#e9ecef', color: '#333' }}
               />
             </div>
           </div>
-          {/* Clear Date Filters Button */}
           {(dateRange.start_date || dateRange.end_date) && (
             <div className="mt-4 flex justify-end">
               <button
-                onClick={() => setDateRange({start_date: '', end_date: ''})}
-                className="px-4 py-2 bg-red-900/20 hover:bg-red-600 text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                onClick={() => setDateRange({ start_date: '', end_date: '' })}
+                className="px-4 py-2 rounded-xl font-medium transition-colors"
+                style={{ backgroundColor: '#f8d7da', color: '#dc3545' }}
               >
                 Clear Date Filters
               </button>
@@ -234,38 +175,35 @@ export const ReportsPage = () => {
           )}
         </div>
 
-        {/* Report Types - Premium Grid */}
+        {/* Report Types */}
         <div>
-          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            <FileText className="w-7 h-7 text-luxury-gold" />
+          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2" style={{ color: '#1a237e' }}>
+            <FileText className="w-7 h-7" style={{ color: '#0d47a1' }} />
             Available Reports
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {reportTypes.map(report => {
               const Icon = report.icon;
               const colors = {
-                'occupancy': 'from-blue-500 to-blue-600',
-                'revenue': 'from-green-500 to-green-600',
-                'bookings': 'from-purple-500 to-purple-600',
-                'payments': 'from-yellow-500 to-yellow-600',
-                'customers': 'from-pink-500 to-pink-600',
-                'services': 'from-indigo-500 to-indigo-600'
+                'occupancy': '#0d6efd', 'revenue': '#28a745', 'bookings': '#6f42c1',
+                'payments': '#ffc107', 'customers': '#e91e8c', 'services': '#6610f2'
               };
               return (
                 <button
                   key={report.id}
                   onClick={() => loadReport(report.id)}
                   disabled={loading}
-                  className="group bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 text-left disabled:opacity-50 border border-slate-700/50 hover:scale-105 transform"
+                  className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all p-6 text-left disabled:opacity-50"
+                  style={{ border: '1px solid #e9ecef' }}
                 >
                   <div className="flex items-center gap-4 mb-4">
-                    <div className={`bg-gradient-to-br ${colors[report.id]} p-4 rounded-xl group-hover:scale-110 transition-transform shadow-lg`}>
-                      <Icon className="w-8 h-8 text-white" />
+                    <div className="p-4 rounded-xl" style={{ backgroundColor: colors[report.id] + '20' }}>
+                      <Icon className="w-8 h-8" style={{ color: colors[report.id] }} />
                     </div>
                   </div>
-                  <h3 className="font-bold text-xl text-white mb-2">{report.name}</h3>
-                  <p className="text-sm text-slate-400">Click to generate detailed report</p>
-                  <div className="mt-4 text-luxury-gold text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                  <h3 className="font-bold text-xl mb-2" style={{ color: '#1a237e' }}>{report.name}</h3>
+                  <p className="text-sm" style={{ color: '#6c757d' }}>Click to generate detailed report</p>
+                  <div className="mt-4 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: '#0d47a1' }}>
                     Generate Report →
                   </div>
                 </button>
@@ -274,67 +212,48 @@ export const ReportsPage = () => {
           </div>
         </div>
 
-        {/* Loading State - Premium */}
+        {/* Loading State */}
         {loading && (
-          <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl p-12 text-center border border-slate-700/50">
-            <div className="relative">
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-700/50 border-t-luxury-gold mx-auto"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <FileText className="w-8 h-8 text-luxury-gold animate-pulse" />
-              </div>
-            </div>
-            <p className="text-slate-300 mt-6 text-lg font-medium">Generating your report...</p>
-            <p className="text-slate-400 text-sm mt-2">Please wait while we compile the data</p>
+          <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 mx-auto" style={{ borderColor: '#e9ecef', borderTopColor: '#0d47a1' }}></div>
+            <p className="mt-6 text-lg font-medium" style={{ color: '#6c757d' }}>Generating your report...</p>
           </div>
         )}
 
-        {/* Report Results - Premium Table */}
+        {/* Report Results */}
         {reportData && !loading && (
-          <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700/50 overflow-hidden">
-            <div className="bg-gradient-to-r from-luxury-navy to-indigo-900 p-6">
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="p-6" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
               <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                 <FileText className="w-7 h-7" />
                 {reportTypes.find(r => r.id === selectedReport)?.name || selectedReport}
               </h2>
-              <p className="text-indigo-200 mt-1">
-                Generated on {format(new Date(), 'MMMM do, yyyy')} • {reportData.length} records
-              </p>
+              <p style={{ color: '#90caf9' }}>Generated on {format(new Date(), 'MMMM do, yyyy')} • {reportData.length} records</p>
             </div>
-            
+
             {reportData.length === 0 ? (
               <div className="p-12 text-center">
-                <div className="bg-slate-700/50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                  <FileText className="w-10 h-10 text-slate-400" />
-                </div>
-                <p className="text-slate-300 text-lg font-medium">No data available</p>
-                <p className="text-slate-400 text-sm mt-2">Try adjusting your date range or filters</p>
+                <FileText className="w-20 h-20 mx-auto mb-4" style={{ color: '#dee2e6' }} />
+                <p className="text-lg font-medium" style={{ color: '#6c757d' }}>No data available</p>
               </div>
             ) : (
-              <div className="overflow-x-auto border border-slate-700/50 rounded-xl bg-slate-800/90">
+              <div className="overflow-x-auto">
                 <table className="min-w-full">
-                  <thead className="bg-slate-800/60 border-b-2 border-slate-700/50">
-                    <tr>
+                  <thead>
+                    <tr style={{ backgroundColor: '#e3f2fd' }}>
                       {Object.keys(reportData[0]).map((key) => (
-                        <th key={key} className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">
-                          {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        <th key={key} className="px-6 py-4 text-left text-xs font-bold uppercase" style={{ color: '#1a237e' }}>
+                          {key.replace(/_/g, ' ')}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="bg-slate-800/90 divide-y divide-slate-700/50">
+                  <tbody className="divide-y" style={{ borderColor: '#e9ecef' }}>
                     {reportData.map((row, idx) => (
-                      <tr key={idx} className="hover:bg-slate-700/40 transition-colors">
+                      <tr key={idx} className="hover:bg-gray-50 transition-colors">
                         {Object.values(row).map((value, colIdx) => (
-                          <td key={colIdx} className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                            {value === null || value === undefined ? (
-                              <span className="text-slate-400">-</span>
-                            ) : typeof value === 'number' ? (
-                              <span className="font-medium">{value.toLocaleString()}</span>
-                            ) : typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}/) ? (
-                              <span className="text-slate-300">{new Date(value).toLocaleDateString()}</span>
-                            ) : (
-                              String(value)
-                            )}
+                          <td key={colIdx} className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: '#333' }}>
+                            {value === null || value === undefined ? '-' : typeof value === 'number' ? value.toLocaleString() : String(value)}
                           </td>
                         ))}
                       </tr>
@@ -351,117 +270,72 @@ export const ReportsPage = () => {
 };
 
 function OpsCard({ title, count, icon: Icon, data, onView, color }) {
-  const [showPreview, setShowPreview] = useState(false);
-  
+  const colorStyles = {
+    green: { bg: '#d4edda', text: '#155724', border: '#28a745' },
+    orange: { bg: '#ffe5d0', text: '#984c0c', border: '#fd7e14' },
+    blue: { bg: '#cfe2ff', text: '#084298', border: '#0d6efd' }
+  };
+  const style = colorStyles[color];
+
   const exportCsv = () => {
     if (!Array.isArray(data) || !data.length) return;
-    const header = ['Booking ID','Guest','Room','Branch'];
-    const lines = [header.join(',')].concat(data.map(r=>[r.booking_id,r.guest,r.room_number,r.branch_name].join(',')));
-    const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+    const csv = ['Booking ID,Guest,Room,Branch', ...data.map(r => `${r.booking_id},${r.guest},${r.room_number},${r.branch_name}`)].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${title.toLowerCase().replace(/\s+/g,'-')}-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `${title.toLowerCase().replace(/\s+/g, '-')}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
-  const colorClasses = {
-    green: 'from-green-500 to-emerald-600',
-    orange: 'from-orange-500 to-amber-600',
-    blue: 'from-blue-500 to-indigo-600'
-  };
-
-  const bgColors = {
-    green: 'bg-gradient-to-br from-green-900/40 to-emerald-900/20 border border-green-600/30',
-    orange: 'bg-gradient-to-br from-orange-900/40 to-amber-900/20 border border-orange-600/30',
-    blue: 'bg-gradient-to-br from-blue-900/40 to-indigo-900/20 border border-blue-600/30'
-  };
-
-  const textColors = {
-    green: 'text-green-400',
-    orange: 'text-orange-400',
-    blue: 'text-blue-400'
-  };
-
-  const buttonColors = {
-    green: 'bg-green-600/20 hover:bg-green-600/30 text-green-300 border-green-600/40',
-    orange: 'bg-orange-600/20 hover:bg-orange-600/30 text-orange-300 border-orange-600/40',
-    blue: 'bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border-blue-600/40'
-  };
-
   return (
-    <div className={`${bgColors[color]} backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 group`}>
-      {/* Header */}
-      <div className="flex items-start justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <div className={`bg-gradient-to-br ${colorClasses[color]} p-3 rounded-xl shadow-lg`}>
-            <Icon className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-white mb-1">{title}</h3>
-            <div className={`text-5xl font-black ${textColors[color]} tabular-nums`}>{count}</div>
-          </div>
+    <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all" style={{ border: `1px solid ${style.border}20` }}>
+      <div className="flex items-center gap-4 mb-4">
+        <div className="p-3 rounded-xl" style={{ backgroundColor: style.bg }}>
+          <Icon className="w-7 h-7" style={{ color: style.border }} />
+        </div>
+        <div>
+          <h3 className="text-sm font-medium" style={{ color: '#6c757d' }}>{title}</h3>
+          <div className="text-4xl font-bold" style={{ color: style.border }}>{count}</div>
         </div>
       </div>
 
-      {/* Guest List Preview */}
       {count > 0 && (
-        <div className="mb-4 bg-slate-900/40 rounded-xl p-3 sm:p-4 border border-slate-700/50">
-          <div className="space-y-2 max-h-48 overflow-y-auto">
-            {data.slice(0, 3).map((item, idx) => (
-              <div key={idx} className="bg-slate-800/60 rounded-lg p-2 sm:p-3 border border-slate-700/30 hover:border-slate-600/50 transition-colors">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 text-sm">
-                  <div>
-                    <div className="text-xs text-slate-400 mb-1">Guest</div>
-                    <div className="text-white font-medium text-xs sm:text-sm truncate">{item.guest || 'N/A'}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-400 mb-1">Room</div>
-                    <div className={`font-bold text-xs sm:text-sm ${textColors[color]}`}>{item.room_number || 'N/A'}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-400 mb-1">Branch</div>
-                    <div className="text-slate-300 text-xs truncate">{item.branch_name || 'N/A'}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-            {count > 3 && (
-              <div className="text-center text-xs text-slate-400 pt-2">
-                +{count - 3} more...
-              </div>
-            )}
-          </div>
+        <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: style.bg + '40' }}>
+          {data.slice(0, 3).map((item, idx) => (
+            <div key={idx} className="text-sm py-1" style={{ color: style.text }}>
+              {item.guest} - Room {item.room_number}
+            </div>
+          ))}
+          {count > 3 && <div className="text-xs mt-1" style={{ color: style.text }}>+{count - 3} more...</div>}
         </div>
       )}
 
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex gap-2">
         <button
-          className={`flex-1 ${buttonColors[color]} px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm border flex items-center justify-center gap-2`}
           onClick={exportCsv}
           disabled={count === 0}
+          className="flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          style={{ backgroundColor: style.bg, color: style.text }}
         >
-          <Download className="w-4 h-4" />
-          <span className="hidden sm:inline">Export</span>
+          <Download className="w-4 h-4 inline mr-1" /> Export
         </button>
-        <button 
-          className={`flex-1 ${buttonColors[color]} px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm border flex items-center justify-center gap-2`}
+        <button
           onClick={onView}
           disabled={count === 0}
+          className="flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          style={{ backgroundColor: style.bg, color: style.text }}
         >
-          <Eye className="w-4 h-4" />
-          <span className="hidden sm:inline">View</span>
+          <Eye className="w-4 h-4 inline mr-1" /> View
         </button>
       </div>
     </div>
   );
 }
 
-// Helper to set report panel from a list
 function normalizeRows(list) {
   if (!Array.isArray(list) || !list.length) return [];
   return list.map((r) => ({

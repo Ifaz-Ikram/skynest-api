@@ -285,17 +285,27 @@ export const BookingsPage = () => {
 
   if (error) {
     return (
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-white">Bookings</h1>
-        <div className="card bg-red-900/20 border border-red-700">
-          <div className="flex items-center gap-3 text-red-200">
-            <AlertCircle className="w-6 h-6" />
-            <div>
-              <p className="font-semibold">Error loading bookings</p>
-              <p className="text-sm">{error}</p>
-              <button onClick={loadBookings} className="btn-secondary mt-3 text-sm">
-                Try Again
-              </button>
+      <div className="min-h-screen p-6" style={{ background: '#f8f9fa' }}>
+        <div className="max-w-7xl mx-auto space-y-6">
+          <h1 className="text-3xl font-bold" style={{ color: '#1a237e' }}>Bookings</h1>
+          <div className="bg-white rounded-xl shadow-lg p-6" style={{ border: '2px solid #ffcdd2' }}>
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-6 h-6" style={{ color: '#d32f2f' }} />
+              <div>
+                <p className="font-semibold" style={{ color: '#c62828' }}>Error loading bookings</p>
+                <p className="text-sm" style={{ color: '#6c757d' }}>{error}</p>
+                <button 
+                  type="button"
+                  onClick={loadBookings} 
+                  className="mt-3 px-4 py-2 text-sm rounded-xl font-bold text-white transition-all hover:scale-105 border-0"
+                  style={{
+                    background: 'linear-gradient(135deg, #e53935 0%, #d32f2f 100%)',
+                    boxShadow: '0 4px 12px rgba(229, 57, 53, 0.3)',
+                  }}
+                >
+                  Try Again
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -498,36 +508,105 @@ export const BookingsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-surface-tertiary p-6">
+    <div className="min-h-screen p-6" style={{ background: '#f8f9fa' }}>
       <div className="max-w-7xl mx-auto space-y-6">
-        <LuxuryPageHeader
-          title="Bookings Management"
-          description="Track and manage hotel reservations across all properties"
-          icon={Calendar}
-          stats={headerStats}
-          action={
-            <button onClick={() => setShowCreateModal(true)} className="btn-primary flex items-center gap-2">
+        {/* Page Header */}
+        <div className="rounded-2xl overflow-hidden shadow-xl" style={{ border: '2px solid #e0e0e0' }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+            padding: '40px',
+            position: 'relative',
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: 'url(https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1920)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              opacity: 0.2,
+            }}></div>
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-12 h-12 text-white" />
+                  <div>
+                    <h1 className="text-4xl font-bold text-white mb-2">Bookings Management</h1>
+                    <p className="text-lg" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                      Track and manage hotel reservations across all properties
+                    </p>
+                  </div>
+                </div>
+                <button 
+                  type="button"
+                  onClick={() => setShowCreateModal(true)} 
+                  className="px-6 py-3 rounded-xl font-bold text-white transition-all hover:scale-105 flex items-center gap-2"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.25)',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(255, 255, 255, 0.3)',
+                    border: '3px solid rgba(255, 255, 255, 0.6)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'rgba(255, 255, 255, 0.35)';
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.8)';
+                    e.target.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 255, 255, 0.5)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'rgba(255, 255, 255, 0.25)';
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.6)';
+                    e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(255, 255, 255, 0.3)';
+                  }}
+                >
               <Plus className="w-5 h-5" />
               New Booking
             </button>
-          }
-        />
+              </div>
+              
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {headerStats.map((stat, index) => (
+                  <div key={index} className="bg-white/20 backdrop-blur-md rounded-xl p-4 hover:bg-white/30 transition-all duration-300 border border-white/30">
+                    <div className="text-white text-sm font-semibold mb-2">{stat.label}</div>
+                    <div className="text-3xl font-bold text-white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>{stat.value}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
 
       {/* Action Buttons Bar */}
-      <div className="bg-surface-secondary rounded-xl shadow-md p-6 border border-border">
+      <div className="bg-white rounded-xl shadow-lg p-6" style={{ border: '2px solid #e0e0e0' }}>
         <div className="flex justify-between items-center">
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={handleAutoCheckout}
-              className="btn-secondary flex items-center bg-orange-600 hover:bg-orange-700 text-white"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-white transition-all hover:scale-105 border-0"
+              style={{
+                background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+              }}
               disabled={loading}
             >
-              <Clock className="w-4 h-4 mr-2" />
+              <Clock className="w-4 h-4" />
               Auto Checkout Past
             </button>
           </div>
           <div className="flex gap-2">
-            <button onClick={exportToExcel} className="btn-secondary flex items-center gap-2">
+            <button 
+              type="button"
+              onClick={exportToExcel} 
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-white transition-all hover:scale-105 border-0"
+              style={{
+                background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+              }}
+            >
               <Download className="w-4 h-4" />
               Export CSV
             </button>
@@ -536,22 +615,24 @@ export const BookingsPage = () => {
       </div>
 
       {/* Advanced Search Filters */}
-      <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-visible">
-        <div className="bg-gradient-to-r from-luxury-navy to-indigo-900 p-6 rounded-t-2xl">
+      <div className="bg-white rounded-2xl shadow-xl overflow-visible" style={{ border: '2px solid #e0e0e0' }}>
+        <div className="p-6 rounded-t-2xl" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
           <div className="flex items-center gap-3 text-white">
             <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
               <AlertCircle className="w-6 h-6" />
             </div>
             <div>
               <h3 className="text-2xl font-bold">Advanced Search Filters</h3>
-              <p className="text-sm text-indigo-200 mt-1">Select customer, booking, room, or date range (all filters are optional)</p>
+              <p className="text-sm mt-1" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Select customer, booking, room, or date range (all filters are optional)</p>
             </div>
           </div>
         </div>
         <div className="p-6 overflow-visible">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="relative">
-              <label className="block text-sm font-semibold text-slate-300 mb-2">Customer Name</label>
+            <div>
+              <div className="h-10 flex items-center">
+                <label className="block text-sm font-semibold" style={{ color: '#495057' }}>Customer Name</label>
+              </div>
               <SearchableDropdown
                 value={advancedFilters.searchCustomer}
                 onChange={(customerId) => setAdvancedFilters({...advancedFilters, searchCustomer: customerId || ''})}
@@ -559,12 +640,14 @@ export const BookingsPage = () => {
                 placeholder="Search customer..."
                 searchPlaceholder="Type to search customers..."
                 className="w-full"
-                buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-slate-600 !bg-slate-800/50 !text-white !placeholder-slate-400 focus-visible:!ring-2 focus-visible:!ring-luxury-gold focus-visible:!border-luxury-gold hover:!border-luxury-gold/50"
-                dropdownClassName="!border-slate-600"
+                buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
+                dropdownClassName="!border-gray-300"
               />
             </div>
-            <div className="relative">
-              <label className="block text-sm font-semibold text-slate-300 mb-2">Booking ID</label>
+            <div>
+              <div className="h-10 flex items-center">
+                <label className="block text-sm font-semibold" style={{ color: '#495057' }}>Booking ID</label>
+              </div>
               <SearchableDropdown
                 value={advancedFilters.searchBookingId}
                 onChange={(bookingId) => setAdvancedFilters({...advancedFilters, searchBookingId: bookingId || ''})}
@@ -572,12 +655,14 @@ export const BookingsPage = () => {
                 placeholder="Booking ID..."
                 searchPlaceholder="Type to search bookings..."
                 className="w-full"
-                buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-slate-600 !bg-slate-800/50 !text-white !placeholder-slate-400 focus-visible:!ring-2 focus-visible:!ring-luxury-gold focus-visible:!border-luxury-gold hover:!border-luxury-gold/50"
-                dropdownClassName="!border-slate-600"
+                buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
+                dropdownClassName="!border-gray-300"
               />
             </div>
-            <div className="relative">
-              <label className="block text-sm font-semibold text-slate-300 mb-2">Room Number</label>
+            <div>
+              <div className="h-10 flex items-center">
+                <label className="block text-sm font-semibold" style={{ color: '#495057' }}>Room Number</label>
+              </div>
               <SearchableDropdown
                 value={advancedFilters.roomNumber}
                 onChange={(roomNumber) => setAdvancedFilters({...advancedFilters, roomNumber: roomNumber || ''})}
@@ -585,17 +670,19 @@ export const BookingsPage = () => {
                 placeholder="Room number..."
                 searchPlaceholder="Type to search rooms..."
                 className="w-full"
-                buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-slate-600 !bg-slate-800/50 !text-white !placeholder-slate-400 focus-visible:!ring-2 focus-visible:!ring-luxury-gold focus-visible:!border-luxury-gold hover:!border-luxury-gold/50"
-                dropdownClassName="!border-slate-600"
+                buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
+                dropdownClassName="!border-gray-300"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2">
-                Start Date
-                <span className="block text-xs font-normal text-slate-400 mt-0.5">
-                  {advancedFilters.endDate ? 'Bookings from this date...' : 'Bookings from this date onwards'}
-                </span>
-              </label>
+              <div className="h-10 flex items-center">
+                <label className="block text-sm font-semibold" style={{ color: '#495057' }}>
+                  Start Date
+                  <span className="block text-xs font-normal" style={{ color: '#6c757d' }}>
+                    From this date onwards
+                  </span>
+                </label>
+              </div>
               <input
                 type="date"
                 value={advancedFilters.startDate}
@@ -603,16 +690,31 @@ export const BookingsPage = () => {
                   console.log('Start date changed to:', e.target.value);
                   setAdvancedFilters({...advancedFilters, startDate: e.target.value});
                 }}
-                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400-2 border-border dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-luxury-gold focus:border-luxury-gold transition-all"
+                className="w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:outline-none transition-all"
+                style={{
+                  borderColor: '#dee2e6',
+                  background: 'white',
+                  color: '#495057',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#1a237e';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#dee2e6';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2">
-                End Date
-                <span className="block text-xs font-normal text-slate-400 mt-0.5">
-                  {advancedFilters.startDate ? '...to this date' : 'Bookings up to this date'}
-                </span>
-              </label>
+              <div className="h-10 flex items-center">
+                <label className="block text-sm font-semibold" style={{ color: '#495057' }}>
+                  End Date
+                  <span className="block text-xs font-normal" style={{ color: '#6c757d' }}>
+                    Up to this date
+                  </span>
+                </label>
+              </div>
               <input
                 type="date"
                 value={advancedFilters.endDate}
@@ -620,7 +722,20 @@ export const BookingsPage = () => {
                   console.log('End date changed to:', e.target.value);
                   setAdvancedFilters({...advancedFilters, endDate: e.target.value});
                 }}
-                className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-800/50 text-white placeholder-slate-400-2 border-border dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-luxury-gold focus:border-luxury-gold transition-all"
+                className="w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:outline-none transition-all"
+                style={{
+                  borderColor: '#dee2e6',
+                  background: 'white',
+                  color: '#495057',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#1a237e';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#dee2e6';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
           </div>
@@ -628,8 +743,13 @@ export const BookingsPage = () => {
           {(advancedFilters.startDate || advancedFilters.endDate) && (
             <div className="mt-4 flex justify-end">
               <button
+                type="button"
                 onClick={() => setAdvancedFilters({...advancedFilters, startDate: '', endDate: ''})}
-                className="px-4 py-2 bg-red-900/20 hover:bg-red-600 text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                className="px-5 py-2.5 rounded-xl font-bold text-white transition-all hover:scale-105 border-0 flex items-center gap-2"
+                style={{
+                  background: 'linear-gradient(135deg, #e53935 0%, #d32f2f 100%)',
+                  boxShadow: '0 4px 12px rgba(229, 57, 53, 0.3)',
+                }}
               >
                 Clear Date Filters
               </button>
@@ -639,8 +759,8 @@ export const BookingsPage = () => {
       </div>
 
       {/* Branch Filter */}
-      <div className="bg-surface-secondary rounded-2xl shadow-xl border border-border overflow-visible">
-        <div className="bg-gradient-to-r from-purple-600 to-purple-800 p-6 rounded-t-2xl">
+      <div className="bg-white rounded-2xl shadow-xl overflow-visible" style={{ border: '2px solid #e0e0e0' }}>
+        <div className="p-6 rounded-t-2xl" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
           <div className="flex items-center justify-between text-white">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
@@ -648,7 +768,7 @@ export const BookingsPage = () => {
               </div>
               <div>
                 <h3 className="text-2xl font-bold">Branch Location</h3>
-                <p className="text-purple-200 text-sm mt-1">Filter bookings by hotel branch</p>
+                <p className="text-sm mt-1" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Filter bookings by hotel branch</p>
               </div>
             </div>
           </div>
@@ -662,13 +782,18 @@ export const BookingsPage = () => {
               placeholder="All branches"
               searchPlaceholder="Search branches..."
               className="flex-1"
-            buttonclassName="!px-4 !py-3 !rounded-xl !border-2 !border-border dark:border-slate-600 !bg-surface-secondary dark:!bg-slate-800 !font-medium !text-slate-300 dark:!text-slate-200 focus-visible:!ring-purple-500 focus-visible:!ring-offset-0 focus-visible:!border-purple-500 hover:!border-purple-400"
-              dropdownClassName="!border-border"
+              buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 !font-medium focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 focus-visible:!ring-offset-0 hover:!border-blue-700"
+              dropdownClassName="!border-gray-300"
             />
             {selectedBranch && (
               <button
+                type="button"
                 onClick={() => setSelectedBranch('')}
-                className="px-6 py-3 bg-red-900/200 hover:bg-red-600 text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                className="px-5 py-2.5 rounded-xl font-bold text-white transition-all hover:scale-105 border-0 flex items-center gap-2"
+                style={{
+                  background: 'linear-gradient(135deg, #e53935 0%, #d32f2f 100%)',
+                  boxShadow: '0 4px 12px rgba(229, 57, 53, 0.3)',
+                }}
               >
                 Clear
               </button>
@@ -682,12 +807,54 @@ export const BookingsPage = () => {
         {statuses.map(status => (
           <button
             key={status}
+            type="button"
             onClick={() => setFilter(status)}
-            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+            className="px-5 py-2.5 rounded-xl font-bold transition-all border-0"
+            style={
               filter === status
-                ? 'bg-luxury-gold text-white'
-                : 'bg-surface-secondary dark:bg-slate-800 text-white dark:text-slate-200 hover:bg-surface-tertiary dark:hover:bg-slate-700/30 border border-border dark:border-slate-600'
-            }`}
+                ? {
+                    background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                    color: '#ffffff',
+                    boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+                    transform: 'scale(1)',
+                  }
+                : {
+                    background: 'white',
+                    color: '#495057',
+                    border: '2px solid #e0e0e0',
+                    transform: 'scale(1)',
+                  }
+            }
+            ref={(el) => {
+              if (el) {
+                // Force apply initial styles
+                if (filter === status) {
+                  el.style.setProperty('background', 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)', 'important');
+                  el.style.setProperty('color', '#ffffff', 'important');
+                  el.style.setProperty('box-shadow', '0 4px 12px rgba(26, 35, 126, 0.3)', 'important');
+                } else {
+                  el.style.setProperty('background', 'white', 'important');
+                  el.style.setProperty('color', '#495057', 'important');
+                  el.style.setProperty('border', '2px solid #e0e0e0', 'important');
+                }
+              }
+            }}
+            onMouseEnter={(e) => {
+              if (filter !== status) {
+                e.currentTarget.style.setProperty('background', 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)', 'important');
+                e.currentTarget.style.setProperty('color', '#1a237e', 'important');
+                e.currentTarget.style.setProperty('border', '2px solid #1a237e', 'important');
+                e.currentTarget.style.setProperty('transform', 'scale(1.05)', 'important');
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (filter !== status) {
+                e.currentTarget.style.setProperty('background', 'white', 'important');
+                e.currentTarget.style.setProperty('color', '#495057', 'important');
+                e.currentTarget.style.setProperty('border', '2px solid #e0e0e0', 'important');
+                e.currentTarget.style.setProperty('transform', 'scale(1)', 'important');
+              }
+            }}
           >
             {status}
           </button>
@@ -697,46 +864,61 @@ export const BookingsPage = () => {
 
 
       {/* Bookings List */}
-      <div className="card">
+      <div className="bg-white rounded-xl shadow-lg p-6" style={{ border: '2px solid #e0e0e0' }}>
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-luxury-gold mx-auto"></div>
-            <p className="text-slate-300 mt-4">Loading bookings...</p>
+            <div 
+              className="animate-spin rounded-full h-12 w-12 mx-auto"
+              style={{
+                borderWidth: '4px',
+                borderStyle: 'solid',
+                borderColor: '#e9ecef',
+                borderTopColor: '#1a237e',
+              }}
+            ></div>
+            <p className="mt-4" style={{ color: '#495057' }}>Loading bookings...</p>
           </div>
         ) : filteredBookings.length === 0 ? (
           <div className="text-center py-12">
-            <Calendar className="w-16 h-16 text-slate-500 mx-auto mb-4" />
-            <p className="text-slate-300">No bookings found</p>
+            <Calendar className="w-16 h-16 mx-auto mb-4" style={{ color: '#adb5bd' }} />
+            <p style={{ color: '#495057' }}>No bookings found</p>
           </div>
         ) : (
           <div className="grid gap-4">
             {filteredBookings.map((booking, index) => (
-              <div key={booking.booking_id || `booking-${index}`} className="border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
+              <div key={booking.booking_id || `booking-${index}`} className="rounded-lg p-6 hover:shadow-lg transition-all" style={{ border: '2px solid #e9ecef', background: '#f8f9fa' }}>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-4 mb-3">
-                      <h3 className="text-lg font-semibold text-white">
+                      <h3 className="text-lg font-semibold" style={{ color: '#1a237e' }}>
                         {booking.guest_name || 'Guest'}
                       </h3>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        booking.status === 'Checked-In'
-                          ? 'bg-green-800/30 text-green-200 dark:bg-green-900/30 dark:text-green-300'
-                          : booking.status === 'Booked'
-                            ? 'bg-blue-800/30 text-blue-200 dark:bg-blue-900/30 dark:text-blue-300'
-                            : 'bg-slate-800 text-slate-100 dark:bg-slate-700/40 dark:text-slate-200'
-                      }`}>
+                      <span 
+                        className="px-3 py-1 rounded-full text-xs font-bold"
+                        style={
+                          booking.status === 'Checked-In'
+                            ? { background: 'linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%)', color: '#2e7d32', border: '2px solid #81c784' }
+                            : booking.status === 'Booked'
+                              ? { background: 'linear-gradient(135deg, #bbdefb 0%, #90caf9 100%)', color: '#0d47a1', border: '2px solid #64b5f6' }
+                              : booking.status === 'Checked-Out'
+                                ? { background: 'linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%)', color: '#6a1b9a', border: '2px solid #ba68c8' }
+                                : { background: 'linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%)', color: '#c62828', border: '2px solid #e57373' }
+                        }
+                      >
                         {booking.status}
                       </span>
                       {(() => {
                         const s = booking.payment_status;
-                        const cls =
-                          s === 'Paid'
-                            ? 'bg-emerald-800/30 text-emerald-300 dark:bg-emerald-900/200/15 dark:text-emerald-200 border border-emerald-700 dark:border-emerald-500/25'
-                            : s === 'Partial'
-                              ? 'bg-amber-800/30 text-amber-300 dark:bg-amber-900/200/15 dark:text-amber-200 border border-amber-700 dark:border-amber-500/25'
-                              : 'bg-rose-800/30 text-rose-700 dark:bg-rose-900/200/15 dark:text-rose-200 border border-rose-200 dark:border-rose-500/25';
+                        let style = {};
+                        if (s === 'Paid') {
+                          style = { background: 'linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%)', color: '#2e7d32', border: '2px solid #81c784' };
+                        } else if (s === 'Partial') {
+                          style = { background: 'linear-gradient(135deg, #fff9c4 0%, #fff59d 100%)', color: '#f57f17', border: '2px solid #ffee58' };
+                        } else {
+                          style = { background: 'linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%)', color: '#c62828', border: '2px solid #e57373' };
+                        }
                         return (
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${cls}`}>
+                          <span className="px-3 py-1 rounded-full text-xs font-bold" style={style}>
                             {s || 'Unpaid'}
                           </span>
                         );
@@ -745,30 +927,30 @@ export const BookingsPage = () => {
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
-                        <p className="text-slate-300">Room</p>
-                        <p className="font-medium text-white">{booking.room_number || 'N/A'}</p>
+                        <p style={{ color: '#6c757d' }}>Room</p>
+                        <p className="font-medium" style={{ color: '#1a237e' }}>{booking.room_number || 'N/A'}</p>
                       </div>
                       <div>
-                        <p className="text-slate-300">Check In</p>
-                        <p className="font-medium text-white">
+                        <p style={{ color: '#6c757d' }}>Check In</p>
+                        <p className="font-medium" style={{ color: '#1a237e' }}>
                           {booking.check_in_date ? format(new Date(booking.check_in_date), 'dd/MM/yyyy') : 'N/A'}
                         </p>
                       </div>
                       <div>
-                        <p className="text-slate-300">Check Out</p>
-                        <p className="font-medium text-white">
+                        <p style={{ color: '#6c757d' }}>Check Out</p>
+                        <p className="font-medium" style={{ color: '#1a237e' }}>
                           {booking.check_out_date ? format(new Date(booking.check_out_date), 'dd/MM/yyyy') : 'N/A'}
                         </p>
                       </div>
                       <div>
-                        <p className="text-slate-300">Total Amount</p>
-                        <p className="font-bold text-luxury-gold">
+                        <p style={{ color: '#6c757d' }}>Total Amount</p>
+                        <p className="font-bold" style={{ color: '#1a237e' }}>
                           Rs {parseFloat(booking.total_amount || 0).toFixed(2)}
                         </p>
                       </div>
                       <div>
-                        <p className="text-slate-300">Paid</p>
-                        <p className="font-bold text-emerald-300">
+                        <p style={{ color: '#6c757d' }}>Paid</p>
+                        <p className="font-bold" style={{ color: '#2e7d32' }}>
                           Rs {(
                             Number(booking.advance_payment||0) +
                             Number(booking.payments_total||0) +
@@ -777,9 +959,10 @@ export const BookingsPage = () => {
                         </p>
                       </div>
                       <div>
-                        <p className="text-slate-300">Balance Due</p>
+                        <p style={{ color: '#6c757d' }}>Balance Due</p>
                         <p
-                          className="font-bold text-white"
+                          className="font-bold"
+                          style={{ color: '#1a237e' }}
                           title={`Total: Rs ${parseFloat(booking.total_amount||0).toFixed(2)} | Paid: Rs ${(
                             parseFloat(booking.advance_payment||0)
                             + parseFloat(booking.payments_total||0)
@@ -791,61 +974,61 @@ export const BookingsPage = () => {
                       </div>
                     </div>
                     {booking.meta && (
-                      <div className="mt-4 rounded-lg border border-border bg-surface-tertiary p-3 text-sm text-slate-300 space-y-1">
-                        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                      <div className="mt-4 rounded-lg p-3 text-sm space-y-1" style={{ border: '2px solid #e9ecef', background: 'white' }}>
+                        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: '#6c757d' }}>
                           Guest context
                         </p>
                         {booking.meta.specialRequests && (
-                          <p>
-                            <span className="font-semibold text-white">Requests:</span>{' '}
+                          <p style={{ color: '#495057' }}>
+                            <span className="font-semibold" style={{ color: '#1a237e' }}>Requests:</span>{' '}
                             {booking.meta.specialRequests}
                           </p>
                         )}
                         {booking.meta.guestAlerts && (
-                          <p className="text-red-600">
+                          <p style={{ color: '#c62828' }}>
                             <span className="font-semibold">Alerts:</span> {booking.meta.guestAlerts}
                           </p>
                         )}
                         {Array.isArray(booking.meta.preferences) && booking.meta.preferences.length > 0 && (
-                          <p>
-                            <span className="font-semibold text-white">Preferences:</span>{' '}
+                          <p style={{ color: '#495057' }}>
+                            <span className="font-semibold" style={{ color: '#1a237e' }}>Preferences:</span>{' '}
                             {booking.meta.preferences.join(', ')}
                           </p>
                         )}
                         {booking.meta.loyaltyId && (
-                          <p>
-                            <span className="font-semibold text-white">Loyalty ID:</span>{' '}
+                          <p style={{ color: '#495057' }}>
+                            <span className="font-semibold" style={{ color: '#1a237e' }}>Loyalty ID:</span>{' '}
                             {booking.meta.loyaltyId}
                           </p>
                         )}
                         {booking.meta.travelAgentCode && (
-                          <p>
-                            <span className="font-semibold text-white">Travel agent:</span>{' '}
+                          <p style={{ color: '#495057' }}>
+                            <span className="font-semibold" style={{ color: '#1a237e' }}>Travel agent:</span>{' '}
                             {booking.meta.travelAgentCode}
                           </p>
                         )}
                         {/* guaranteeType removed - guarantee feature not in schema */}
                         {booking.meta.travelReason && (
-                          <p>
-                            <span className="font-semibold text-white">Travel reason:</span>{' '}
+                          <p style={{ color: '#495057' }}>
+                            <span className="font-semibold" style={{ color: '#1a237e' }}>Travel reason:</span>{' '}
                             {booking.meta.travelReason}
                           </p>
                         )}
                         {booking.meta.notes && (
-                          <p>
-                            <span className="font-semibold text-white">Internal notes:</span>{' '}
+                          <p style={{ color: '#495057' }}>
+                            <span className="font-semibold" style={{ color: '#1a237e' }}>Internal notes:</span>{' '}
                             {booking.meta.notes}
                           </p>
                         )}
                         {Array.isArray(booking.meta.attachments) && booking.meta.attachments.length > 0 && (
-                          <p>
-                            <span className="font-semibold text-white">Attachments:</span>{' '}
+                          <p style={{ color: '#495057' }}>
+                            <span className="font-semibold" style={{ color: '#1a237e' }}>Attachments:</span>{' '}
                             {booking.meta.attachments.join(', ')}
                           </p>
                         )}
                         {booking.meta.group && (booking.meta.group.code || booking.meta.group.name || booking.meta.group.notes) && (
-                          <div className="pt-2 border-t border-border mt-2 text-sm text-slate-300 space-y-1">
-                            <p className="font-semibold text-white">Group / block</p>
+                          <div className="pt-2 mt-2 text-sm space-y-1" style={{ borderTop: '2px solid #e9ecef', color: '#495057' }}>
+                            <p className="font-semibold" style={{ color: '#1a237e' }}>Group / block</p>
                             {booking.meta.group.code && <p>Code: {booking.meta.group.code}</p>}
                             {booking.meta.group.name && <p>Name: {booking.meta.group.name}</p>}
                             {booking.meta.group.notes && <p>Notes: {booking.meta.group.notes}</p>}
@@ -854,32 +1037,48 @@ export const BookingsPage = () => {
                       </div>
                     )}
                   </div>
-                  <div className="flex gap-2 ml-4">
+                  <div className="flex flex-wrap gap-2 ml-4">
                     {booking.status === 'Booked' && (
                       <button 
+                        type="button"
                         onClick={() => handleCheckIn(booking.booking_id)}
-                        className="btn-primary text-sm"
+                        className="px-4 py-2 text-sm rounded-xl font-bold text-white transition-all hover:scale-105 border-0"
+                        style={{
+                          background: 'linear-gradient(135deg, #43a047 0%, #388e3c 100%)',
+                          boxShadow: '0 4px 12px rgba(67, 160, 71, 0.3)',
+                        }}
                       >
                         Check In
                       </button>
                     )}
                     {booking.status === 'Booked' && (
                       <button 
+                        type="button"
                         onClick={() => handleCancel(booking.booking_id)}
-                        className="btn-secondary text-sm"
+                        className="px-4 py-2 text-sm rounded-xl font-bold text-white transition-all hover:scale-105 border-0"
+                        style={{
+                          background: 'linear-gradient(135deg, #e53935 0%, #d32f2f 100%)',
+                          boxShadow: '0 4px 12px rgba(229, 57, 53, 0.3)',
+                        }}
                       >
                         Cancel
                       </button>
                     )}
                     {booking.status === 'Checked-In' && (
                       <button 
+                        type="button"
                         onClick={() => handleCheckOut(booking)}
-                        className="btn-secondary text-sm"
+                        className="px-4 py-2 text-sm rounded-xl font-bold text-white transition-all hover:scale-105 border-0"
+                        style={{
+                          background: 'linear-gradient(135deg, #fb8c00 0%, #f57c00 100%)',
+                          boxShadow: '0 4px 12px rgba(251, 140, 0, 0.3)',
+                        }}
                       >
                         Check Out
                       </button>
                     )}
                     <button
+                      type="button"
                       onClick={async () => {
                         try {
                           const url = await api.getInvoiceHtmlUrlWithToken(booking.booking_id);
@@ -889,13 +1088,22 @@ export const BookingsPage = () => {
                           alert('Failed to open invoice. Please try again.');
                         }
                       }}
-                      className="btn-secondary text-sm"
+                      className="px-4 py-2 text-sm rounded-xl font-bold text-white transition-all hover:scale-105 border-0"
+                      style={{
+                        background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                        boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+                      }}
                     >
                       Invoice
                     </button>
                     <button 
+                      type="button"
                       onClick={() => setSelectedBooking(booking)}
-                      className="btn-secondary text-sm"
+                      className="px-4 py-2 text-sm rounded-xl font-bold text-white transition-all hover:scale-105 border-0"
+                      style={{
+                        background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                        boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+                      }}
                     >
                       View Details
                     </button>
@@ -910,28 +1118,33 @@ export const BookingsPage = () => {
         {hasMoreBookings && (
           <div className="mt-6 text-center">
             <button
+              type="button"
               onClick={() => loadBookings((pagination.page || 1) + 1, getCurrentFilters(), true)}
               disabled={loading}
-              className="btn-primary px-6 py-2"
+              className="px-6 py-3 rounded-xl font-bold text-white transition-all hover:scale-105 border-0"
+              style={{
+                background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+              }}
             >
               {loading ? 'Loading...' : `Load More Bookings (${allBookings.length} loaded)`}
             </button>
-            <p className="text-sm text-slate-300 mt-2">
+            <p className="text-sm mt-2" style={{ color: '#6c757d' }}>
               Load more bookings for better search results
             </p>
           </div>
         )}
         
         {/* Pagination Controls & Info */}
-        <div className="mt-8 border-t pt-6">
+        <div className="mt-8 pt-6" style={{ borderTop: '2px solid #e9ecef' }}>
           <div className="flex items-center justify-between mb-4">
-            <div className="text-sm text-slate-300">
+            <div className="text-sm" style={{ color: '#495057' }}>
               Showing <span className="font-semibold">{((pagination.page - 1) * pagination.limit) + 1}</span> to{' '}
               <span className="font-semibold">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of{' '}
               <span className="font-semibold">{pagination.total}</span> bookings
-              {selectedBranch && <span className="text-luxury-gold"> (filtered by branch)</span>}
+              {selectedBranch && <span style={{ color: '#1a237e', fontWeight: 600 }}> (filtered by branch)</span>}
               {(advancedFilters.startDate || advancedFilters.endDate) && (
-                <span className="text-luxury-gold">
+                <span style={{ color: '#1a237e', fontWeight: 600 }}>
                   {' '}(filtered by dates: 
                   {advancedFilters.startDate && advancedFilters.endDate 
                     ? ` ${advancedFilters.startDate} to ${advancedFilters.endDate}` 
@@ -943,7 +1156,7 @@ export const BookingsPage = () => {
             </div>
 
             {/* Items per page selector */}
-            <div className="flex items-center gap-2 text-sm text-slate-300 relative">
+            <div className="flex items-center gap-2 text-sm relative" style={{ color: '#495057' }}>
               <label htmlFor="pageSize">Per page:</label>
               <SearchableDropdown
                 value={String(pagination.limit)}
@@ -952,7 +1165,7 @@ export const BookingsPage = () => {
                 hideSearch
                 clearable={false}
                 className="min-w-[140px]"
-                buttonClassName="!px-3 !py-1 !rounded-md !border border-border dark:border-slate-600 focus-visible:!ring-luxury-gold focus-visible:!ring-offset-0 hover:!border-luxury-gold"
+                buttonClassName="!px-3 !py-2 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 focus-visible:!ring-offset-0 hover:!border-blue-700"
                 id="pageSize"
               />
             </div>
@@ -961,9 +1174,27 @@ export const BookingsPage = () => {
           {pagination.totalPages > 1 && (
             <div className="flex items-center justify-center space-x-2">
               <button
+                type="button"
                 onClick={() => loadBookings((pagination.page || 1) - 1, getCurrentFilters())}
                 disabled={(pagination.page || 1) <= 1}
-                className="px-4 py-2 text-sm font-medium border border-border dark:border-slate-600 rounded-md hover:bg-surface-tertiary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 text-sm font-medium border-2 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  borderColor: '#e0e0e0',
+                  background: 'white',
+                  color: '#495057',
+                }}
+                onMouseEnter={(e) => {
+                  if ((pagination.page || 1) > 1) {
+                    e.currentTarget.style.borderColor = '#1a237e';
+                    e.currentTarget.style.color = '#1a237e';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if ((pagination.page || 1) > 1) {
+                    e.currentTarget.style.borderColor = '#e0e0e0';
+                    e.currentTarget.style.color = '#495057';
+                  }
+                }}
               >
                 ← Previous
               </button>
@@ -973,15 +1204,40 @@ export const BookingsPage = () => {
                   const pageNum = Math.max(1, Math.min((pagination.totalPages || 1) - 6, (pagination.page || 1) - 3)) + i;
                   if (pageNum > (pagination.totalPages || 1)) return null;
                   
+                  const isActive = pageNum === (pagination.page || 1);
+                  
                   return (
                     <button
                       key={pageNum}
+                      type="button"
                       onClick={() => loadBookings(pageNum, getCurrentFilters())}
-                      className={`min-w-[40px] px-3 py-2 text-sm font-medium border rounded-md transition-all ${
-                        pageNum === (pagination.page || 1)
-                          ? 'bg-luxury-gold text-white border-luxury-gold shadow-md scale-105'
-                          : 'border-border dark:border-slate-600 hover:bg-surface-tertiary dark:bg-slate-700/30 hover:border-gray-400'
-                      }`}
+                      className="min-w-[40px] px-3 py-2 text-sm font-bold rounded-xl transition-all border-0"
+                      style={
+                        isActive
+                          ? {
+                              background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                              color: '#ffffff',
+                              boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+                              transform: 'scale(1.05)',
+                            }
+                          : {
+                              background: 'white',
+                              color: '#495057',
+                              border: '2px solid #e0e0e0',
+                            }
+                      }
+                      onMouseEnter={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.borderColor = '#1a237e';
+                          e.currentTarget.style.color = '#1a237e';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.borderColor = '#e0e0e0';
+                          e.currentTarget.style.color = '#495057';
+                        }
+                      }}
                     >
                       {pageNum}
                     </button>
@@ -990,9 +1246,27 @@ export const BookingsPage = () => {
               </div>
               
               <button
+                type="button"
                 onClick={() => loadBookings((pagination.page || 1) + 1, getCurrentFilters())}
                 disabled={(pagination.page || 1) >= (pagination.totalPages || 1)}
-                className="px-4 py-2 text-sm font-medium border border-border dark:border-slate-600 rounded-md hover:bg-surface-tertiary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 text-sm font-medium border-2 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  borderColor: '#e0e0e0',
+                  background: 'white',
+                  color: '#495057',
+                }}
+                onMouseEnter={(e) => {
+                  if ((pagination.page || 1) < (pagination.totalPages || 1)) {
+                    e.currentTarget.style.borderColor = '#1a237e';
+                    e.currentTarget.style.color = '#1a237e';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if ((pagination.page || 1) < (pagination.totalPages || 1)) {
+                    e.currentTarget.style.borderColor = '#e0e0e0';
+                    e.currentTarget.style.color = '#495057';
+                  }
+                }}
               >
                 Next →
               </button>
@@ -1041,11 +1315,15 @@ const PaidPill = ({ booking }) => {
   const total = Number(booking.total_amount || 0);
   const pct = total > 0 ? Math.round((paid / total) * 100) : 0;
   const status = booking.payment_status;
-  const colorClass = status === 'Paid'
-    ? 'bg-emerald-800/30 dark:bg-emerald-900/200/15 text-emerald-300 dark:text-emerald-200 border border-emerald-700 dark:border-emerald-500/25'
-    : status === 'Partial'
-      ? 'bg-luxury-gold/10 dark:bg-luxury-gold/20 text-luxury-gold border border-luxury-gold/20 dark:border-luxury-gold/30'
-      : 'bg-rose-800/30 dark:bg-rose-900/200/15 text-rose-700 dark:text-rose-200 border border-rose-200 dark:border-rose-500/25';
+  
+  let pillStyle = {};
+  if (status === 'Paid') {
+    pillStyle = { background: 'linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%)', color: '#2e7d32', border: '2px solid #81c784' };
+  } else if (status === 'Partial') {
+    pillStyle = { background: 'linear-gradient(135deg, #fff9c4 0%, #fff59d 100%)', color: '#f57f17', border: '2px solid #ffee58' };
+  } else {
+    pillStyle = { background: 'linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%)', color: '#c62828', border: '2px solid #e57373' };
+  }
 
   const containerRef = useRef(null);
   const [show, setShow] = useState(false);
@@ -1073,24 +1351,28 @@ const PaidPill = ({ booking }) => {
       onBlur={handleHide}
       tabIndex={0}
     >
-      <span className={`px-3 py-1 rounded-full text-xs font-medium ${colorClass}`}>
+      <span className="px-3 py-1 rounded-full text-xs font-bold" style={pillStyle}>
         Paid Rs {paid.toFixed(2)}{total > 0 ? ` (${pct}%)` : ''}
       </span>
       {show && (
         <div
-          className={`absolute right-0 w-64 bg-surface-secondary dark:bg-slate-800 border border-border dark:border-slate-700 shadow-lg rounded-md p-3 text-xs text-white dark:text-slate-200 z-50 ${
+          className={`absolute right-0 w-64 shadow-lg rounded-xl p-3 text-xs z-50 ${
             position === 'below' ? 'top-full mt-2' : 'bottom-full mb-2'
           }`}
+          style={{
+            background: 'white',
+            border: '2px solid #e9ecef',
+          }}
         >
-          <div className="flex justify-between font-semibold text-white">
+          <div className="flex justify-between font-semibold" style={{ color: '#1a237e' }}>
             <span>Total</span>
             <span>Rs {total.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between text-slate-300">
+          <div className="flex justify-between" style={{ color: '#495057' }}>
             <span>Paid</span>
             <span>Rs {paid.toFixed(2)}</span>
           </div>
-          <div className="mt-2 space-y-1 text-slate-300">
+          <div className="mt-2 space-y-1" style={{ color: '#495057' }}>
             <div className="flex justify-between"><span>Advance</span><span>Rs {adv.toFixed(2)}</span></div>
             <div className="flex justify-between"><span>Payments</span><span>Rs {pay.toFixed(2)}</span></div>
             <div className="flex justify-between"><span>Adjustments</span><span>Rs {adj.toFixed(2)}</span></div>

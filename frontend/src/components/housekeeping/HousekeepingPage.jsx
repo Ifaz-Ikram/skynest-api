@@ -21,51 +21,6 @@ import {
 } from 'lucide-react';
 import { LuxuryPageHeader, LoadingSpinner, SearchableDropdown } from '../common';
 
-const statusColors = {
-  Arrival: { 
-    bg: 'bg-blue-900/20 dark:bg-blue-900/200/15', 
-    text: 'text-blue-300 dark:text-blue-200', 
-    border: 'border-blue-700 dark:border-blue-500/30',
-    icon: 'text-blue-600 dark:text-blue-300',
-    badge: 'bg-blue-800/30 text-blue-200 dark:bg-blue-900/200/20 dark:text-blue-200'
-  },
-  Stayover: { 
-    bg: 'bg-emerald-900/20 dark:bg-emerald-900/200/15', 
-    text: 'text-emerald-300 dark:text-emerald-200', 
-    border: 'border-emerald-700 dark:border-emerald-500/30',
-    icon: 'text-emerald-600 dark:text-emerald-300',
-    badge: 'bg-emerald-800/30 text-emerald-200 dark:bg-emerald-900/200/20 dark:text-emerald-200'
-  },
-  'Due Out': { 
-    bg: 'bg-amber-900/20 dark:bg-amber-900/200/15', 
-    text: 'text-amber-300 dark:text-amber-200', 
-    border: 'border-amber-700 dark:border-amber-500/30',
-    icon: 'text-amber-600 dark:text-amber-300',
-    badge: 'bg-amber-800/30 text-amber-200 dark:bg-amber-900/200/20 dark:text-amber-200'
-  },
-  Dirty: { 
-    bg: 'bg-rose-900/20 dark:bg-rose-900/200/15', 
-    text: 'text-rose-700 dark:text-rose-200', 
-    border: 'border-rose-200 dark:border-rose-500/30',
-    icon: 'text-rose-600 dark:text-rose-300',
-    badge: 'bg-rose-800/30 text-rose-800 dark:bg-rose-900/200/20 dark:text-rose-200'
-  },
-  Available: { 
-    bg: 'bg-surface-tertiary dark:bg-slate-700/30', 
-    text: 'text-slate-100', 
-    border: 'border-border',
-    icon: 'text-slate-200',
-    badge: 'bg-slate-800 text-white dark:bg-slate-700/40 dark:text-slate-200'
-  },
-  OOO: { 
-    bg: 'bg-purple-900/20 dark:bg-purple-900/200/15', 
-    text: 'text-purple-300 dark:text-purple-200', 
-    border: 'border-purple-700 dark:border-purple-500/30',
-    icon: 'text-purple-600 dark:text-purple-300',
-    badge: 'bg-purple-800/30 text-purple-200 dark:bg-purple-900/200/20 dark:text-purple-200'
-  },
-};
-
 export default function HousekeepingPage() {
   const [board, setBoard] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -99,7 +54,6 @@ export default function HousekeepingPage() {
       }
       const data = await api.getHousekeepingBoard(params);
 
-      // Handle paginated response
       const roomsList = data?.rooms || data || [];
       const total = data?.pagination?.total || data?.total || roomsList.length;
       const totalPages = data?.pagination?.totalPages || Math.ceil(total / (filters.limit || pagination.limit));
@@ -135,7 +89,6 @@ export default function HousekeepingPage() {
   }, []);
 
   useEffect(() => {
-    // Reload board when branch filter changes (reset to page 1)
     if (branches.length > 0) {
       loadBoard(1);
     }
@@ -144,13 +97,11 @@ export default function HousekeepingPage() {
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
-      // Reload current page with current filters
       await loadBoard(pagination.page);
     } catch (error) {
       console.error('Refresh failed:', error);
       setError('Failed to refresh data');
     }
-    // Note: setRefreshing(false) is called in loadBoard's finally block
   };
 
   const handleAutoUpdate = async () => {
@@ -159,30 +110,26 @@ export default function HousekeepingPage() {
       const result = await api.updateRoomStatusesAutomatically();
       console.log('Auto-update result:', result);
 
-      // Show success message
       if (result.updatesCount > 0) {
         alert(`Successfully updated ${result.updatesCount} room statuses automatically!`);
       } else {
         alert('No room statuses needed updating.');
       }
 
-      // Refresh the board to show updated statuses (preserve current page)
       await loadBoard(pagination.page);
     } catch (error) {
       console.error('Auto-update failed:', error);
       alert('Failed to update room statuses automatically. Please try again.');
     }
-    // Note: setRefreshing(false) is called in loadBoard's finally block
   };
 
   const handleRoomStatusUpdate = async (roomId, newStatus, forceOverride = false) => {
     setUpdating(true);
     try {
       await api.updateRoomStatus(roomId, newStatus, forceOverride);
-      // Refresh the board while preserving current page and filters
       await loadBoard(pagination.page);
       setEditingRoom(null);
-      setError(null); // Clear any previous errors
+      setError(null);
 
       if (forceOverride) {
         alert('Room status updated with emergency override. This action has been logged.');
@@ -190,7 +137,6 @@ export default function HousekeepingPage() {
     } catch (err) {
       console.error('Room status update error:', err);
 
-      // Enhanced error handling with business logic explanations
       if (err.message.includes('Status transition not allowed')) {
         const errorData = err.response?.data;
         if (errorData?.reason) {
@@ -214,7 +160,6 @@ export default function HousekeepingPage() {
     }
   };
 
-  // Simple room status counts
   const statusCounts = useMemo(() => {
     if (!board?.rooms) return { Available: 0, Occupied: 0, Maintenance: 0, Reserved: 0 };
 
@@ -225,7 +170,6 @@ export default function HousekeepingPage() {
     return counts;
   }, [board]);
 
-  // Filter rooms by status
   const filteredRooms = useMemo(() => {
     if (!board?.rooms) return [];
     if (filterStatus === 'All') return board.rooms;
@@ -256,17 +200,18 @@ export default function HousekeepingPage() {
     return <LoadingSpinner size="xl" message="Loading housekeeping board..." />;
   }
 
-  if (error) {
+  if (error && !board) {
     return (
-      <div className="min-h-screen bg-surface-tertiary flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f8f9fa' }}>
         <div className="max-w-md mx-auto text-center">
-          <div className="bg-red-900/20 dark:bg-red-900/200/15 border border-red-700 dark:border-red-500/30 rounded-lg p-6">
-            <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-red-900 mb-2">Error Loading Board</h2>
-            <p className="text-red-300 mb-4">{error}</p>
+          <div className="bg-white rounded-xl p-8 shadow-lg">
+            <AlertTriangle className="w-16 h-16 mx-auto mb-4" style={{ color: '#dc3545' }} />
+            <h2 className="text-xl font-bold mb-2" style={{ color: '#1a237e' }}>Error Loading Board</h2>
+            <p className="mb-6" style={{ color: '#6c757d' }}>{error}</p>
             <button 
               onClick={handleRefresh}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
+              style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}
             >
               Try Again
             </button>
@@ -277,18 +222,18 @@ export default function HousekeepingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-primary dark:bg-slate-950 p-6 transition-colors">
+    <div className="min-h-screen p-6" style={{ backgroundColor: '#f8f9fa' }}>
       <div className="max-w-7xl mx-auto space-y-6">
         <LuxuryPageHeader
           title="Housekeeping Board"
           description={`Room status management • ${board?.date || 'Today'}`}
           icon={Sparkles}
           stats={[
-            { label: 'Available', value: statusCounts.Available, trend: 'Ready' },
-            { label: 'Occupied', value: statusCounts.Occupied, trend: 'In use' },
-            { label: 'Maintenance', value: statusCounts.Maintenance, trend: 'Out of order' },
-            { label: 'Reserved', value: statusCounts.Reserved, trend: 'Pre-booked' },
-            { label: 'Total Rooms', value: board?.rooms?.length || 0, trend: 'All statuses' },
+            { label: 'Available', value: statusCounts.Available },
+            { label: 'Occupied', value: statusCounts.Occupied },
+            { label: 'Maintenance', value: statusCounts.Maintenance },
+            { label: 'Reserved', value: statusCounts.Reserved },
+            { label: 'Total Rooms', value: board?.rooms?.length || 0 },
           ]}
           actions={[{
             label: 'Auto-Update Statuses',
@@ -298,12 +243,27 @@ export default function HousekeepingPage() {
           }]}
         />
 
+        {/* Error Alert */}
+        {error && (
+          <div className="bg-white rounded-xl p-4 shadow-lg border-l-4" style={{ borderLeftColor: '#dc3545' }}>
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 mt-0.5" style={{ color: '#dc3545' }} />
+              <div>
+                <p className="font-medium" style={{ color: '#dc3545' }}>{error}</p>
+              </div>
+              <button onClick={() => setError(null)} className="ml-auto">
+                <X className="w-4 h-4" style={{ color: '#6c757d' }} />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Branch Filter */}
-        <div className="bg-surface-secondary rounded-xl shadow-md p-6 border border-border">
+        <div className="bg-white rounded-xl shadow-lg p-6">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-slate-300" />
-              <span className="font-medium text-slate-300">Filter by Branch:</span>
+              <Building2 className="w-5 h-5" style={{ color: '#6c757d' }} />
+              <span className="font-medium" style={{ color: '#1a237e' }}>Filter by Branch:</span>
             </div>
             <SearchableDropdown
               value={selectedBranch}
@@ -315,7 +275,8 @@ export default function HousekeepingPage() {
             {selectedBranch && (
               <button
                 onClick={() => setSelectedBranch('')}
-                className="text-sm text-slate-400 hover:text-slate-300 underline"
+                className="text-sm underline transition-colors"
+                style={{ color: '#0d47a1' }}
               >
                 Clear Filter
               </button>
@@ -323,131 +284,96 @@ export default function HousekeepingPage() {
           </div>
         </div>
 
-        {/* Status Summary Cards - Clickable Filters */}
+        {/* Status Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <button
+          <StatusCard
+            label="Available"
+            count={statusCounts.Available}
+            icon={Bed}
+            color="#28a745"
+            bgColor="#d4edda"
+            isActive={filterStatus === 'Available'}
             onClick={() => setFilterStatus('Available')}
-            className={`bg-surface-secondary dark:bg-slate-800 rounded-xl shadow-md p-6 border border-border dark:border-green-800/40 hover:shadow-lg transition-all duration-200 ${
-              filterStatus === 'Available' 
-                ? 'border-green-400 ring-2 ring-green-200 shadow-lg' 
-                : 'border-green-700 hover:border-green-600'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-green-300">Available</p>
-                <p className="text-2xl font-bold text-green-300">{statusCounts.Available}</p>
-              </div>
-              <div className="p-2 rounded-lg bg-green-800/30 dark:bg-emerald-900/200/20">
-                <Bed className="w-5 h-5 text-green-600 dark:text-emerald-200" />
-              </div>
-            </div>
-          </button>
-          
-          <button
+          />
+          <StatusCard
+            label="Occupied"
+            count={statusCounts.Occupied}
+            icon={User}
+            color="#0d6efd"
+            bgColor="#cfe2ff"
+            isActive={filterStatus === 'Occupied'}
             onClick={() => setFilterStatus('Occupied')}
-            className={`bg-blue-900/20 dark:bg-blue-900/200/15 border border-blue-700 dark:border-blue-500/30 rounded-xl p-6 hover:shadow-md transition-all duration-200 ${
-              filterStatus === 'Occupied' 
-                ? 'border-blue-400 ring-2 ring-blue-200 shadow-lg' 
-                : 'border-blue-700 hover:border-blue-600'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-blue-300">Occupied</p>
-                <p className="text-2xl font-bold text-blue-300">{statusCounts.Occupied}</p>
-              </div>
-              <div className="p-2 rounded-lg bg-blue-800/30 dark:bg-blue-900/200/20">
-                <User className="w-5 h-5 text-blue-600 dark:text-blue-200" />
-              </div>
-            </div>
-          </button>
-          
-          <button
+          />
+          <StatusCard
+            label="Maintenance"
+            count={statusCounts.Maintenance}
+            icon={Wrench}
+            color="#fd7e14"
+            bgColor="#ffe5d0"
+            isActive={filterStatus === 'Maintenance'}
             onClick={() => setFilterStatus('Maintenance')}
-            className={`bg-orange-900/20 dark:bg-orange-900/200/15 border border-orange-700 dark:border-orange-500/30 rounded-xl p-6 hover:shadow-md transition-all duration-200 ${
-              filterStatus === 'Maintenance' 
-                ? 'border-orange-400 ring-2 ring-orange-200 shadow-lg' 
-                : 'border-orange-700 hover:border-orange-600'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-orange-300">Maintenance</p>
-                <p className="text-2xl font-bold text-orange-300">{statusCounts.Maintenance}</p>
-              </div>
-              <div className="p-2 rounded-lg bg-orange-800/30 dark:bg-orange-900/200/20">
-                <Wrench className="w-5 h-5 text-orange-600 dark:text-orange-200" />
-              </div>
-            </div>
-          </button>
-
-          {/* Reserved Filter Button */}
-          <button
+          />
+          <StatusCard
+            label="Reserved"
+            count={statusCounts.Reserved}
+            icon={Calendar}
+            color="#6f42c1"
+            bgColor="#e2d9f3"
+            isActive={filterStatus === 'Reserved'}
             onClick={() => setFilterStatus('Reserved')}
-            className={`bg-purple-900/20 dark:bg-purple-900/200/15 border border-purple-700 dark:border-purple-500/30 rounded-xl p-6 hover:shadow-md transition-all duration-200 ${
-              filterStatus === 'Reserved' 
-                ? 'border-purple-400 ring-2 ring-purple-200 shadow-lg' 
-                : 'border-purple-700 hover:border-purple-600'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-purple-300">Reserved</p>
-                <p className="text-2xl font-bold text-purple-300">{statusCounts.Reserved}</p>
-              </div>
-              <div className="p-2 rounded-lg bg-purple-800/30 dark:bg-purple-900/200/20">
-                <Calendar className="w-5 h-5 text-purple-600 dark:text-purple-200" />
-              </div>
-            </div>
-          </button>
+          />
         </div>
 
         {/* All Rooms Button */}
-        <div className="mb-6">
+        <div>
           <button
             onClick={() => setFilterStatus('All')}
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-              filterStatus === 'All'
-                ? 'bg-luxury-gold text-white shadow-lg'
-                : 'bg-surface-tertiary text-slate-300 dark:bg-slate-800 dark:text-slate-200 hover:bg-surface-secondary dark:hover:bg-slate-700/40'
-            }`}
+            className="px-5 py-2.5 rounded-xl font-semibold transition-all"
+            style={filterStatus === 'All' ? {
+              background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+              color: 'white',
+              boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)'
+            } : {
+              backgroundColor: 'white',
+              color: '#1a237e',
+              border: '2px solid #e9ecef'
+            }}
           >
             Show All Rooms ({board?.rooms?.length || 0})
           </button>
         </div>
 
         {/* Business Rules Guide */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl shadow-sm border border-blue-700 dark:border-blue-500/40 p-6 mb-6">
-          <div className="flex items-start gap-3">
-            <div className="p-2 bg-blue-800/30 dark:bg-blue-900/200/20 rounded-lg">
-              <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-blue-300" />
+        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4" style={{ borderLeftColor: '#0d6efd' }}>
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-xl" style={{ backgroundColor: '#e3f2fd' }}>
+              <CheckCircle2 className="w-6 h-6" style={{ color: '#0d6efd' }} />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-white dark:text-slate-100 mb-3">Housekeeping Status Change Rules</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div className="bg-slate-800 dark:bg-slate-800 p-3 rounded-lg border border-green-600 dark:border-green-500/40 shadow-sm">
-                  <div className="font-semibold text-green-200 dark:text-green-300 mb-2 flex items-center gap-1">
-                    <span className="text-green-300 dark:text-green-400">✓</span> What Housekeeping CAN Do:
+              <h3 className="text-lg font-bold mb-4" style={{ color: '#1a237e' }}>Housekeeping Status Change Rules</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl" style={{ backgroundColor: '#d4edda', border: '1px solid #28a745' }}>
+                  <div className="font-semibold mb-2 flex items-center gap-2" style={{ color: '#155724' }}>
+                    <span>✓</span> What Housekeeping CAN Do:
                   </div>
-                  <ul className="space-y-1 text-slate-100 dark:text-slate-300">
+                  <ul className="space-y-1 text-sm" style={{ color: '#155724' }}>
                     <li>• Available → Maintenance (anytime)</li>
                     <li>• Maintenance → Available (anytime)</li>
                     <li>• Occupied → Maintenance (emergencies only)</li>
                   </ul>
                 </div>
-                <div className="bg-slate-800 dark:bg-slate-800 p-3 rounded-lg border border-red-600 dark:border-red-500/40 shadow-sm">
-                  <div className="font-semibold text-red-200 dark:text-red-300 mb-2 flex items-center gap-1">
-                    <span className="text-red-300 dark:text-red-400">✗</span> What Requires Booking System:
+                <div className="p-4 rounded-xl" style={{ backgroundColor: '#f8d7da', border: '1px solid #dc3545' }}>
+                  <div className="font-semibold mb-2 flex items-center gap-2" style={{ color: '#721c24' }}>
+                    <span>✗</span> What Requires Booking System:
                   </div>
-                  <ul className="space-y-1 text-slate-100 dark:text-slate-300">
+                  <ul className="space-y-1 text-sm" style={{ color: '#721c24' }}>
                     <li>• Setting to Reserved (use pre-booking)</li>
                     <li>• Setting to Occupied (use check-in)</li>
                     <li>• Changing rooms with active bookings</li>
                   </ul>
                 </div>
               </div>
-              <div className="mt-3 p-2 bg-amber-800/30 dark:bg-amber-900/200/20 border border-amber-300 dark:border-amber-500/40 rounded text-xs text-amber-900 dark:text-amber-200">
+              <div className="mt-4 p-3 rounded-lg text-sm" style={{ backgroundColor: '#fff3cd', border: '1px solid #ffc107', color: '#856404' }}>
                 <strong>💡 Protection:</strong> Rooms with active bookings cannot be changed to Available/Maintenance.
                 Complete checkout or cancel booking first. Admins can use emergency override if needed.
               </div>
@@ -455,29 +381,25 @@ export default function HousekeepingPage() {
           </div>
         </div>
 
-        {/* Filter and Rooms */}
-        <div className="bg-surface-secondary rounded-xl shadow-sm border border-border overflow-visible">
-          <div className="bg-surface-tertiary px-6 py-4 border-b border-border">
+        {/* Rooms Grid */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="px-6 py-4 border-b" style={{ backgroundColor: '#e3f2fd', borderColor: '#dee2e6' }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-lg bg-luxury-gold">
+                <div className="p-2 rounded-lg" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
                   <Bed className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-white">Room Management</h2>
-                  <p className="text-sm text-slate-300">Click buttons to change room status</p>
+                  <h2 className="text-lg font-bold" style={{ color: '#1a237e' }}>Room Management</h2>
+                  <p className="text-sm" style={{ color: '#6c757d' }}>Click buttons to change room status</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-slate-300">Currently showing:</span>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  filterStatus === 'All' ? 'bg-slate-800 text-white' :
-                  filterStatus === 'Available' ? 'bg-green-800/30 text-green-200' :
-                  filterStatus === 'Occupied' ? 'bg-blue-800/30 text-blue-200' :
-                  filterStatus === 'Maintenance' ? 'bg-orange-800/30 text-orange-200' :
-                  filterStatus === 'Reserved' ? 'bg-purple-800/30 text-purple-200' :
-                  'bg-slate-800 text-white'
-                }`}>
+                <span className="text-sm font-medium" style={{ color: '#6c757d' }}>Showing:</span>
+                <span 
+                  className="px-3 py-1 rounded-full text-sm font-medium"
+                  style={getFilterBadgeStyle(filterStatus)}
+                >
                   {filterStatus === 'All' ? 'All Rooms' : filterStatus}
                 </span>
               </div>
@@ -487,7 +409,7 @@ export default function HousekeepingPage() {
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {filteredRooms.map((room) => (
-                <SimpleRoomCard 
+                <RoomCard 
                   key={room.room_id} 
                   room={room} 
                   isEditing={editingRoom === room.room_id}
@@ -498,28 +420,28 @@ export default function HousekeepingPage() {
                 />
               ))}
             </div>
+            
+            {filteredRooms.length === 0 && (
+              <div className="text-center py-12">
+                <Bed className="w-16 h-16 mx-auto mb-4" style={{ color: '#dee2e6' }} />
+                <p style={{ color: '#6c757d' }}>No rooms found with the selected filter.</p>
+              </div>
+            )}
           </div>
           
-          {/* Pagination Controls */}
+          {/* Pagination */}
           {filteredRooms.length > 0 && pagination.totalPages > 1 && (
-            <div className="border-t border-border dark:border-slate-700 bg-surface-secondary dark:bg-slate-800 px-6 py-4 relative z-10">
+            <div className="border-t px-6 py-4" style={{ backgroundColor: '#f8f9fa', borderColor: '#dee2e6' }}>
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                {/* Result Count */}
-                <div className="text-sm text-slate-300">
+                <div className="text-sm" style={{ color: '#6c757d' }}>
                   Showing <span className="font-semibold">{((pagination.page - 1) * pagination.limit) + 1}</span> to{' '}
-                  <span className="font-semibold">
-                    {Math.min(pagination.page * pagination.limit, pagination.total)}
-                  </span>{' '}
+                  <span className="font-semibold">{Math.min(pagination.page * pagination.limit, pagination.total)}</span>{' '}
                   of <span className="font-semibold">{pagination.total}</span> rooms
                 </div>
 
-                {/* Items Per Page Selector */}
-                <div className="flex items-center gap-2 relative z-20">
-                  <label htmlFor="limit" className="text-sm text-slate-300">
-                    Items per page:
-                  </label>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm" style={{ color: '#6c757d' }}>Per page:</label>
                   <SearchableDropdown
-                    id="limit"
                     value={String(pagination.limit)}
                     onChange={(value) => {
                       const newLimit = Number(value);
@@ -530,26 +452,24 @@ export default function HousekeepingPage() {
                     options={pageSizeOptions}
                     hideSearch
                     clearable={false}
-                    className="min-w-[140px]"
-                    buttonClassName="!border border-border dark:border-slate-600 !px-3 !py-1 text-sm focus-visible:!ring-luxury-gold focus-visible:!ring-offset-0"
+                    className="min-w-[120px]"
                   />
                 </div>
 
-                {/* Page Navigation */}
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => loadBoard(pagination.page - 1)}
                     disabled={pagination.page === 1}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                      pagination.page === 1
-                        ? 'bg-surface-tertiary text-slate-400 cursor-not-allowed opacity-60'
-                        : 'bg-surface-secondary dark:bg-slate-800 border border-border dark:border-slate-600 text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-700/40'
-                    }`}
+                    className="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                    style={{ 
+                      backgroundColor: pagination.page === 1 ? '#e9ecef' : 'white',
+                      color: '#1a237e',
+                      border: '1px solid #dee2e6'
+                    }}
                   >
                     Previous
                   </button>
 
-                  {/* Page Numbers */}
                   <div className="flex gap-1">
                     {Array.from({ length: Math.min(7, pagination.totalPages) }, (_, i) => {
                       let pageNum;
@@ -567,11 +487,16 @@ export default function HousekeepingPage() {
                         <button
                           key={pageNum}
                           onClick={() => loadBoard(pageNum)}
-                          className={`w-8 h-8 rounded-md text-sm font-medium transition-all ${
-                            pagination.page === pageNum
-                              ? 'bg-luxury-gold text-white shadow-md transform scale-105'
-                              : 'bg-surface-secondary dark:bg-slate-800 border border-border dark:border-slate-600 text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-700/40 hover:border-luxury-gold'
-                          }`}
+                          className="w-10 h-10 rounded-lg text-sm font-medium transition-all"
+                          style={pagination.page === pageNum ? {
+                            background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                            color: 'white',
+                            boxShadow: '0 2px 8px rgba(26, 35, 126, 0.3)'
+                          } : {
+                            backgroundColor: 'white',
+                            color: '#1a237e',
+                            border: '1px solid #dee2e6'
+                          }}
                         >
                           {pageNum}
                         </button>
@@ -582,11 +507,12 @@ export default function HousekeepingPage() {
                   <button
                     onClick={() => loadBoard(pagination.page + 1)}
                     disabled={pagination.page === pagination.totalPages}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                      pagination.page === pagination.totalPages
-                        ? 'bg-surface-tertiary text-slate-400 cursor-not-allowed opacity-60'
-                        : 'bg-surface-secondary dark:bg-slate-800 border border-border dark:border-slate-600 text-slate-300 hover:bg-surface-tertiary dark:hover:bg-slate-700/40'
-                    }`}
+                    className="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                    style={{ 
+                      backgroundColor: pagination.page === pagination.totalPages ? '#e9ecef' : 'white',
+                      color: '#1a237e',
+                      border: '1px solid #dee2e6'
+                    }}
                   >
                     Next
                   </button>
@@ -600,18 +526,53 @@ export default function HousekeepingPage() {
   );
 }
 
-function SimpleRoomCard({ room, isEditing, onEdit, onCancel, onStatusUpdate, updating }) {
+// Helper function for filter badge styling
+function getFilterBadgeStyle(status) {
+  const styles = {
+    'All': { backgroundColor: '#e9ecef', color: '#495057' },
+    'Available': { backgroundColor: '#d4edda', color: '#155724' },
+    'Occupied': { backgroundColor: '#cfe2ff', color: '#084298' },
+    'Maintenance': { backgroundColor: '#ffe5d0', color: '#984c0c' },
+    'Reserved': { backgroundColor: '#e2d9f3', color: '#59359a' },
+  };
+  return styles[status] || styles['All'];
+}
+
+// Status Card Component
+function StatusCard({ label, count, icon: Icon, color, bgColor, isActive, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className="bg-white rounded-xl shadow-lg p-6 text-left transition-all hover:shadow-xl"
+      style={{
+        border: isActive ? `3px solid ${color}` : '3px solid transparent',
+        boxShadow: isActive ? `0 0 0 3px ${bgColor}` : undefined
+      }}
+    >
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium" style={{ color: '#6c757d' }}>{label}</p>
+          <p className="text-3xl font-bold mt-1" style={{ color }}>{count}</p>
+        </div>
+        <div className="p-3 rounded-xl" style={{ backgroundColor: bgColor }}>
+          <Icon className="w-6 h-6" style={{ color }} />
+        </div>
+      </div>
+    </button>
+  );
+}
+
+// Room Card Component
+function RoomCard({ room, isEditing, onEdit, onCancel, onStatusUpdate, updating }) {
   const [validTransitions, setValidTransitions] = useState(null);
   const [loadingTransitions, setLoadingTransitions] = useState(false);
 
-  // Load valid transitions when editing starts OR when room status changes
   useEffect(() => {
     if (isEditing) {
-      // Always reload when editing starts to get fresh data
-      setValidTransitions(null); // Clear old data first
+      setValidTransitions(null);
       loadValidTransitions();
     }
-  }, [isEditing, room.room_status]); // Re-run when room status changes
+  }, [isEditing, room.room_status]);
 
   const loadValidTransitions = async () => {
     setLoadingTransitions(true);
@@ -631,45 +592,46 @@ function SimpleRoomCard({ room, isEditing, onEdit, onCancel, onStatusUpdate, upd
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Available': return 'bg-green-800/30 dark:bg-emerald-900/200/15 text-green-200 dark:text-emerald-200';
-      case 'Occupied': return 'bg-blue-800/30 dark:bg-blue-900/200/15 text-blue-200 dark:text-blue-200';
-      case 'Maintenance': return 'bg-orange-800/30 dark:bg-orange-900/200/15 text-orange-200 dark:text-orange-200';
-      case 'Reserved': return 'bg-purple-800/30 dark:bg-purple-900/200/15 text-purple-200 dark:text-purple-200';
-      default: return 'bg-slate-800 dark:bg-slate-700/40 text-white dark:text-slate-200';
-    }
+  const getStatusStyle = (status) => {
+    const styles = {
+      'Available': { backgroundColor: '#d4edda', color: '#155724' },
+      'Occupied': { backgroundColor: '#cfe2ff', color: '#084298' },
+      'Maintenance': { backgroundColor: '#ffe5d0', color: '#984c0c' },
+      'Reserved': { backgroundColor: '#e2d9f3', color: '#59359a' },
+    };
+    return styles[status] || { backgroundColor: '#e9ecef', color: '#495057' };
   };
 
-  const getDerivedColor = (derived) => {
-    switch (derived) {
-      case 'Available': return 'bg-slate-800 dark:bg-slate-700/40 text-white dark:text-slate-200';
-      case 'Arrival': return 'bg-blue-800/30 dark:bg-blue-900/200/15 text-blue-200 dark:text-blue-200';
-      case 'Stayover': return 'bg-green-800/30 dark:bg-emerald-900/200/15 text-green-200 dark:text-emerald-200';
-      case 'Due Out': return 'bg-yellow-800/30 dark:bg-amber-900/200/15 text-yellow-800 dark:text-amber-200';
-      case 'Dirty': return 'bg-red-800/30 dark:bg-rose-900/200/15 text-red-200 dark:text-rose-200';
-      case 'OOO': return 'bg-purple-800/30 dark:bg-purple-900/200/15 text-purple-200 dark:text-purple-200';
-      default: return 'bg-slate-800 dark:bg-slate-700/40 text-white dark:text-slate-200';
-    }
+  const getDerivedStyle = (derived) => {
+    const styles = {
+      'Available': { backgroundColor: '#e9ecef', color: '#495057' },
+      'Arrival': { backgroundColor: '#cfe2ff', color: '#084298' },
+      'Stayover': { backgroundColor: '#d4edda', color: '#155724' },
+      'Due Out': { backgroundColor: '#fff3cd', color: '#856404' },
+      'Dirty': { backgroundColor: '#f8d7da', color: '#721c24' },
+      'OOO': { backgroundColor: '#e2d9f3', color: '#59359a' },
+    };
+    return styles[derived] || { backgroundColor: '#e9ecef', color: '#495057' };
   };
 
   return (
-    <div className="bg-surface-secondary border border-border rounded-lg p-4 hover:shadow-md transition-all duration-200">
+    <div className="bg-white rounded-xl shadow-lg p-5 hover:shadow-xl transition-all" style={{ border: '1px solid #e9ecef' }}>
       {/* Room Header */}
-      <div className="flex items-start justify-between mb-3">
+      <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
-          <div className="flex items-center space-x-2 mb-1">
-            <MapPin className="w-4 h-4 text-slate-400" />
-            <span className="text-xs text-slate-300">{room.branch_name}</span>
+          <div className="flex items-center gap-2 mb-1">
+            <MapPin className="w-4 h-4" style={{ color: '#6c757d' }} />
+            <span className="text-xs" style={{ color: '#6c757d' }}>{room.branch_name}</span>
           </div>
-          <h3 className="text-lg font-semibold text-white">Room {room.room_number}</h3>
-          <p className="text-sm text-slate-300">{room.room_type} • Cap {room.capacity}</p>
+          <h3 className="text-lg font-bold" style={{ color: '#1a237e' }}>Room {room.room_number}</h3>
+          <p className="text-sm" style={{ color: '#6c757d' }}>{room.room_type} • Cap {room.capacity}</p>
         </div>
         
         {!isEditing ? (
           <button
             onClick={onEdit}
-            className="p-2 bg-luxury-gold/10 text-luxury-gold hover:bg-luxury-gold/20 rounded-lg transition-all duration-200 hover:scale-105"
+            className="p-2 rounded-lg transition-all hover:scale-105"
+            style={{ backgroundColor: '#e3f2fd', color: '#0d47a1' }}
             title="Click to change room status"
           >
             <Edit3 className="w-4 h-4" />
@@ -677,7 +639,8 @@ function SimpleRoomCard({ room, isEditing, onEdit, onCancel, onStatusUpdate, upd
         ) : (
           <button
             onClick={onCancel}
-            className="p-1 text-slate-400 hover:text-slate-300 transition-colors"
+            className="p-2 rounded-lg transition-colors"
+            style={{ backgroundColor: '#f8f9fa', color: '#6c757d' }}
             title="Cancel editing"
           >
             <X className="w-4 h-4" />
@@ -685,199 +648,189 @@ function SimpleRoomCard({ room, isEditing, onEdit, onCancel, onStatusUpdate, upd
         )}
       </div>
 
-      {/* Guest Information & Booking Protection Warning */}
+      {/* Guest Information & Booking Warning */}
       {room.booking && (
-        <div className="mb-3">
-          {/* Booking Protection Alert */}
-          <div className="mb-2 p-2 bg-amber-900/20 dark:bg-amber-900/200/15 border border-amber-300 dark:border-amber-500/30 rounded-lg">
+        <div className="mb-4">
+          <div className="mb-3 p-3 rounded-lg" style={{ backgroundColor: '#fff3cd', border: '1px solid #ffc107' }}>
             <div className="flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-              <div className="text-xs text-amber-200">
+              <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#856404' }} />
+              <div className="text-xs" style={{ color: '#856404' }}>
                 <span className="font-semibold">Booking Protected:</span> This room has an active booking.
-                Status cannot be changed to Available/Maintenance. Cancel booking first or complete checkout.
+                Status cannot be changed to Available/Maintenance.
               </div>
             </div>
           </div>
 
-          {/* Guest Information */}
-          <div className="p-3 bg-blue-900/20 dark:bg-blue-900/200/15 border border-blue-700 dark:border-blue-500/30 rounded-lg">
+          <div className="p-3 rounded-lg" style={{ backgroundColor: '#e3f2fd', border: '1px solid #0d6efd' }}>
             <div className="flex items-center gap-2 mb-2">
-              <Users className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium text-blue-200">Guest Information</span>
+              <Users className="w-4 h-4" style={{ color: '#0d47a1' }} />
+              <span className="text-sm font-medium" style={{ color: '#0d47a1' }}>Guest Information</span>
             </div>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
-                <span className="text-blue-300 font-medium">Guest:</span>
-                <span className="text-blue-900">{room.booking.guest_name || 'Unknown'}</span>
+                <span style={{ color: '#0d6efd' }}>Guest:</span>
+                <span className="font-medium" style={{ color: '#1a237e' }}>{room.booking.guest_name || 'Unknown'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-blue-300 font-medium">Check-in:</span>
-                <span className="text-blue-900">{new Date(room.booking.check_in_date).toLocaleDateString()}</span>
+                <span style={{ color: '#0d6efd' }}>Check-in:</span>
+                <span style={{ color: '#495057' }}>{new Date(room.booking.check_in_date).toLocaleDateString()}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-blue-300 font-medium">Check-out:</span>
-                <span className="text-blue-900">{new Date(room.booking.check_out_date).toLocaleDateString()}</span>
+                <span style={{ color: '#0d6efd' }}>Check-out:</span>
+                <span style={{ color: '#495057' }}>{new Date(room.booking.check_out_date).toLocaleDateString()}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-blue-300 font-medium">Booking Status:</span>
-                <span className="text-blue-900 font-semibold">{room.booking.status}</span>
+                <span style={{ color: '#0d6efd' }}>Status:</span>
+                <span className="font-semibold" style={{ color: '#1a237e' }}>{room.booking.status}</span>
               </div>
-              {room.booking.special_requests && (
-                <div className="mt-2 pt-2 border-t border-blue-700">
-                  <span className="text-blue-300 font-medium">Special Requests:</span>
-                  <p className="text-blue-900 text-xs mt-1">{room.booking.special_requests}</p>
-                </div>
-              )}
             </div>
           </div>
         </div>
       )}
 
       {/* Status Display */}
-      <div className="space-y-2 mb-3">
+      <div className="space-y-2 mb-4">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-slate-300">Room Status:</span>
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(room.room_status)}`}>
+          <span className="text-xs font-medium" style={{ color: '#6c757d' }}>Room Status:</span>
+          <span 
+            className="px-3 py-1 rounded-full text-xs font-semibold"
+            style={getStatusStyle(room.room_status)}
+          >
             {room.room_status}
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-slate-300">Housekeeping:</span>
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDerivedColor(room.derived)}`}>
+          <span className="text-xs font-medium" style={{ color: '#6c757d' }}>Housekeeping:</span>
+          <span 
+            className="px-3 py-1 rounded-full text-xs font-semibold"
+            style={getDerivedStyle(room.derived)}
+          >
             {room.derived}
           </span>
         </div>
       </div>
 
-      {/* Status Change Buttons */}
+      {/* Status Change Section */}
       {isEditing ? (
-        <div className="space-y-2">
+        <div className="space-y-3 pt-3 border-t" style={{ borderColor: '#e9ecef' }}>
           {loadingTransitions ? (
             <div className="flex items-center justify-center py-4">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-luxury-gold"></div>
-              <span className="ml-2 text-sm text-slate-300">Loading status options...</span>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2" style={{ borderColor: '#0d47a1' }}></div>
+              <span className="ml-2 text-sm" style={{ color: '#6c757d' }}>Loading options...</span>
             </div>
           ) : validTransitions ? (
-            <div className="space-y-2">
-              {/* Helper Text Based on Current Status */}
-              <div className="mb-3 p-2 bg-blue-900/20 dark:bg-blue-900/200/15 border border-blue-700 dark:border-blue-500/30 rounded-md">
-                <div className="text-xs text-blue-200">
-                  {room.room_status === 'Available' && (
-                    <>
-                      <CheckCircle2 className="w-3 h-3 inline mr-1" />
-                      <strong>Available Room:</strong> Can be set to Maintenance. Reserved/Occupied status is set through booking/check-in process.
-                    </>
-                  )}
-                  {room.room_status === 'Maintenance' && (
-                    <>
-                      <Wrench className="w-3 h-3 inline mr-1" />
-                      <strong>Maintenance Room:</strong> Can only be set to Available. Cannot be booked until maintenance complete.
-                    </>
-                  )}
-                  {room.room_status === 'Reserved' && (
-                    <>
-                      <Calendar className="w-3 h-3 inline mr-1" />
-                      <strong>Reserved Room:</strong> Controlled by booking system. Cancel booking or use check-in process.
-                    </>
-                  )}
-                  {room.room_status === 'Occupied' && (
-                    <>
-                      <User className="w-3 h-3 inline mr-1" />
-                      <strong>Occupied Room:</strong> Guest is checked in. Can set to Maintenance for emergencies (guest will be relocated). Use checkout process to make Available.
-                    </>
-                  )}
-                </div>
+            <div className="space-y-3">
+              {/* Helper Text */}
+              <div className="p-2 rounded-lg text-xs" style={{ backgroundColor: '#e3f2fd', color: '#0d47a1' }}>
+                {room.room_status === 'Available' && (
+                  <><CheckCircle2 className="w-3 h-3 inline mr-1" /><strong>Available:</strong> Can be set to Maintenance.</>
+                )}
+                {room.room_status === 'Maintenance' && (
+                  <><Wrench className="w-3 h-3 inline mr-1" /><strong>Maintenance:</strong> Can only be set to Available.</>
+                )}
+                {room.room_status === 'Reserved' && (
+                  <><Calendar className="w-3 h-3 inline mr-1" /><strong>Reserved:</strong> Controlled by booking system.</>
+                )}
+                {room.room_status === 'Occupied' && (
+                  <><User className="w-3 h-3 inline mr-1" /><strong>Occupied:</strong> Can set to Maintenance for emergencies.</>
+                )}
               </div>
 
-              <div className="text-xs font-medium text-slate-300 mb-2">✅ Available Status Changes:</div>
-              {validTransitions.validTransitions.length > 0 ? (
-                <div className="grid grid-cols-2 gap-2">
-                  {validTransitions.validTransitions.map((transition) => (
-                    <button
-                      key={transition.status}
-                      onClick={() => handleStatusChange(transition.status)}
-                      disabled={updating}
-                      className="px-3 py-2 bg-green-800/30 text-green-200 rounded-md hover:bg-green-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium border border-green-600"
-                      title={transition.reason}
-                    >
-                      ✓ {transition.status}
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-xs text-slate-300 italic p-2 bg-surface-tertiary rounded">
-                  No manual status changes allowed. Use booking system to change this room's status.
+              {/* Valid Transitions */}
+              {validTransitions.validTransitions.length > 0 && (
+                <>
+                  <div className="text-xs font-medium" style={{ color: '#28a745' }}>✅ Available Changes:</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {validTransitions.validTransitions.map((transition) => (
+                      <button
+                        key={transition.status}
+                        onClick={() => handleStatusChange(transition.status)}
+                        disabled={updating}
+                        className="px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                        style={{ 
+                          backgroundColor: '#d4edda', 
+                          color: '#155724', 
+                          border: '1px solid #28a745' 
+                        }}
+                        title={transition.reason}
+                      >
+                        ✓ {transition.status}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {validTransitions.validTransitions.length === 0 && (
+                <div className="text-xs italic p-2 rounded-lg" style={{ backgroundColor: '#f8f9fa', color: '#6c757d' }}>
+                  No manual status changes allowed. Use booking system.
                 </div>
               )}
 
+              {/* Invalid Transitions */}
               {validTransitions.invalidTransitions.length > 0 && (
                 <>
-                  <div className="text-xs font-medium text-red-300 mb-2 mt-3">❌ Blocked Status Changes:</div>
+                  <div className="text-xs font-medium mt-3" style={{ color: '#dc3545' }}>❌ Blocked Changes:</div>
                   <div className="grid grid-cols-2 gap-2">
                     {validTransitions.invalidTransitions.map((transition) => (
                       <div
                         key={transition.status}
-                        className="px-3 py-2 bg-red-900/20 dark:bg-red-900/200/15 text-red-300 dark:text-red-200 rounded-md cursor-not-allowed text-sm font-medium opacity-75 border border-red-700 dark:border-red-500/30"
+                        className="px-3 py-2 rounded-lg text-sm font-medium cursor-not-allowed opacity-60"
+                        style={{ 
+                          backgroundColor: '#f8d7da', 
+                          color: '#721c24', 
+                          border: '1px solid #dc3545' 
+                        }}
                         title={transition.reason}
                       >
                         ✗ {transition.status}
                       </div>
                     ))}
                   </div>
-                  <div className="text-xs text-slate-300 mt-2 p-2 bg-surface-tertiary rounded border border-border">
-                    💡 <strong>Why blocked?</strong> Hover over buttons to see reason. Use booking/check-in/checkout processes instead.
+                  
+                  {/* Emergency Override */}
+                  <div className="mt-3 pt-3 border-t" style={{ borderColor: '#dc3545' }}>
+                    <div className="text-xs font-medium mb-2" style={{ color: '#dc3545' }}>
+                      🚨 Emergency Override (Admin Only):
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {validTransitions.invalidTransitions.map((transition) => (
+                        <button
+                          key={`force-${transition.status}`}
+                          onClick={() => {
+                            if (window.confirm(`⚠️ EMERGENCY OVERRIDE\n\nForce change to ${transition.status}?\n\nThis will bypass all business rules and be logged.\n\nContinue?`)) {
+                              handleStatusChange(transition.status, true);
+                            }
+                          }}
+                          disabled={updating}
+                          className="px-3 py-2 rounded-lg text-sm font-bold text-white transition-colors disabled:opacity-50"
+                          style={{ backgroundColor: '#dc3545', border: '2px solid #b02a37' }}
+                          title={`Emergency override: Force change to ${transition.status}`}
+                        >
+                          ⚡ Force {transition.status}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="text-xs mt-2 p-2 rounded-lg" style={{ backgroundColor: '#f8d7da', color: '#721c24' }}>
+                      ⚠️ Emergency override bypasses all rules and is permanently logged.
+                    </div>
                   </div>
                 </>
-              )}
-
-              {/* Emergency Override Section */}
-              {validTransitions.invalidTransitions.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-red-600">
-                  <div className="text-xs font-medium text-red-300 mb-2">
-                    🚨 Emergency Override (Admin Only):
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {validTransitions.invalidTransitions.map((transition) => (
-                      <button
-                        key={`force-${transition.status}`}
-                        onClick={() => {
-                          if (window.confirm(`⚠️ EMERGENCY OVERRIDE\n\nForce change to ${transition.status}?\n\nThis will:\n- Bypass all business rules\n- Be logged to audit trail\n- Require Admin privileges\n\nReason: ${transition.reason}\n\nContinue?`)) {
-                            handleStatusChange(transition.status, true);
-                          }
-                        }}
-                        disabled={updating}
-                        className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold border-2 border-red-800 shadow-md"
-                        title={`Emergency override: Force change to ${transition.status} (Admin only)`}
-                      >
-                        ⚡ Force {transition.status}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="text-xs text-red-300 dark:text-red-200 mt-2 p-2 bg-red-900/20 dark:bg-red-900/200/15 rounded border border-red-600 dark:border-red-500/30">
-                    ⚠️ <strong>Warning:</strong> Emergency override bypasses all business rules and is permanently logged to audit trail. Only use in genuine emergencies.
-                  </div>
-                </div>
               )}
             </div>
           ) : (
             <div className="text-center py-4">
-              <div className="text-sm text-slate-400 mb-2">
-                Loading smart validation...
-              </div>
-              <div className="text-xs text-slate-400">
-                Please wait while we check business rules
-              </div>
+              <div className="text-sm mb-2" style={{ color: '#6c757d' }}>Loading validation...</div>
             </div>
           )}
         </div>
       ) : (
-        <div className="text-center py-4 border-2 border-dashed border-border dark:border-slate-600 rounded-lg">
-          <div className="text-sm text-slate-300 mb-2 font-medium">
-            Click the edit icon above to change room status
+        <div className="text-center py-4 border-2 border-dashed rounded-lg" style={{ borderColor: '#dee2e6' }}>
+          <div className="text-sm font-medium mb-1" style={{ color: '#6c757d' }}>
+            Click edit to change status
           </div>
-          <div className="text-xs text-slate-400 text-center px-2">
-            Smart validation ensures proper business rules.<br />
-            <span className="text-green-300">Green = allowed</span>, <span className="text-red-300">Red = blocked</span> (use booking system).
+          <div className="text-xs" style={{ color: '#adb5bd' }}>
+            <span style={{ color: '#28a745' }}>Green = allowed</span>, <span style={{ color: '#dc3545' }}>Red = blocked</span>
           </div>
         </div>
       )}

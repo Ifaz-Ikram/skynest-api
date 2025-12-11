@@ -51,21 +51,21 @@ const RegistrationModal = ({ onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 'var(--z-modal)' }}>
-      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-700/50" style={{minWidth: '600px'}}>
-        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0" style={{ zIndex: 'var(--z-sticky)' }}>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[99999]">
+      <div className="backdrop-blur-xl rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" style={{minWidth: '600px', background: 'white', border: '2px solid #e0e0e0'}}>
+        <div className="px-6 py-5 sticky top-0 rounded-t-2xl z-10" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-white">Create Account</h2>
-            <button onClick={onClose} className="text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg p-2 transition-all duration-200">
+            <button onClick={onClose} className="text-white hover:bg-white/20 rounded-lg p-2 transition-all duration-200">
               <X className="w-6 h-6" />
             </button>
           </div>
-          <p className="text-sm text-slate-300 mt-1">Register as a customer to book rooms</p>
+          <p className="text-sm mt-1" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Register as a customer to book rooms</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4" style={{width: '100%'}}>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4" style={{width: '100%', background: '#f8f9fa'}}>
           {error && (
-            <div className="bg-red-900/20 border border-red-700 text-red-300 px-4 py-3 rounded-lg flex items-center">
+            <div className="px-4 py-3 rounded-lg flex items-center" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '2px solid rgba(239, 68, 68, 0.3)', color: '#ef4444' }}>
               <AlertCircle className="w-5 h-5 mr-2" />
               {error}
             </div>
@@ -73,15 +73,18 @@ const RegistrationModal = ({ onClose, onSuccess }) => {
 
           {/* Account Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Account Information</h3>
+            <h3 className="text-lg font-semibold" style={{ color: '#495057' }}>Account Information</h3>
             
             <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2">Username *</label>
+              <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Username *</label>
               <input
                 type="text"
                 value={formData.username}
                 onChange={(e) => setFormData({...formData, username: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none"
+                className="w-full px-4 py-3 border-2 rounded-xl transition-all duration-200 outline-none"
+                style={{ borderColor: '#dee2e6', background: 'white', color: '#495057' }}
+                onFocus={(e) => { e.target.style.borderColor = '#1a237e'; e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)'; }}
+                onBlur={(e) => { e.target.style.borderColor = '#dee2e6'; e.target.style.boxShadow = 'none'; }}
                 placeholder="Choose a username"
                 required
               />
@@ -89,23 +92,29 @@ const RegistrationModal = ({ onClose, onSuccess }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-300 mb-2">Password *</label>
+                <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Password *</label>
                 <input
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
-                  className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none"
+                  className="w-full px-4 py-3 border-2 rounded-xl transition-all duration-200 outline-none"
+                  style={{ borderColor: '#dee2e6', background: 'white', color: '#495057' }}
+                  onFocus={(e) => { e.target.style.borderColor = '#1a237e'; e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#dee2e6'; e.target.style.boxShadow = 'none'; }}
                   placeholder="At least 6 characters"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-300 mb-2">Confirm Password *</label>
+                <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Confirm Password *</label>
                 <input
                   type="password"
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-                  className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none"
+                  className="w-full px-4 py-3 border-2 rounded-xl transition-all duration-200 outline-none"
+                  style={{ borderColor: '#dee2e6', background: 'white', color: '#495057' }}
+                  onFocus={(e) => { e.target.style.borderColor = '#1a237e'; e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#dee2e6'; e.target.style.boxShadow = 'none'; }}
                   placeholder="Re-enter password"
                   required
                 />
@@ -114,16 +123,19 @@ const RegistrationModal = ({ onClose, onSuccess }) => {
           </div>
 
           {/* Personal Information */}
-          <div className="space-y-4 pt-4 border-t border-slate-700/50">
-            <h3 className="text-lg font-semibold text-white">Personal Information</h3>
+          <div className="space-y-4 pt-4" style={{ borderTop: '1px solid #e0e0e0' }}>
+            <h3 className="text-lg font-semibold" style={{ color: '#495057' }}>Personal Information</h3>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2">Full Name *</label>
+              <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Full Name *</label>
               <input
                 type="text"
                 value={formData.full_name}
                 onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none"
+                className="w-full px-4 py-3 border-2 rounded-xl transition-all duration-200 outline-none"
+                style={{ borderColor: '#dee2e6', background: 'white', color: '#495057' }}
+                onFocus={(e) => { e.target.style.borderColor = '#1a237e'; e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)'; }}
+                onBlur={(e) => { e.target.style.borderColor = '#dee2e6'; e.target.style.boxShadow = 'none'; }}
                 placeholder="John Doe"
                 required
               />
@@ -131,23 +143,29 @@ const RegistrationModal = ({ onClose, onSuccess }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-300 mb-2">Email *</label>
+                <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Email *</label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none"
+                  className="w-full px-4 py-3 border-2 rounded-xl transition-all duration-200 outline-none"
+                  style={{ borderColor: '#dee2e6', background: 'white', color: '#495057' }}
+                  onFocus={(e) => { e.target.style.borderColor = '#1a237e'; e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#dee2e6'; e.target.style.boxShadow = 'none'; }}
                   placeholder="john@example.com"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-300 mb-2">Phone *</label>
+                <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Phone *</label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none"
+                  className="w-full px-4 py-3 border-2 rounded-xl transition-all duration-200 outline-none"
+                  style={{ borderColor: '#dee2e6', background: 'white', color: '#495057' }}
+                  onFocus={(e) => { e.target.style.borderColor = '#1a237e'; e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#dee2e6'; e.target.style.boxShadow = 'none'; }}
                   placeholder="+1 234 567 8900"
                   required
                 />
@@ -155,11 +173,14 @@ const RegistrationModal = ({ onClose, onSuccess }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2">Address</label>
+              <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Address</label>
               <textarea
                 value={formData.address}
                 onChange={(e) => setFormData({...formData, address: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none resize-vertical"
+                className="w-full px-4 py-3 border-2 rounded-xl transition-all duration-200 outline-none resize-vertical"
+                style={{ borderColor: '#dee2e6', background: 'white', color: '#495057' }}
+                onFocus={(e) => { e.target.style.borderColor = '#1a237e'; e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)'; }}
+                onBlur={(e) => { e.target.style.borderColor = '#dee2e6'; e.target.style.boxShadow = 'none'; }}
                 placeholder="Street address, city, country"
                 rows="2"
               />
@@ -167,12 +188,15 @@ const RegistrationModal = ({ onClose, onSuccess }) => {
           </div>
 
         </form>
-        <div className="px-6 py-5 border-t border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky bottom-0" style={{ zIndex: 'var(--z-sticky)' }}>
-          <div className="flex gap-3">
+        <div className="px-6 py-5 sticky bottom-0 z-10" style={{ borderTop: '2px solid #e0e0e0', background: 'white' }}>
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/60 hover:border-slate-500 hover:text-white transition-all duration-200 flex-1"
+              className="dropdown-option-button px-6 py-3 font-semibold rounded-xl transition-all duration-200 flex-1"
+              style={{ background: 'white', border: '2px solid #1a237e', color: '#1a237e', boxShadow: '0 2px 8px rgba(26, 35, 126, 0.15)' }}
+              onMouseEnter={(e) => { e.target.style.setProperty('background', 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)', 'important'); e.target.style.setProperty('color', 'white', 'important'); e.target.style.setProperty('box-shadow', '0 4px 12px rgba(26, 35, 126, 0.3)', 'important'); }}
+              onMouseLeave={(e) => { e.target.style.setProperty('background', 'white', 'important'); e.target.style.setProperty('color', '#1a237e', 'important'); e.target.style.setProperty('box-shadow', '0 2px 8px rgba(26, 35, 126, 0.15)', 'important'); }}
             >
               Cancel
             </button>
@@ -180,7 +204,8 @@ const RegistrationModal = ({ onClose, onSuccess }) => {
               type="submit"
               disabled={loading}
               onClick={handleSubmit}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30 transition-all duration-200 flex-1"
+              className="dropdown-option-button px-6 py-3 font-bold rounded-xl transition-all hover:scale-105 border-0 flex-1"
+              style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)', boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)', color: 'white', opacity: loading ? 0.5 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
             >
               {loading ? 'Creating Account...' : 'Create Account'}
             </button>

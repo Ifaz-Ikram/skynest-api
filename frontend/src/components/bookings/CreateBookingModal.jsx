@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { X } from 'lucide-react';
 import api from '../../utils/api';
 import SearchableDropdown from '../common/SearchableDropdown';
 import { validateBookingForm, hasValidationErrors } from '../../utils/validation';
@@ -368,25 +369,38 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[99999] p-2 sm:p-4">
-      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] flex flex-col border border-slate-700/50" style={{minWidth: '600px'}}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] flex flex-col overflow-hidden" style={{minWidth: '600px', border: '2px solid #e0e0e0'}}>
         {/* Fixed Header */}
-        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg flex-shrink-0 sticky top-0 z-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-white">New Booking</h2>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Availability is checked before confirming, and you can capture guest preferences or alerts below.
-          </p>
+        <div className="px-6 py-5 flex-shrink-0 sticky top-0 z-10 rounded-t-2xl" style={{
+          background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+        }}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-white">New Booking</h2>
+              <p className="text-xs sm:text-sm mt-1" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                Availability is checked before confirming, and you can capture guest preferences or alerts below.
+              </p>
+            </div>
+            <button 
+              onClick={onClose} 
+              className="text-white hover:bg-white/20 p-2 rounded-lg transition-all"
+              type="button"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
         </div>
         
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto" style={{ background: '#f8f9fa' }}>
           <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5" style={{width: '100%'}}>
           {loadingData ? (
-            <div className="text-center py-8 text-slate-400">Loading guests and rooms...</div>
+            <div className="text-center py-8" style={{ color: '#495057' }}>Loading guests and rooms...</div>
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="relative">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Branch</label>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Branch</label>
                   <SearchableDropdown
                     options={branches}
                     value={selectedBranch}
@@ -398,10 +412,12 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                     searchKeys={['branch_name', 'branch_code']}
                     renderOption={(branch) => `${branch.branch_name} (${branch.branch_code})`}
                     required
+                    buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
+                    dropdownClassName="!border-gray-300"
                   />
                 </div>
                 <div className="relative">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Guest</label>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Guest</label>
                   {console.log('Guests array:', guests)}
                   <SearchableDropdown
                     options={guests}
@@ -417,6 +433,8 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                     searchKeys={['full_name', 'email', 'phone']}
                     renderOption={(guest) => `${guest.full_name} - ${guest.email || guest.phone || `ID: ${guest.guest_id}`}`}
                     required
+                    buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
+                    dropdownClassName="!border-gray-300"
                   />
               {idStatus && (
                 <p className={`mt-2 text-xs ${idStatus.has_valid_id_proof ? 'text-emerald-600' : 'text-amber-600'}`}>
@@ -428,7 +446,7 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
 
           {/* Booking Type Section - Single Column */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Booking Type</label>
+            <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Booking Type</label>
             <div className="space-y-2">
               <label className="flex items-center">
                 <input
@@ -443,7 +461,7 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                   }))}
                   className="mr-2"
                 />
-                <span className="text-sm font-medium text-slate-300">Single Booking</span>
+                <span className="text-sm font-medium" style={{ color: '#495057' }}>Single Booking</span>
               </label>
               <label className="flex items-center">
                 <input
@@ -457,19 +475,32 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                   }))}
                   className="mr-2"
                 />
-                <span className="text-sm font-medium text-slate-300">Group Booking</span>
+                <span className="text-sm font-medium" style={{ color: '#495057' }}>Group Booking</span>
               </label>
             </div>
             {formData.is_group_booking && (
               <div className="mt-3">
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>
                   Group Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.group_name}
                   onChange={(e) => setFormData(prev => ({ ...prev, group_name: e.target.value }))}
-                  className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none"
+                  className="w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:outline-none transition-all"
+                  style={{
+                    borderColor: '#dee2e6',
+                    background: 'white',
+                    color: '#495057',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#1a237e';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#dee2e6';
+                    e.target.style.boxShadow = 'none';
+                  }}
                   placeholder="Enter group name"
                   required
                 />
@@ -481,7 +512,7 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
               {!formData.is_group_booking ? (
                 // Individual Booking - Single Room Selection
                 <div className="relative">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Room</label>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Room</label>
                   <SearchableDropdown
                     options={filteredRooms}
                     value={formData.room_id}
@@ -494,13 +525,15 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                     renderOption={(room) => `Room ${room.room_number} - ${room.room_type_name} - Rs. ${room.daily_rate}/night`}
                     disabled={!selectedBranch}
                     required
+                    buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
+                    dropdownClassName="!border-gray-300"
                   />
                 </div>
               ) : (
                 // Group Booking - Room Type + Quantity Selection
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="relative">
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Room Type</label>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Room Type</label>
                     <SearchableDropdown
                       options={roomTypes}
                       value={formData.room_type_id}
@@ -519,17 +552,32 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                       searchKeys={['name', 'description']}
                       renderOption={(roomType) => `${roomType.name} - Rs. ${roomType.daily_rate}/night - Capacity: ${roomType.capacity}`}
                       required
+                      buttonClassName="!px-4 !py-3 !rounded-xl !border-2 !border-gray-300 !bg-white !text-gray-900 focus-visible:!ring-2 focus-visible:!ring-blue-900 focus-visible:!border-blue-900 hover:!border-blue-700"
+                      dropdownClassName="!border-gray-300"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Number of Rooms</label>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Number of Rooms</label>
                     <input
                       type="number"
                       min="1"
                       max="20"
                       value={formData.room_quantity}
                       onChange={(e) => setFormData(prev => ({ ...prev, room_quantity: parseInt(e.target.value) || 1 }))}
-                      className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none"
+                      className="w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:outline-none transition-all"
+                      style={{
+                        borderColor: '#dee2e6',
+                        background: 'white',
+                        color: '#495057',
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = '#1a237e';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = '#dee2e6';
+                        e.target.style.boxShadow = 'none';
+                      }}
                       required
                     />
                   </div>
@@ -537,7 +585,7 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
               )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Check In Date</label>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Check In Date</label>
                   <input
                     type="date"
                     value={formData.check_in_date}
@@ -545,12 +593,25 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                       setFormData({ ...formData, check_in_date: e.target.value });
                       resetAvailability();
                     }}
-                    className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none"
+                    className="w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:outline-none transition-all"
+                    style={{
+                      borderColor: '#dee2e6',
+                      background: 'white',
+                      color: '#495057',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#1a237e';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#dee2e6';
+                      e.target.style.boxShadow = 'none';
+                    }}
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Check Out Date</label>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>Check Out Date</label>
                   <input
                     type="date"
                     value={formData.check_out_date}
@@ -558,17 +619,30 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                       setFormData({ ...formData, check_out_date: e.target.value });
                       resetAvailability();
                     }}
-                    className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none"
+                    className="w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:outline-none transition-all"
+                    style={{
+                      borderColor: '#dee2e6',
+                      background: 'white',
+                      color: '#495057',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#1a237e';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#dee2e6';
+                      e.target.style.boxShadow = 'none';
+                    }}
                     required
                   />
                 </div>
               </div>
 
-              <div className="rounded-lg border border-border p-4 bg-surface-tertiary">
+              <div className="rounded-xl p-4" style={{ border: '2px solid #e0e0e0', background: 'white' }}>
                 <div className="flex flex-wrap items-center gap-3">
                   <div>
-                    <p className="text-sm font-medium text-white">Availability</p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-sm font-semibold" style={{ color: '#1a237e' }}>Availability</p>
+                    <p className="text-xs" style={{ color: '#6c757d' }}>
                       Check real-time conflicts before confirming the booking.
                     </p>
                   </div>
@@ -576,7 +650,13 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                     type="button"
                     onClick={checkAvailability}
                     disabled={availabilityLoading}
-                    className="btn-secondary text-sm"
+                    className="px-4 py-2 rounded-xl font-bold text-white transition-all hover:scale-105 border-0 text-sm"
+                    style={{
+                      background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                      boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+                      opacity: availabilityLoading ? 0.5 : 1,
+                      cursor: availabilityLoading ? 'not-allowed' : 'pointer',
+                    }}
                   >
                     {availabilityLoading ? 'Checking...' : 'Check availability'}
                   </button>
@@ -588,8 +668,8 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                   <div
                     className={`mt-3 rounded-md px-3 py-2 text-sm ${
                       availability.available
-                        ? 'bg-emerald-900/20 text-emerald-300 border border-emerald-700'
-                        : 'bg-rose-900/20 text-rose-700 border border-rose-200'
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                        : 'bg-rose-100 text-rose-800 border border-rose-300'
                     }`}
                   >
                     {availability.available
@@ -603,7 +683,7 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                 )}
                 {!!suggestions.length && (
                   <div className="mt-3">
-                    <p className="text-sm font-medium text-white mb-2">
+                    <p className="text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>
                       {formData.is_group_booking ? 'Suggested room types' : 'Suggested rooms'}
                     </p>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
@@ -625,15 +705,24 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                               setFormData((prev) => ({ ...prev, room_id: String(room.room_id) }));
                             }
                           }}
-                          className="w-full text-left rounded-md border border-border bg-slate-800 px-3 py-2 hover:border-luxury-gold transition"
+                          className="w-full text-left rounded-xl px-3 py-2 transition"
+                          style={{ border: '2px solid #e0e0e0', background: 'white' }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = '#1a237e';
+                            e.currentTarget.style.background = '#f8f9fa';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = '#e0e0e0';
+                            e.currentTarget.style.background = 'white';
+                          }}
                         >
-                          <p className="font-medium text-white">
+                          <p className="font-semibold" style={{ color: '#1a237e' }}>
                             {formData.is_group_booking 
                               ? `${room.room_type_name || room.name} (${room.available_count || 'Available'} rooms)`
                               : `Room ${room.room_number}  ${room.type_name || room.room_type_name}`
                             }
                           </p>
-                          <p className="text-xs text-slate-300">
+                          <p className="text-xs" style={{ color: '#6c757d' }}>
                             {formData.is_group_booking
                               ? `Rs. ${room.daily_rate || room.base_rate}/night - Capacity: ${room.capacity}`
                               : `Capacity ${room.capacity} | Rate Rs. ${room.daily_rate}`
@@ -646,11 +735,11 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                 )}
                 {showAlternatives && !suggestions.length && (
                   <div className="mt-3 space-y-2">
-                    <p className="text-sm font-medium text-white">
+                    <p className="text-sm font-semibold" style={{ color: '#1a237e' }}>
                       Free rooms for the selected stay
                     </p>
                     {freeRooms.length === 0 && (
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs" style={{ color: '#6c757d' }}>
                         No rooms found for these dates.
                       </p>
                     )}
@@ -663,12 +752,21 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                             handleRoomChange(room.room_id);
                             setFormData((prev) => ({ ...prev, room_id: String(room.room_id) }));
                           }}
-                          className="w-full text-left rounded-md border border-border bg-slate-800 px-3 py-2 hover:border-luxury-gold transition"
+                          className="w-full text-left rounded-xl px-3 py-2 transition"
+                          style={{ border: '2px solid #e0e0e0', background: 'white' }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = '#1a237e';
+                            e.currentTarget.style.background = '#f8f9fa';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = '#e0e0e0';
+                            e.currentTarget.style.background = 'white';
+                          }}
                         >
-                          <p className="font-medium text-white">
+                          <p className="font-semibold" style={{ color: '#1a237e' }}>
                             Room {room.room_number}  {room.type_name || room.room_type_name}
                           </p>
-                          <p className="text-xs text-slate-300">
+                          <p className="text-xs" style={{ color: '#6c757d' }}>
                             Capacity {room.capacity} | Rate Rs. {room.daily_rate}
                           </p>
                         </button>
@@ -680,7 +778,7 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>
                     {formData.is_group_booking ? 'Rate per Room (Rs.)' : 'Daily Rate (Rs.)'}
                   </label>
                   <input
@@ -688,11 +786,24 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                     step="0.01"
                     value={formData.booked_rate}
                     onChange={(e) => setFormData({ ...formData, booked_rate: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none"
+                    className="w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:outline-none transition-all"
+                    style={{
+                      borderColor: '#dee2e6',
+                      background: 'white',
+                      color: '#495057',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#1a237e';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#dee2e6';
+                      e.target.style.boxShadow = 'none';
+                    }}
                     placeholder={formData.is_group_booking ? "Auto-filled from room type" : "Auto-filled from room"}
                     required
                   />
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs mt-1" style={{ color: '#6c757d' }}>
                     {formData.is_group_booking 
                       ? `Rate per night for each room (${formData.room_quantity} rooms × Rs. ${formData.booked_rate || 0} = Rs. ${(parseFloat(formData.booked_rate || 0) * parseInt(formData.room_quantity || 1)).toFixed(2)}/night total)`
                       : "Rate per night for this booking."
@@ -700,7 +811,7 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>
                     {formData.is_group_booking ? 'Total Guests' : 'Number of Guests'}
                   </label>
                   <input
@@ -708,11 +819,24 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                     min="1"
                     value={formData.number_of_guests}
                     onChange={(e) => setFormData({ ...formData, number_of_guests: parseInt(e.target.value) || 1 })}
-                    className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none"
+                    className="w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:outline-none transition-all"
+                    style={{
+                      borderColor: '#dee2e6',
+                      background: 'white',
+                      color: '#495057',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#1a237e';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#dee2e6';
+                      e.target.style.boxShadow = 'none';
+                    }}
                     required
                   />
                   {formData.is_group_booking && (
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-xs mt-1" style={{ color: '#6c757d' }}>
                       Total number of guests across all rooms in this group booking.
                     </p>
                   )}
@@ -721,38 +845,41 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
 
               {/* Group Booking Summary */}
               {formData.is_group_booking && (
-                <div className="mt-4 p-4 bg-gradient-to-r from-luxury-gold/20 to-yellow-600/20 border-2 border-luxury-gold/30 rounded-xl shadow-lg">
-                  <h3 className="text-lg font-bold text-luxury-gold mb-3 flex items-center justify-center gap-2">
-                    <span className="w-2 h-2 bg-luxury-gold rounded-full"></span>
+                <div className="mt-4 p-4 rounded-xl shadow-lg" style={{ 
+                  background: 'linear-gradient(135deg, rgba(26, 35, 126, 0.05) 0%, rgba(13, 71, 161, 0.05) 100%)',
+                  border: '2px solid #1a237e'
+                }}>
+                  <h3 className="text-lg font-bold mb-3 flex items-center justify-center gap-2" style={{ color: '#1a237e' }}>
+                    <span className="w-2 h-2 rounded-full" style={{ background: '#1a237e' }}></span>
                     Group Booking Summary
                   </h3>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="font-semibold text-luxury-gold">Group Name:</span>
-                      <span className="ml-2 text-white font-medium">{formData.group_name || 'Not specified'}</span>
+                      <span className="font-semibold" style={{ color: '#1a237e' }}>Group Name:</span>
+                      <span className="ml-2 font-medium" style={{ color: '#495057' }}>{formData.group_name || 'Not specified'}</span>
                     </div>
                     <div>
-                      <span className="font-semibold text-luxury-gold">Room Type:</span>
-                      <span className="ml-2 text-white font-medium">{roomTypes.find(rt => rt.room_type_id == formData.room_type_id)?.name || 'Not selected'}</span>
+                      <span className="font-semibold" style={{ color: '#1a237e' }}>Room Type:</span>
+                      <span className="ml-2 font-medium" style={{ color: '#495057' }}>{roomTypes.find(rt => rt.room_type_id == formData.room_type_id)?.name || 'Not selected'}</span>
                     </div>
                     <div>
-                      <span className="font-semibold text-luxury-gold">Number of Rooms:</span>
-                      <span className="ml-2 text-white font-medium">{formData.room_quantity}</span>
+                      <span className="font-semibold" style={{ color: '#1a237e' }}>Number of Rooms:</span>
+                      <span className="ml-2 font-medium" style={{ color: '#495057' }}>{formData.room_quantity}</span>
                     </div>
                     <div>
-                      <span className="font-semibold text-luxury-gold">Total Guests:</span>
-                      <span className="ml-2 text-white font-medium">{formData.number_of_guests}</span>
+                      <span className="font-semibold" style={{ color: '#1a237e' }}>Total Guests:</span>
+                      <span className="ml-2 font-medium" style={{ color: '#495057' }}>{formData.number_of_guests}</span>
                     </div>
                     <div className="col-span-2">
-                      <span className="font-semibold text-luxury-gold">Total Booking Amount:</span>
-                      <span className="ml-2 text-white font-bold text-xl">Rs {calculateGroupTotalAmount().toFixed(2)}</span>
+                      <span className="font-semibold" style={{ color: '#1a237e' }}>Total Booking Amount:</span>
+                      <span className="ml-2 font-bold text-xl" style={{ color: '#1a237e' }}>Rs {calculateGroupTotalAmount().toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-semibold mb-2" style={{ color: '#495057' }}>
                   Advance Payment (Rs.) *
                 </label>
                 <input
@@ -763,11 +890,24 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, advance_payment: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 rounded-lg text-white placeholder-slate-400 focus:bg-slate-700/60 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 hover:border-slate-500 transition-all duration-200 outline-none"
+                  className="w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:outline-none transition-all"
+                  style={{
+                    borderColor: '#dee2e6',
+                    background: 'white',
+                    color: '#495057',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#1a237e';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#dee2e6';
+                    e.target.style.boxShadow = 'none';
+                  }}
                   placeholder={`Minimum Rs ${formData.is_group_booking ? calculateGroupAdvancePayment().toFixed(2) : calculateAdvancePayment().toFixed(2)} (10% of total)`}
                   required
                 />
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs mt-1" style={{ color: '#6c757d' }}>
                   Minimum Rs {formData.is_group_booking ? calculateGroupAdvancePayment().toFixed(2) : calculateAdvancePayment().toFixed(2)} (10% of total stay amount) required to confirm the booking.
                   {formData.is_group_booking && (
                     <span className="block mt-1">
@@ -782,12 +922,31 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
         </div>
         
         {/* Fixed Footer */}
-        <div className="px-6 py-5 border-t border-slate-700/50 bg-slate-800/60 backdrop-blur-lg flex-shrink-0 sticky bottom-0 z-10">
+        <div className="px-6 py-5 flex-shrink-0 sticky bottom-0 z-10 rounded-b-2xl" style={{ 
+          background: 'white',
+          borderTop: '2px solid #e0e0e0'
+        }}>
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 bg-slate-700/40 backdrop-blur-md border-2 border-slate-600/70 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/60 hover:border-slate-500 hover:text-white transition-all duration-200 flex-1"
+              className="dropdown-option-button px-6 py-3 font-semibold rounded-xl transition-all duration-200 flex-1"
+              style={{
+                background: 'white',
+                border: '2px solid #1a237e',
+                color: '#1a237e',
+                boxShadow: '0 2px 8px rgba(26, 35, 126, 0.15)',
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.setProperty('background', 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)', 'important');
+                e.target.style.setProperty('color', 'white', 'important');
+                e.target.style.setProperty('box-shadow', '0 4px 12px rgba(26, 35, 126, 0.3)', 'important');
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.setProperty('background', 'white', 'important');
+                e.target.style.setProperty('color', '#1a237e', 'important');
+                e.target.style.setProperty('box-shadow', '0 2px 8px rgba(26, 35, 126, 0.15)', 'important');
+              }}
             >
               Cancel
             </button>
@@ -795,7 +954,15 @@ export const CreateBookingModal = ({ onClose, onSuccess }) => {
               type="submit"
               disabled={loading || loadingData}
               onClick={handleSubmit}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30 transition-all duration-200 flex-1"
+              className="dropdown-option-button px-6 py-3 font-bold rounded-xl transition-all flex-1"
+              style={{
+                background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                color: 'white',
+                border: '2px solid transparent',
+                boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+                opacity: (loading || loadingData) ? 0.5 : 1,
+                cursor: (loading || loadingData) ? 'not-allowed' : 'pointer',
+              }}
             >
               {loading ? 'Creating...' : 'Create Booking'}
             </button>

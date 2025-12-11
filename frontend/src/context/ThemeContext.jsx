@@ -8,6 +8,10 @@ const ThemeContext = createContext({
 });
 
 const getPreferredTheme = () => {
+  // FORCE LIGHT MODE for SkyNest dashboard theme
+  return 'light';
+  
+  /* Original logic - disabled to force light mode
   if (typeof window === 'undefined') {
     return 'light';
   }
@@ -19,6 +23,7 @@ const getPreferredTheme = () => {
 
   const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
   return prefersDark ? 'dark' : 'light';
+  */
 };
 
 export const ThemeProvider = ({ children }) => {

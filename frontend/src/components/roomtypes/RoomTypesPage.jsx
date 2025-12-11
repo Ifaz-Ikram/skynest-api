@@ -11,207 +11,121 @@ const RoomTypesPage = () => {
   const [showQuoteModal, setShowQuoteModal] = useState(false);
   const [selectedRoomType, setSelectedRoomType] = useState(null);
 
-  useEffect(() => {
-    loadRoomTypes();
-  }, []);
+  useEffect(() => { loadRoomTypes(); }, []);
 
   const loadRoomTypes = async () => {
     try {
       const data = await api.getRoomTypes();
-      console.log('Room types data:', data);
       setRoomTypes(Array.isArray(data) ? data : data.roomTypes || []);
-    } catch (error) {
-      console.error('Failed to load room types:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = (roomType) => {
-    setSelectedRoomType(roomType);
-    setShowEditModal(true);
-  };
-
-  const handleQuote = (roomType) => {
-    setSelectedRoomType(roomType);
-    setShowQuoteModal(true);
+    } catch (error) { console.error('Failed to load room types:', error); }
+    finally { setLoading(false); }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this room type? This action cannot be undone.')) {
-      try {
-        await api.deleteRoomType(id);
-        alert('Room type deleted successfully!');
-        loadRoomTypes(); // Refresh the list
-      } catch (error) {
-        alert('Failed to delete room type: ' + error.message);
-      }
+    if (window.confirm('Are you sure you want to delete this room type?')) {
+      try { await api.deleteRoomType(id); loadRoomTypes(); }
+      catch (error) { alert('Failed to delete: ' + error.message); }
     }
   };
 
-  // Calculate stats
   const totalRoomTypes = roomTypes.length;
-  const avgRate = roomTypes.length > 0 
-    ? roomTypes.reduce((sum, rt) => sum + parseFloat(rt.base_rate || 0), 0) / roomTypes.length 
-    : 0;
+  const avgRate = roomTypes.length > 0 ? roomTypes.reduce((sum, rt) => sum + parseFloat(rt.base_rate || 0), 0) / roomTypes.length : 0;
   const totalCapacity = roomTypes.reduce((sum, rt) => sum + parseInt(rt.max_occupancy || 0), 0);
 
-  if (loading) {
-    return <LoadingSpinner size="xl" message="Loading room types..." />;
-  }
+  if (loading) return <LoadingSpinner size="xl" message="Loading room types..." />;
 
   return (
-    <div className="min-h-screen bg-surface-primary dark:bg-slate-950 p-6 transition-colors">
+    <div className="min-h-screen p-6" style={{ backgroundColor: '#f8f9fa' }}>
       <div className="max-w-7xl mx-auto space-y-6">
         <LuxuryPageHeader
           title="Room Types"
           description="Manage room type configurations"
           icon={Bed}
           stats={[
-            { label: 'Total Types', value: totalRoomTypes, trend: 'Active configurations' },
-            { label: 'Average Rate', value: `Rs ${avgRate.toFixed(2)}`, trend: 'Per night' },
-            { label: 'Total Capacity', value: totalCapacity, trend: 'Max guests' },
+            { label: 'Total Types', value: totalRoomTypes },
+            { label: 'Average Rate', value: `Rs ${avgRate.toFixed(2)}` },
+            { label: 'Total Capacity', value: totalCapacity },
           ]}
-          actions={[{
-            label: 'Add Room Type',
-            icon: Plus,
-            onClick: () => setShowCreateModal(true),
-            variant: 'secondary'
-          }]}
+          actions={[{ label: 'Add Room Type', icon: Plus, onClick: () => setShowCreateModal(true) }]}
         />
 
-        <div className="bg-surface-secondary dark:bg-slate-800 rounded-xl shadow-md border border-border dark:border-slate-700 overflow-hidden">
-        {roomTypes.length === 0 ? (
-          <div className="text-center py-12">
-            <Bed className="w-16 h-16 text-slate-500 mx-auto mb-4" />
-            <p className="text-slate-300">No room types found</p>
-            <button onClick={() => setShowCreateModal(true)} className="mt-4 btn-primary">
-              Add First Room Type
-            </button>
-          </div>
-        ) : (
-          <div className="overflow-x-auto border border-border dark:border-slate-700">
-            <table className="min-w-full divide-y divide-border dark:divide-slate-700">
-              <thead className="bg-surface-tertiary dark:bg-slate-800/60">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    Room Type
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    Base Rate
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    Max Occupancy
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    Amenities
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-surface-secondary dark:bg-slate-800 divide-y divide-border dark:divide-slate-700">
-                {roomTypes.map((type) => (
-                  <tr key={type.room_type_id} className="hover:bg-surface-tertiary dark:hover:bg-slate-700/40 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-luxury-gold/10 rounded-lg">
-                          <Bed className="w-5 h-5 text-luxury-gold" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-white">{type.name}</div>
-                          {type.amenities && (
-                            <div className="text-sm text-slate-400">{type.amenities}</div>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-luxury-gold">
-                        Rs {parseFloat(type.daily_rate || 0).toFixed(2)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2 text-sm text-white">
-                        <Users className="w-4 h-4 text-slate-400" />
-                        {type.capacity || 'N/A'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-slate-300 max-w-xs truncate">
-                        {type.amenities || 'No amenities listed'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleQuote(type)}
-                        className="text-slate-300 hover:text-white mr-4"
-                        title="Get Rate Quote"
-                      >
-                        <Calculator className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => handleEdit(type)}
-                        className="text-blue-600 hover:text-blue-900 mr-4"
-                      >
-                        <Edit className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(type.room_type_id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    </td>
+        {/* Room Types Table */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          {roomTypes.length === 0 ? (
+            <div className="text-center py-16">
+              <Bed className="w-20 h-20 mx-auto mb-4" style={{ color: '#dee2e6' }} />
+              <p style={{ color: '#6c757d' }}>No room types found</p>
+              <button onClick={() => setShowCreateModal(true)} className="mt-4 px-6 py-3 rounded-xl font-semibold text-white" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
+                Add First Room Type
+              </button>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead>
+                  <tr style={{ backgroundColor: '#e3f2fd' }}>
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase" style={{ color: '#1a237e' }}>Room Type</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase" style={{ color: '#1a237e' }}>Base Rate</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase" style={{ color: '#1a237e' }}>Max Occupancy</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase" style={{ color: '#1a237e' }}>Amenities</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold uppercase" style={{ color: '#1a237e' }}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                </thead>
+                <tbody className="divide-y" style={{ borderColor: '#e9ecef' }}>
+                  {roomTypes.map((type) => (
+                    <tr key={type.room_type_id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg" style={{ backgroundColor: '#e3f2fd' }}>
+                            <Bed className="w-5 h-5" style={{ color: '#0d47a1' }} />
+                          </div>
+                          <div>
+                            <div className="font-medium" style={{ color: '#1a237e' }}>{type.name}</div>
+                            {type.amenities && <div className="text-sm" style={{ color: '#6c757d' }}>{type.amenities}</div>}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-lg font-bold" style={{ color: '#1a237e' }}>Rs {parseFloat(type.daily_rate || 0).toFixed(2)}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2" style={{ color: '#6c757d' }}>
+                          <Users className="w-4 h-4" />
+                          {type.capacity || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm max-w-xs truncate" style={{ color: '#6c757d' }}>{type.amenities || 'No amenities listed'}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <div className="flex justify-end gap-2">
+                          <button onClick={() => { setSelectedRoomType(type); setShowQuoteModal(true); }} className="p-2 rounded-lg transition-colors" style={{ backgroundColor: '#e9ecef', color: '#495057' }} title="Get Rate Quote">
+                            <Calculator className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => { setSelectedRoomType(type); setShowEditModal(true); }} className="p-2 rounded-lg transition-colors" style={{ backgroundColor: '#e3f2fd', color: '#0d47a1' }}>
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete(type.room_type_id)} className="p-2 rounded-lg transition-colors" style={{ backgroundColor: '#f8d7da', color: '#dc3545' }}>
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
 
-      {showCreateModal && (
-        <RoomTypeModal
-          onClose={() => setShowCreateModal(false)}
-          onSuccess={() => {
-            setShowCreateModal(false);
-            loadRoomTypes();
-          }}
-        />
-      )}
-
-      {showEditModal && selectedRoomType && (
-        <RoomTypeModal
-          roomType={selectedRoomType}
-          onClose={() => {
-            setShowEditModal(false);
-            setSelectedRoomType(null);
-          }}
-          onSuccess={() => {
-            setShowEditModal(false);
-            setSelectedRoomType(null);
-            loadRoomTypes();
-          }}
-        />
-      )}
-
-      {showQuoteModal && selectedRoomType && (
-        <RateQuoteModal
-          roomType={selectedRoomType}
-          onClose={() => {
-            setShowQuoteModal(false);
-            setSelectedRoomType(null);
-          }}
-        />
-      )}
+        {showCreateModal && <RoomTypeModal onClose={() => setShowCreateModal(false)} onSuccess={() => { setShowCreateModal(false); loadRoomTypes(); }} />}
+        {showEditModal && selectedRoomType && <RoomTypeModal roomType={selectedRoomType} onClose={() => { setShowEditModal(false); setSelectedRoomType(null); }} onSuccess={() => { setShowEditModal(false); setSelectedRoomType(null); loadRoomTypes(); }} />}
+        {showQuoteModal && selectedRoomType && <RateQuoteModal roomType={selectedRoomType} onClose={() => { setShowQuoteModal(false); setSelectedRoomType(null); }} />}
       </div>
     </div>
   );
 };
 
-// Room Type Modal (Create/Edit)
 const RoomTypeModal = ({ roomType, onClose, onSuccess }) => {
   const isEdit = !!roomType;
   const [formData, setFormData] = useState({
@@ -222,7 +136,54 @@ const RoomTypeModal = ({ roomType, onClose, onSuccess }) => {
   });
   const [loading, setLoading] = useState(false);
 
-// Rate Quote Modal
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (isEdit) {
+        await api.request(`/api/admin/room-types/${roomType.room_type_id}`, { method: 'PUT', body: JSON.stringify(formData) });
+      } else {
+        await api.createRoomType({ room_type_name: formData.name, base_rate: Number(formData.daily_rate), capacity: Number(formData.capacity), description: formData.amenities || null });
+      }
+      onSuccess();
+    } catch (error) { alert('Failed: ' + error.message); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+        <div className="px-6 py-5 border-b flex justify-between items-center" style={{ backgroundColor: '#e3f2fd', borderColor: '#dee2e6' }}>
+          <h2 className="text-2xl font-bold" style={{ color: '#1a237e' }}>{isEdit ? 'Edit Room Type' : 'Add New Room Type'}</h2>
+          <button onClick={onClose} className="p-2 rounded-lg" style={{ backgroundColor: 'white', color: '#6c757d' }}><X className="w-5 h-5" /></button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>Type Name *</label>
+            <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2" style={{ borderColor: '#e9ecef', color: '#333' }} required />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>Base Rate (per night) *</label>
+            <input type="number" step="0.01" value={formData.daily_rate} onChange={(e) => setFormData({ ...formData, daily_rate: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2" style={{ borderColor: '#e9ecef', color: '#333' }} required />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>Max Occupancy *</label>
+            <input type="number" value={formData.capacity} onChange={(e) => setFormData({ ...formData, capacity: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2" style={{ borderColor: '#e9ecef', color: '#333' }} required />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>Amenities</label>
+            <textarea value={formData.amenities} onChange={(e) => setFormData({ ...formData, amenities: e.target.value })} rows="3" className="w-full px-4 py-3 rounded-xl border-2" style={{ borderColor: '#e9ecef', color: '#333' }} placeholder="e.g., WiFi, TV, Mini Bar" />
+          </div>
+          <div className="flex gap-3 pt-4 border-t" style={{ borderColor: '#e9ecef' }}>
+            <button type="button" onClick={onClose} className="flex-1 px-5 py-3 rounded-xl font-medium" style={{ backgroundColor: '#e9ecef', color: '#495057' }}>Cancel</button>
+            <button type="submit" disabled={loading} className="flex-1 px-5 py-3 rounded-xl font-semibold text-white" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>{loading ? 'Saving...' : (isEdit ? 'Update' : 'Create')}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const RateQuoteModal = ({ roomType, onClose }) => {
   const [form, setForm] = useState({ check_in: '', check_out: '', promo: '' });
   const [quote, setQuote] = useState(null);
@@ -235,167 +196,52 @@ const RateQuoteModal = ({ roomType, onClose }) => {
     try {
       const data = await api.getRateQuote({ room_type_id: roomType.room_type_id, ...form });
       setQuote(data);
-    } catch (e) {
-      alert('Failed to get quote: ' + e.message);
-    } finally { setLoading(false); }
+    } catch (e) { alert('Failed to get quote: ' + e.message); }
+    finally { setLoading(false); }
   };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-lg w-full border border-slate-700/50" style={{minWidth: '600px'}}>
-        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 z-10 flex justify-between items-center">
-          <h2 className="text-2xl font-display font-bold text-white">Rate Quote · {roomType.name}</h2>
-          <button 
-            onClick={onClose} 
-            className="text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg p-2 transition-all duration-200"
-          >
-            <X className="w-6 h-6" />
-          </button>
+      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
+        <div className="px-6 py-5 border-b flex justify-between items-center" style={{ backgroundColor: '#e3f2fd', borderColor: '#dee2e6' }}>
+          <h2 className="text-xl font-bold" style={{ color: '#1a237e' }}>Rate Quote · {roomType.name}</h2>
+          <button onClick={onClose} className="p-2 rounded-lg" style={{ backgroundColor: 'white', color: '#6c757d' }}><X className="w-5 h-5" /></button>
         </div>
         <div className="p-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Check In</label>
-              <input type="date" className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400" value={form.check_in} onChange={(e)=>setForm({...form, check_in:e.target.value})} />
+              <label className="block text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>Check In</label>
+              <input type="date" value={form.check_in} onChange={(e) => setForm({ ...form, check_in: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2" style={{ borderColor: '#e9ecef', color: '#333' }} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Check Out</label>
-              <input type="date" className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400" value={form.check_out} onChange={(e)=>setForm({...form, check_out:e.target.value})} />
+              <label className="block text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>Check Out</label>
+              <input type="date" value={form.check_out} onChange={(e) => setForm({ ...form, check_out: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2" style={{ borderColor: '#e9ecef', color: '#333' }} />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Promo Code</label>
-            <input type="text" className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400" placeholder="Optional" value={form.promo} onChange={(e)=>setForm({...form, promo:e.target.value})} />
+            <label className="block text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>Promo Code</label>
+            <input type="text" value={form.promo} onChange={(e) => setForm({ ...form, promo: e.target.value })} placeholder="Optional" className="w-full px-4 py-3 rounded-xl border-2" style={{ borderColor: '#e9ecef', color: '#333' }} />
           </div>
-          <div className="flex items-center gap-3">
-            <button onClick={getQuote} className="btn-primary" disabled={loading || !form.check_in || !form.check_out}>
+          <div className="flex items-center gap-4">
+            <button onClick={getQuote} disabled={loading || !form.check_in || !form.check_out} className="px-6 py-3 rounded-xl font-semibold text-white disabled:opacity-50" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
               {loading ? 'Calculating...' : 'Get Quote'}
             </button>
-            {quote && (
-              <div className="text-sm text-slate-300">
-                {quote.nights} night{quote.nights>1?'s':''} · Total Rs {parseFloat(quote.total).toFixed(2)} (Base Rs {parseFloat(quote.base_rate).toFixed(2)})
-              </div>
-            )}
+            {quote && <div className="text-sm" style={{ color: '#6c757d' }}>{quote.nights} night(s) · Total Rs {parseFloat(quote.total).toFixed(2)}</div>}
           </div>
-          {quote?.nightly?.length ? (
-            <div className="bg-surface-tertiary border border-border rounded-lg p-3">
-              <div className="text-sm font-medium text-white mb-2">Nightly Rates</div>
+          {quote?.nightly?.length > 0 && (
+            <div className="p-4 rounded-xl" style={{ backgroundColor: '#e3f2fd' }}>
+              <div className="text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>Nightly Rates</div>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 {quote.nightly.map(n => (
                   <div key={n.date} className="flex justify-between">
-                    <span className="text-slate-300">{new Date(n.date).toLocaleDateString()}</span>
-                    <span className="text-white">Rs {parseFloat(n.rate).toFixed(2)}</span>
+                    <span style={{ color: '#6c757d' }}>{new Date(n.date).toLocaleDateString()}</span>
+                    <span style={{ color: '#1a237e' }}>Rs {parseFloat(n.rate).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
             </div>
-          ) : null}
+          )}
         </div>
-      </div>
-    </div>
-  );
-};
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      if (isEdit) {
-        await api.request(`/api/admin/room-types/${roomType.room_type_id}`, {
-          method: 'PUT',
-          body: JSON.stringify(formData),
-        });
-        alert('Room type updated successfully!');
-      } else {
-        // Map UI fields to API payload
-        const payload = {
-          room_type_name: formData.name,
-          base_rate: Number(formData.daily_rate),
-          capacity: Number(formData.capacity),
-          description: formData.amenities || null,
-        };
-        await api.createRoomType(payload);
-        alert('Room type created successfully!');
-      }
-      onSuccess();
-    } catch (error) {
-      alert(`Failed to ${isEdit ? 'update' : 'create'} room type: ` + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-slate-700/50" style={{minWidth: '600px'}}>
-        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 z-10 flex justify-between items-center">
-          <h2 className="text-2xl font-display font-bold text-white">
-            {isEdit ? 'Edit Room Type' : 'Add New Room Type'}
-          </h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-300">
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Type Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
-              placeholder="e.g., Deluxe Suite, Standard Room"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Base Rate (per night) <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              value={formData.daily_rate}
-              onChange={(e) => setFormData({...formData, daily_rate: e.target.value})}
-              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
-              placeholder="0.00"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Max Occupancy <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              value={formData.capacity}
-              onChange={(e) => setFormData({...formData, capacity: e.target.value})}
-              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
-              placeholder="Number of guests"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Amenities</label>
-            <textarea
-              value={formData.amenities}
-              onChange={(e) => setFormData({...formData, amenities: e.target.value})}
-              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
-              rows="3"
-              placeholder="e.g., WiFi, TV, Mini Bar, Ocean View"
-            />
-          </div>
-          <div className="flex gap-3 pt-4 border-t border-border">
-            <button type="button" onClick={onClose} className="btn-secondary flex-1">
-              Cancel
-            </button>
-            <button type="submit" disabled={loading} className="btn-primary flex-1">
-              {loading ? (isEdit ? 'Updating...' : 'Creating...') : (isEdit ? 'Update' : 'Create')}
-            </button>
-          </div>
-        </form>
       </div>
     </div>
   );

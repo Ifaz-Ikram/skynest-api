@@ -10,354 +10,105 @@ const BranchesPage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);
 
-  useEffect(() => {
-    loadBranches();
-  }, []);
+  useEffect(() => { loadBranches(); }, []);
 
   const loadBranches = async () => {
     try {
       const data = await api.getBranches();
       setBranches(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error('Failed to load branches:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = (branch) => {
-    setSelectedBranch(branch);
-    setShowEditModal(true);
+    } catch (error) { console.error('Failed:', error); }
+    finally { setLoading(false); }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this branch? This action cannot be undone.')) {
-      try {
-        await api.deleteBranch(id);
-        alert('Branch deleted successfully!');
-        loadBranches(); // Refresh the list
-      } catch (error) {
-        alert('Failed to delete branch: ' + error.message);
-      }
+    if (window.confirm('Delete this branch?')) {
+      try { await api.deleteBranch(id); loadBranches(); }
+      catch (error) { alert('Failed: ' + error.message); }
     }
   };
 
-  // Calculate stats
-  const totalBranches = branches.length;
-  const activeBranches = branches.filter(b => b.is_active !== false).length;
-
-  if (loading) {
-    return <LoadingSpinner size="xl" message="Loading branches..." />;
-  }
+  if (loading) return <LoadingSpinner size="xl" message="Loading branches..." />;
 
   return (
-    <div className="min-h-screen bg-surface-primary dark:bg-slate-950 p-6 transition-colors">
+    <div className="min-h-screen p-6" style={{ backgroundColor: '#f8f9fa' }}>
       <div className="max-w-7xl mx-auto space-y-6">
-        <LuxuryPageHeader
-          title="Branches"
-          description="Manage hotel branch locations"
-          icon={Building2}
-          stats={[
-            { label: 'Total Branches', value: totalBranches, trend: `${activeBranches} active` },
-            { label: 'Locations', value: new Set(branches.map(b => b.city || b.branch_id)).size, trend: 'Cities' },
-            { label: 'Network', value: branches.length > 0 ? 'Multi-branch' : 'Single', trend: 'Hotel chain' },
-          ]}
-          actions={[{
-            label: 'Add Branch',
-            icon: Plus,
-            onClick: () => setShowCreateModal(true),
-            variant: 'secondary'
-          }]}
+        <LuxuryPageHeader title="Branches" description="Manage hotel branch locations" icon={Building2}
+          stats={[{ label: 'Total', value: branches.length }, { label: 'Active', value: branches.filter(b => b.is_active !== false).length }]}
+          actions={[{ label: 'Add Branch', icon: Plus, onClick: () => setShowCreateModal(true) }]}
         />
 
-      <div className="card bg-surface-secondary dark:bg-slate-800">
-        {branches.length === 0 ? (
-          <div className="text-center py-12">
-            <Building2 className="w-16 h-16 text-slate-500 mx-auto mb-4" />
-            <p className="text-slate-300">No branches found</p>
-          </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {branches.map((branch) => (
-              <div key={branch.branch_id} className="rounded-lg p-6 hover:shadow-lg transition-all bg-slate-800/60 border border-slate-700/50">
-                <div className="flex items-start gap-3 mb-4">
-                  <div className="p-2 bg-luxury-gold/10 rounded-lg">
-                    <Building2 className="w-6 h-6 text-luxury-gold" />
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          {branches.length === 0 ? (
+            <div className="text-center py-16">
+              <Building2 className="w-20 h-20 mx-auto mb-4" style={{ color: '#dee2e6' }} />
+              <p style={{ color: '#6c757d' }}>No branches found</p>
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {branches.map((branch) => (
+                <div key={branch.branch_id} className="rounded-xl p-6" style={{ backgroundColor: '#f8f9fa', border: '1px solid #e9ecef' }}>
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="p-3 rounded-xl" style={{ backgroundColor: '#e3f2fd' }}>
+                      <Building2 className="w-6 h-6" style={{ color: '#0d47a1' }} />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg" style={{ color: '#1a237e' }}>{branch.branch_name}</h3>
+                      <p className="text-sm flex items-center gap-1" style={{ color: '#6c757d' }}><MapPin className="w-4 h-4" />{branch.location || 'N/A'}</p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-white text-lg">{branch.branch_name}</h3>
-                    <p className="text-sm text-slate-300 mt-1 flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
-                      {branch.location || 'N/A'}
-                    </p>
-                  </div>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-slate-300">Contact:</span>
-                    <span className="font-medium text-white">{branch.contact_number || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-300">Manager:</span>
-                    <span className="font-medium text-white">{branch.manager_name || 'N/A'}</span>
+                  <div className="mt-4 pt-4 flex gap-3" style={{ borderTop: '1px solid #e9ecef' }}>
+                    <button onClick={() => { setSelectedBranch(branch); setShowEditModal(true); }} className="flex-1 px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2" style={{ backgroundColor: '#e3f2fd', color: '#0d47a1' }}><Edit className="w-4 h-4" />Edit</button>
+                    <button onClick={() => handleDelete(branch.branch_id)} className="flex-1 px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2" style={{ backgroundColor: '#f8d7da', color: '#dc3545' }}><Trash2 className="w-4 h-4" />Delete</button>
                   </div>
                 </div>
-                <div className="mt-4 pt-4 border-t border-slate-700/30 flex gap-3">
-                  <button
-                    onClick={() => handleEdit(branch)}
-                    className="flex-1 bg-blue-500/15 text-blue-300 hover:bg-blue-500/25 hover:text-blue-200 px-4 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-all"
-                  >
-                    <Edit className="w-4 h-4" />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(branch.branch_id)}
-                    className="flex-1 bg-red-500/15 text-red-300 hover:bg-red-500/25 hover:text-red-200 px-4 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-all"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-      {showCreateModal && (
-        <BranchModal 
-          onClose={() => setShowCreateModal(false)}
-          onSuccess={() => {
-            setShowCreateModal(false);
-            loadBranches();
-          }}
-        />
-      )}
-
-      {showEditModal && selectedBranch && (
-        <BranchModal
-          branch={selectedBranch}
-          onClose={() => {
-            setShowEditModal(false);
-            setSelectedBranch(null);
-          }}
-          onSuccess={() => {
-            setShowEditModal(false);
-            setSelectedBranch(null);
-            loadBranches();
-          }}
-        />
-      )}
+        {showCreateModal && <BranchModal onClose={() => setShowCreateModal(false)} onSuccess={() => { setShowCreateModal(false); loadBranches(); }} />}
+        {showEditModal && selectedBranch && <BranchModal branch={selectedBranch} onClose={() => { setShowEditModal(false); setSelectedBranch(null); }} onSuccess={() => { setShowEditModal(false); setSelectedBranch(null); loadBranches(); }} />}
       </div>
     </div>
   );
 };
 
-// Branch Modal (Create/Edit)
 const BranchModal = ({ branch, onClose, onSuccess }) => {
   const isEdit = !!branch;
-  const [formData, setFormData] = useState({
-    branch_name: branch?.branch_name || '',
-    branch_code: branch?.branch_code || '',
-    city: branch?.city || branch?.location || '',
-    phone: branch?.phone || branch?.contact_number || '',
-    manager_id: branch?.manager_id || '',
-  });
+  const [formData, setFormData] = useState({ branch_name: branch?.branch_name || '', branch_code: branch?.branch_code || '', city: branch?.city || '', phone: branch?.phone || '' });
   const [loading, setLoading] = useState(false);
-  const [managers, setManagers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    loadManagers();
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const loadManagers = async () => {
-    try {
-      const response = await api.getEmployees();
-      // Handle both array and object responses
-      const employees = Array.isArray(response) ? response : (response.employees || []);
-      const managerList = employees.filter(emp => emp.role === 'Manager');
-      setManagers(managerList);
-    } catch (error) {
-      console.error('Failed to load managers:', error);
-    }
-  };
-
-  const filteredManagers = searchTerm.trim() === ''
-    ? managers
-    : managers.filter(manager =>
-        manager.name?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-
-  const selectedManager = managers.find(m => m.employee_id === formData.manager_id);
-
-  console.log('Debug - Managers:', managers.length, 'Filtered:', filteredManagers.length, 'ShowDropdown:', showDropdown);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (isEdit) {
-        await api.updateBranch(branch.branch_id, formData);
-        alert('Branch updated successfully!');
-      } else {
-        const payload = {
-          branch_name: formData.branch_name,
-          branch_code: formData.branch_code,
-          address: formData.city, // Map city to address field
-          contact_number: formData.phone, // Map phone to contact_number field
-          manager_id: formData.manager_id || null,
-        };
-        await api.createBranch(payload);
-        alert('Branch created successfully!');
-      }
+      if (isEdit) await api.updateBranch(branch.branch_id, formData);
+      else await api.createBranch({ branch_name: formData.branch_name, branch_code: formData.branch_code, address: formData.city, contact_number: formData.phone });
       onSuccess();
-    } catch (error) {
-      alert(`Failed to ${isEdit ? 'update' : 'create'} branch: ` + error.message);
-    } finally {
-      setLoading(false);
-    }
+    } catch (error) { alert('Failed: ' + error.message); }
+    finally { setLoading(false); }
   };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-md w-full border border-slate-700/50" style={{minWidth: '600px'}}>
-        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 z-10 flex justify-between items-center">
-          <h2 className="text-2xl font-display font-bold text-white">
-            {isEdit ? 'Edit Branch' : 'Add New Branch'}
-          </h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-300">
-            <X className="w-6 h-6" />
-          </button>
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+        <div className="px-6 py-5 border-b flex justify-between items-center" style={{ backgroundColor: '#e3f2fd' }}>
+          <h2 className="text-2xl font-bold" style={{ color: '#1a237e' }}>{isEdit ? 'Edit Branch' : 'Add Branch'}</h2>
+          <button onClick={onClose} className="p-2 rounded-lg" style={{ backgroundColor: 'white' }}><X className="w-5 h-5" /></button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Branch Name</label>
-            <input
-              type="text"
-              value={formData.branch_name}
-              onChange={(e) => setFormData({...formData, branch_name: e.target.value})}
-              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Branch Code</label>
-            <input
-              type="text"
-              value={formData.branch_code}
-              onChange={(e) => setFormData({...formData, branch_code: e.target.value})}
-              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
-              placeholder="e.g., COL-01"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">City</label>
-            <input
-              type="text"
-              value={formData.city}
-              onChange={(e) => setFormData({...formData, city: e.target.value})}
-              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Contact Number</label>
-            <input
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => setFormData({...formData, phone: e.target.value})}
-              className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400"
-            />
-          </div>
-          <div className="relative" ref={dropdownRef}>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Manager</label>
-            <div className="relative">
-              <input
-                type="text"
-                value={selectedManager ? selectedManager.name : searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setShowDropdown(true);
-                  if (!e.target.value) {
-                    setFormData({...formData, manager_id: ''});
-                  }
-                }}
-                onFocus={() => setShowDropdown(true)}
-                placeholder="Search for a manager..."
-                className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400 w-full"
-              />
-              {showDropdown && managers.length > 0 && (
-                <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                  {filteredManagers.length > 0 ? (
-                    filteredManagers.map((manager) => (
-                      <button
-                        key={manager.employee_id}
-                        type="button"
-                        onClick={() => {
-                          setFormData({...formData, manager_id: manager.employee_id});
-                          setSearchTerm('');
-                          setShowDropdown(false);
-                        }}
-                        className="w-full text-left px-4 py-3 hover:bg-slate-700 text-white transition-colors border-b border-slate-700 last:border-b-0"
-                      >
-                        <div className="font-medium">{manager.name}</div>
-                        <div className="text-sm text-slate-400">ID: {manager.employee_id} • {manager.email}</div>
-                      </button>
-                    ))
-                  ) : (
-                    <div className="px-4 py-3 text-slate-400 text-center">
-                      No managers found matching "{searchTerm}"
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-            {selectedManager && (
-              <div className="mt-2 text-sm text-slate-400">
-                Selected: <span className="text-white font-medium">{selectedManager.name}</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData({...formData, manager_id: ''});
-                    setSearchTerm('');
-                  }}
-                  className="ml-2 text-red-400 hover:text-red-300"
-                >
-                  Clear
-                </button>
-              </div>
-            )}
-          </div>
-          <div className="flex gap-3 pt-4 border-t border-border">
-            <button type="button" onClick={onClose} className="btn-secondary flex-1">
-              Cancel
-            </button>
-            <button type="submit" disabled={loading} className="btn-primary flex-1">
-              {loading ? (isEdit ? 'Updating...' : 'Creating...') : (isEdit ? 'Update Branch' : 'Create Branch')}
-            </button>
+          <div><label className="block text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>Branch Name *</label><input type="text" value={formData.branch_name} onChange={(e) => setFormData({ ...formData, branch_name: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2" style={{ borderColor: '#e9ecef' }} required /></div>
+          <div><label className="block text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>Branch Code *</label><input type="text" value={formData.branch_code} onChange={(e) => setFormData({ ...formData, branch_code: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2" style={{ borderColor: '#e9ecef' }} required /></div>
+          <div><label className="block text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>City *</label><input type="text" value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2" style={{ borderColor: '#e9ecef' }} required /></div>
+          <div><label className="block text-sm font-semibold mb-2" style={{ color: '#1a237e' }}>Contact</label><input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2" style={{ borderColor: '#e9ecef' }} /></div>
+          <div className="flex gap-3 pt-4 border-t" style={{ borderColor: '#e9ecef' }}>
+            <button type="button" onClick={onClose} className="flex-1 px-5 py-3 rounded-xl" style={{ backgroundColor: '#e9ecef' }}>Cancel</button>
+            <button type="submit" disabled={loading} className="flex-1 px-5 py-3 rounded-xl text-white" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>{loading ? 'Saving...' : (isEdit ? 'Update' : 'Create')}</button>
           </div>
         </form>
       </div>
     </div>
   );
 };
-
-// Legacy wrapper for backward compatibility
-const CreateBranchModal = BranchModal;
 
 export default BranchesPage;

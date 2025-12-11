@@ -602,24 +602,45 @@ const Dashboard = ({ user, onNavigate }) => {
 
   const getStatusBadge = (status) => {
     const styles = {
-      'Booked': 'bg-blue-800/30 text-blue-200 dark:bg-blue-900/30 dark:text-blue-300',
-      'Checked-In': 'bg-green-800/30 text-green-200 dark:bg-green-900/30 dark:text-green-300',
-      'Checked-Out': 'bg-surface-tertiary text-slate-300',
-      'Cancelled': 'bg-red-800/30 text-red-200 dark:bg-red-900/30 dark:text-red-300',
+      'Booked': 'text-blue-800 font-semibold',
+      'Checked-In': 'text-green-800 font-semibold',
+      'Checked-Out': 'text-gray-600 font-semibold',
+      'Cancelled': 'text-red-800 font-semibold',
     };
-    return styles[status] || 'bg-surface-tertiary text-slate-300';
+    const bgStyles = {
+      'Booked': '#e3f2fd',
+      'Checked-In': '#d4edda',
+      'Checked-Out': '#e9ecef',
+      'Cancelled': '#f8d7da',
+    };
+    return { class: styles[status] || 'text-gray-600 font-semibold', bg: bgStyles[status] || '#e9ecef' };
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-primary p-6 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{
+        background: '#f8f9fa',
+      }}>
         <div className="text-center">
-          <LoadingSpinner size="xl" message="Loading dashboard..." />
-          <p className="text-slate-400 mt-4 text-sm">
-            Fetching bookings, rooms, guests, and reports...
-          </p>
-          <p className="text-slate-500 mt-2 text-xs">
-            Check browser console (F12) for detailed API logs
+          {/* Large Spinner */}
+          <div className="mb-8">
+            <div 
+              className="w-24 h-24 border-6 rounded-full animate-spin mx-auto"
+              style={{
+                borderWidth: '6px',
+                borderStyle: 'solid',
+                borderColor: '#e9ecef',
+                borderTopColor: '#1a237e',
+              }}
+            ></div>
+          </div>
+
+          {/* Text */}
+          <h2 className="text-3xl font-bold mb-3" style={{ color: '#1a237e' }}>
+            Loading Dashboard...
+          </h2>
+          <p className="text-base" style={{ color: '#6c757d' }}>
+            Fetching your data
           </p>
         </div>
       </div>
@@ -635,21 +656,28 @@ const Dashboard = ({ user, onNavigate }) => {
   // Customer role gets a completely different dashboard
   if (user?.role === 'Customer') {
     return (
-      <div className="min-h-screen bg-surface-primary p-6">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Customer Header */}
-          <div className="card bg-gradient-to-r from-luxury-navy to-indigo-900 text-white relative overflow-hidden">
+      <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
+        <div className="max-w-7xl mx-auto space-y-6 p-6">
+          {/* Customer Header - SkyNest Theme */}
+          <div className="relative overflow-hidden rounded-2xl shadow-2xl" style={{
+            background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+          }}>
+            <div className="absolute inset-0 opacity-20" style={{
+              backgroundImage: 'url(https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1920)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}></div>
             <div className="absolute inset-0 opacity-10">
               <div className="absolute inset-0" style={{
                 backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
                 backgroundSize: '20px 20px'
               }}></div>
             </div>
-            <div className="relative z-10 p-8">
-              <h1 className="text-4xl font-display font-bold mb-2">
+            <div className="relative z-10 p-12">
+              <h1 className="text-5xl font-bold mb-3 text-white">
                 {dashboardConfig.title}
               </h1>
-              <p className="text-indigo-200 text-lg">{dashboardConfig.subtitle}</p>
+              <p className="text-blue-200 text-xl">{dashboardConfig.subtitle}</p>
             </div>
           </div>
 
@@ -666,28 +694,39 @@ const Dashboard = ({ user, onNavigate }) => {
   // Accountant role gets financial-focused dashboard
   if (user?.role === 'Accountant') {
     return (
-      <div className="min-h-screen bg-surface-primary p-6">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Accountant Header */}
-          <div className="card bg-gradient-to-r from-luxury-navy to-indigo-900 text-white relative overflow-hidden">
+      <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
+        <div className="max-w-7xl mx-auto space-y-6 p-6">
+          {/* Accountant Header - SkyNest Theme */}
+          <div className="relative overflow-hidden rounded-2xl shadow-2xl" style={{
+            background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+          }}>
+            <div className="absolute inset-0 opacity-20" style={{
+              backgroundImage: 'url(https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1920)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}></div>
             <div className="absolute inset-0 opacity-10">
               <div className="absolute inset-0" style={{
                 backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
                 backgroundSize: '20px 20px'
               }}></div>
             </div>
-            <div className="relative z-10 p-8">
+            <div className="relative z-10 p-12">
               <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4">
                 <div className="flex-1">
-                  <h1 className="text-4xl font-display font-bold mb-2">
+                  <h1 className="text-5xl font-bold mb-3 text-white">
                     {dashboardConfig.title}
                   </h1>
-                  <p className="text-indigo-200 text-lg">{dashboardConfig.subtitle}</p>
+                  <p className="text-blue-200 text-xl">{dashboardConfig.subtitle}</p>
                 </div>
                 <button 
                   onClick={handleRefresh}
                   disabled={loading}
-                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg p-3 transition-all duration-300 disabled:opacity-50"
+                  className="rounded-lg p-4 transition-all duration-300 disabled:opacity-50 shadow-lg hover:shadow-xl"
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.15)',
+                    backdropFilter: 'blur(10px)',
+                  }}
                   title="Refresh Dashboard Data"
                 >
                   <RefreshCw className={`w-6 h-6 text-white ${loading ? 'animate-spin' : ''}`} />
@@ -712,26 +751,33 @@ const Dashboard = ({ user, onNavigate }) => {
   // Receptionist role gets operations-focused dashboard
   if (user?.role === 'Receptionist') {
     return (
-      <div className="min-h-screen bg-surface-primary p-6">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Receptionist Header */}
-          <div className="card bg-gradient-to-r from-luxury-navy to-indigo-900 text-white relative overflow-hidden">
+      <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
+        <div className="max-w-7xl mx-auto space-y-6 p-6">
+          {/* Receptionist Header - SkyNest Theme */}
+          <div className="relative overflow-hidden rounded-2xl shadow-2xl" style={{
+            background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+          }}>
+            <div className="absolute inset-0 opacity-20" style={{
+              backgroundImage: 'url(https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1920)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}></div>
             <div className="absolute inset-0 opacity-10">
               <div className="absolute inset-0" style={{
                 backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
                 backgroundSize: '20px 20px'
               }}></div>
             </div>
-            <div className="relative z-10 p-8">
+            <div className="relative z-10 p-12">
               <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4">
                 <div className="flex-1">
-                  <h1 className="text-4xl font-display font-bold mb-2">
+                  <h1 className="text-5xl font-bold mb-3 text-white">
                     {getGreeting()}, {user.username}! 👋
                   </h1>
-                  <p className="text-indigo-200 text-lg">
+                  <p className="text-blue-200 text-xl">
                     {format(new Date(), 'EEEE, MMMM do yyyy')}
                     {lastUpdated && (
-                      <span className="text-indigo-300 text-sm ml-2">
+                      <span className="text-blue-300 text-base ml-2">
                         • Last updated: {format(lastUpdated, 'HH:mm:ss')}
                       </span>
                     )}
@@ -740,7 +786,11 @@ const Dashboard = ({ user, onNavigate }) => {
                 <button 
                   onClick={handleRefresh}
                   disabled={loading}
-                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg p-3 transition-all duration-300 disabled:opacity-50"
+                  className="rounded-lg p-4 transition-all duration-300 disabled:opacity-50 shadow-lg hover:shadow-xl"
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.15)',
+                    backdropFilter: 'blur(10px)',
+                  }}
                   title="Refresh Dashboard Data"
                 >
                   <RefreshCw className={`w-6 h-6 text-white ${loading ? 'animate-spin' : ''}`} />
@@ -764,19 +814,22 @@ const Dashboard = ({ user, onNavigate }) => {
 
   // Admin and Manager roles get full dashboard (existing layout)
   return (
-    <div className="min-h-screen bg-surface-primary p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
+      <div className="max-w-7xl mx-auto space-y-6 p-6">
         
         {/* Show warning if no data loaded */}
         {!hasCriticalData && (
-          <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-4 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+          <div className="rounded-xl p-6 flex items-start gap-3 shadow-lg" style={{
+            backgroundColor: '#fff3cd',
+            border: '2px solid #ffc107',
+          }}>
+            <AlertCircle className="w-6 h-6 text-yellow-800 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-yellow-200 font-semibold mb-1">No Data Available</h3>
-              <p className="text-yellow-300 text-sm">
+              <h3 className="text-yellow-900 font-bold mb-2 text-lg">No Data Available</h3>
+              <p className="text-yellow-800 text-sm">
                 The dashboard is not loading data from the API. Please check:
               </p>
-              <ul className="text-yellow-300 text-sm mt-2 ml-4 list-disc space-y-1">
+              <ul className="text-yellow-800 text-sm mt-2 ml-4 list-disc space-y-1">
                 <li>Backend server is running on port 4000</li>
                 <li>You are logged in with proper credentials</li>
                 <li>Your user role has access to dashboard data</li>
@@ -786,24 +839,31 @@ const Dashboard = ({ user, onNavigate }) => {
           </div>
         )}
 
-        {/* 🎨 PHASE 1: Glassmorphism Hero Card */}
-        <div className="card bg-gradient-to-r from-luxury-navy to-indigo-900 text-white relative overflow-hidden">
+        {/* 🎨 Hero Section - SkyNest Theme */}
+        <div className="relative overflow-hidden rounded-2xl shadow-2xl" style={{
+          background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+        }}>
+          <div className="absolute inset-0 opacity-20" style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1920)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}></div>
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0" style={{
               backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
               backgroundSize: '20px 20px'
             }}></div>
           </div>
-          <div className="relative z-10 p-8">
+          <div className="relative z-10 p-12">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-8">
               <div className="flex-1">
-                <h1 className="text-4xl font-display font-bold mb-2">
+                <h1 className="text-5xl font-bold mb-3 text-white">
                   {getGreeting()}, {user.username}! 👋
                 </h1>
-                <p className="text-indigo-200 text-lg">
+                <p className="text-blue-200 text-xl">
                   {format(new Date(), 'EEEE, MMMM do yyyy')} • {stats.activeBookings} active bookings
                   {lastUpdated && (
-                    <span className="text-indigo-300 text-sm ml-2">
+                    <span className="text-blue-300 text-base ml-2">
                       • Last updated: {format(lastUpdated, 'HH:mm:ss')}
                     </span>
                   )}
@@ -812,7 +872,11 @@ const Dashboard = ({ user, onNavigate }) => {
               <button 
                 onClick={handleRefresh}
                 disabled={loading}
-                className="bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg p-3 transition-all duration-300 disabled:opacity-50"
+                className="rounded-lg p-4 transition-all duration-300 disabled:opacity-50 shadow-lg hover:shadow-xl"
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.15)',
+                  backdropFilter: 'blur(10px)',
+                }}
                 title="Refresh Dashboard Data"
               >
                 <RefreshCw className={`w-6 h-6 text-white ${loading ? 'animate-spin' : ''}`} />
@@ -861,18 +925,21 @@ const Dashboard = ({ user, onNavigate }) => {
         {/* �💰 PHASE 1: Today's Revenue + Payment Status */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Today's Revenue Card */}
-          <div className="card bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-l-4 border-green-500">
+          <div className="rounded-xl p-6 shadow-lg transition-all duration-300 hover:shadow-2xl" style={{
+            background: 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)',
+            borderLeft: '4px solid #28a745',
+          }}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-green-300 dark:text-green-400 font-medium">Today's Revenue</p>
-                <p className="text-3xl font-bold text-green-900 dark:text-green-100">
+                <p className="text-sm text-green-800 font-semibold">Today's Revenue</p>
+                <p className="text-4xl font-bold text-green-900 mt-2">
                   Rs {paymentStats.collected.toLocaleString()}
                 </p>
-                <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                <p className="text-xs text-green-700 mt-2">
                   {todaysPayments} payments received
                 </p>
               </div>
-              <DollarSign className="w-12 h-12 text-green-500 dark:text-green-400 opacity-50" />
+              <DollarSign className="w-14 h-14 text-green-600 opacity-40" />
             </div>
           </div>
 
@@ -895,25 +962,27 @@ const Dashboard = ({ user, onNavigate }) => {
         {/* 📊 PHASE 1: Revenue Trend Chart + Alerts Panel */}
         {shouldShowSection(user?.role, 'analytics') && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Revenue Trend Chart (2/3 width) */}
-            <div className="lg:col-span-2 card">
-              <h3 className="text-lg font-semibold text-white dark:text-slate-100 mb-4">Revenue Trends (Last 7 Days)</h3>
+            {/* Revenue Trend Chart (2/3 width) - SkyNest Theme */}
+            <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-lg">
+              <h3 className="text-lg font-bold mb-4" style={{ color: '#1a237e' }}>Revenue Trends (Last 7 Days)</h3>
               <LineChart 
                 data={sparklineData.revenue}
                 labels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
                 dataKey="value"
                 xKey="label"
                 height={240}
-                color="#D4AF37"
+                color="#0d47a1"
                 strokeWidth={3}
               />
             </div>
 
-            {/* Alerts & Action Items Panel (1/3 width) */}
+            {/* Alerts & Action Items Panel (1/3 width) - SkyNest Theme */}
             {shouldShowSection(user?.role, 'alerts') && (
-              <div className="card border-l-4 border-orange-500">
-                <h3 className="text-lg font-semibold text-white dark:text-slate-100 mb-4 flex items-center">
-                  <AlertCircle className="w-5 h-5 mr-2 text-orange-500" />
+              <div className="bg-white rounded-xl p-6 shadow-lg" style={{
+                borderLeft: '4px solid #ff9800',
+              }}>
+                <h3 className="text-lg font-bold mb-4 flex items-center" style={{ color: '#1a237e' }}>
+                  <AlertCircle className="w-5 h-5 mr-2" style={{ color: '#ff9800' }} />
                   Attention Needed
                 </h3>
                 <div className="space-y-3">
@@ -1047,79 +1116,109 @@ const Dashboard = ({ user, onNavigate }) => {
           </div>
         </div>
 
-      {/* Secondary Stats with Enhanced Visuals */}
+      {/* Secondary Stats with Enhanced Visuals - SkyNest Theme */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card hover:shadow-lg transition-shadow">
+        <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-sm font-medium text-slate-300 dark:text-slate-300 mb-1">Total Guests</p>
-              <p className="text-3xl font-bold text-white dark:text-slate-100">{stats.totalGuests}</p>
+              <p className="text-sm font-semibold mb-1" style={{ color: '#6c757d' }}>Total Guests</p>
+              <p className="text-4xl font-bold" style={{ color: '#1a237e' }}>{stats.totalGuests}</p>
               <div className="mt-2">
-                <Sparkline data={sparklineData.bookings} color="#3B82F6" width={80} height={20} />
+                <Sparkline data={sparklineData.bookings} color="#0d47a1" width={80} height={20} />
               </div>
             </div>
-            <div className="bg-blue-800/30 dark:bg-blue-900/200/20 p-3 rounded-full">
-              <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div className="p-4 rounded-full" style={{ backgroundColor: '#e3f2fd' }}>
+              <Users className="w-7 h-7" style={{ color: '#0d6efd' }} />
             </div>
           </div>
         </div>
 
-        <div className="card hover:shadow-lg transition-shadow">
+        <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-sm font-medium text-slate-300 dark:text-slate-300 mb-1">Occupancy Rate</p>
+              <p className="text-sm font-semibold mb-1" style={{ color: '#6c757d' }}>Occupancy Rate</p>
               <div className="flex items-center gap-4">
-                <MiniGauge value={stats.occupancyRate} max={100} color="#8B5CF6" size={60} />
+                <MiniGauge value={stats.occupancyRate} max={100} color="#6366f1" size={60} />
                 <div>
-                  <p className="text-2xl font-bold text-white dark:text-slate-100">{stats.activeBookings}/{stats.totalRooms}</p>
-                  <p className="text-xs text-slate-400 dark:text-slate-400">rooms occupied</p>
+                  <p className="text-2xl font-bold" style={{ color: '#1a237e' }}>{stats.activeBookings}/{stats.totalRooms}</p>
+                  <p className="text-xs" style={{ color: '#6c757d' }}>rooms occupied</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="card hover:shadow-lg transition-shadow">
+        <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-sm font-medium text-slate-300 dark:text-slate-300 mb-1">Pending Check-Ins</p>
-              <p className="text-3xl font-bold text-white dark:text-slate-100">{stats.pendingCheckIns}</p>
+              <p className="text-sm font-semibold mb-1" style={{ color: '#6c757d' }}>Pending Check-Ins</p>
+              <p className="text-4xl font-bold" style={{ color: '#1a237e' }}>{stats.pendingCheckIns}</p>
               {stats.pendingCheckIns > 5 && (
-                <div className="mt-2 flex items-center text-yellow-600 dark:text-yellow-400 text-sm">
+                <div className="mt-2 flex items-center text-sm" style={{ color: '#ffc107' }}>
                   <AlertCircle className="w-4 h-4 mr-1" />
                   <span>Action required</span>
                 </div>
               )}
             </div>
-            <div className="bg-yellow-800/30 dark:bg-yellow-900/200/20 p-3 rounded-full">
-              <AlertCircle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+            <div className="p-4 rounded-full" style={{ backgroundColor: '#fff3cd' }}>
+              <AlertCircle className="w-7 h-7" style={{ color: '#ffc107' }} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - SkyNest Theme */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card flex items-center justify-between">
+        <div className="bg-white rounded-xl p-6 shadow-lg flex items-center justify-between hover:shadow-xl transition-all">
           <div>
-            <div className="text-sm text-slate-300 dark:text-slate-300">Operations</div>
-            <div className="text-xl font-bold text-white dark:text-slate-100">Housekeeping</div>
+            <div className="text-sm font-medium mb-1" style={{ color: '#6c757d' }}>Operations</div>
+            <div className="text-xl font-bold" style={{ color: '#1a237e' }}>Housekeeping</div>
           </div>
-          <button className="btn-primary" onClick={()=>onNavigate && onNavigate('housekeeping')}>Open</button>
+          <button 
+            type="button"
+            className="px-6 py-3 rounded-xl font-bold text-white transition-all hover:scale-105 border-0" 
+            style={{
+              background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+              boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+            }}
+            onClick={()=>onNavigate && onNavigate('housekeeping')}
+          >
+            Open →
+          </button>
         </div>
-        <div className="card flex items-center justify-between">
+        <div className="bg-white rounded-xl p-6 shadow-lg flex items-center justify-between hover:shadow-xl transition-all">
           <div>
-            <div className="text-sm text-slate-300 dark:text-slate-300">Reports</div>
-            <div className="text-xl font-bold text-white dark:text-slate-100">Arrivals/Departures</div>
+            <div className="text-sm font-medium mb-1" style={{ color: '#6c757d' }}>Reports</div>
+            <div className="text-xl font-bold" style={{ color: '#1a237e' }}>Arrivals/Departures</div>
           </div>
-          <button className="btn-secondary" onClick={()=>onNavigate && onNavigate('reports')}>View</button>
+          <button 
+            type="button"
+            className="px-6 py-3 rounded-xl font-bold text-white transition-all hover:scale-105 border-0" 
+            style={{
+              background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+              boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+            }}
+            onClick={()=>onNavigate && onNavigate('reports')}
+          >
+            View →
+          </button>
         </div>
-        <div className="card flex items-center justify-between">
+        <div className="bg-white rounded-xl p-6 shadow-lg flex items-center justify-between hover:shadow-xl transition-all">
           <div>
-            <div className="text-sm text-slate-300 dark:text-slate-300">Rates</div>
-            <div className="text-xl font-bold text-white dark:text-slate-100">Get Quote</div>
+            <div className="text-sm font-medium mb-1" style={{ color: '#6c757d' }}>Rates</div>
+            <div className="text-xl font-bold" style={{ color: '#1a237e' }}>Get Quote</div>
           </div>
-          <button className="btn-secondary" onClick={()=>setShowQuote(true)}>Quote</button>
+          <button 
+            type="button"
+            className="px-6 py-3 rounded-xl font-bold text-white transition-all hover:scale-105 border-0" 
+            style={{
+              background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+              boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+            }}
+            onClick={()=>setShowQuote(true)}
+          >
+            Quote →
+          </button>
         </div>
       </div>
 
@@ -1139,14 +1238,19 @@ const Dashboard = ({ user, onNavigate }) => {
         />
       )}
 
-      {/* Recent Bookings */}
+      {/* Recent Bookings - SkyNest Theme */}
       {shouldShowSection(user?.role, 'recentBookings') && (
-        <div className="card shadow-lg">
+        <div className="bg-white rounded-xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-white dark:text-slate-100">Recent Bookings</h2>
+            <h2 className="text-2xl font-bold" style={{ color: '#1a237e' }}>Recent Bookings</h2>
             <button 
+              type="button"
               onClick={() => onNavigate && onNavigate('bookings')}
-              className="text-luxury-gold hover:text-luxury-darkGold font-medium text-sm transition-colors flex items-center"
+              className="font-bold text-sm transition-all flex items-center px-5 py-2.5 rounded-xl hover:scale-105 text-white border-0"
+              style={{
+                background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+              }}
             >
               View All →
             </button>
@@ -1154,41 +1258,41 @@ const Dashboard = ({ user, onNavigate }) => {
 
         {recentBookings.length === 0 ? (
           <div className="text-center py-12">
-            <Calendar className="w-16 h-16 text-slate-500 dark:text-slate-500 mx-auto mb-4" />
-            <p className="text-slate-300 dark:text-slate-300">No bookings found</p>
+            <Calendar className="w-16 h-16 mx-auto mb-4" style={{ color: '#90a4ae' }} />
+            <p style={{ color: '#607d8b' }}>No bookings found</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-border dark:border-slate-700">
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300 dark:text-slate-200">Guest</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300 dark:text-slate-200">Room</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300 dark:text-slate-200">Check In</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300 dark:text-slate-200">Check Out</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-300 dark:text-slate-200">Status</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300 dark:text-slate-200">Amount</th>
+                <tr style={{ borderBottom: '2px solid #e0e0e0' }}>
+                  <th className="text-left py-3 px-4 text-sm font-bold" style={{ color: '#1a237e' }}>Guest</th>
+                  <th className="text-left py-3 px-4 text-sm font-bold" style={{ color: '#1a237e' }}>Room</th>
+                  <th className="text-left py-3 px-4 text-sm font-bold" style={{ color: '#1a237e' }}>Check In</th>
+                  <th className="text-left py-3 px-4 text-sm font-bold" style={{ color: '#1a237e' }}>Check Out</th>
+                  <th className="text-left py-3 px-4 text-sm font-bold" style={{ color: '#1a237e' }}>Status</th>
+                  <th className="text-right py-3 px-4 text-sm font-bold" style={{ color: '#1a237e' }}>Amount</th>
                 </tr>
               </thead>
               <tbody>
                 {recentBookings.map((booking) => (
-                  <tr key={booking.booking_id} className="border-b border-border dark:border-slate-700 hover:bg-surface-tertiary dark:hover:bg-slate-700/30 transition-colors">
+                  <tr key={booking.booking_id} className="transition-colors" style={{ borderBottom: '1px solid #f5f5f5' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                     <td className="py-4 px-4">
-                      <div className="font-medium text-white dark:text-slate-100">{booking.guest_name || 'Guest'}</div>
+                      <div className="font-semibold" style={{ color: '#212529' }}>{booking.guest_name || 'Guest'}</div>
                     </td>
-                    <td className="py-4 px-4 text-slate-300 dark:text-slate-300 font-medium">{booking.room_number || 'N/A'}</td>
-                    <td className="py-4 px-4 text-slate-300 dark:text-slate-300">
+                    <td className="py-4 px-4 font-medium" style={{ color: '#495057' }}>{booking.room_number || 'N/A'}</td>
+                    <td className="py-4 px-4" style={{ color: '#6c757d' }}>
                       {booking.check_in_date ? format(new Date(booking.check_in_date), 'dd/MM/yyyy') : 'N/A'}
                     </td>
-                    <td className="py-4 px-4 text-slate-300 dark:text-slate-300">
+                    <td className="py-4 px-4" style={{ color: '#6c757d' }}>
                       {booking.check_out_date ? format(new Date(booking.check_out_date), 'dd/MM/yyyy') : 'N/A'}
                     </td>
                     <td className="py-4 px-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(booking.status)}`}>
+                      <span className={`px-3 py-1 rounded-full text-xs ${getStatusBadge(booking.status).class}`} style={{ backgroundColor: getStatusBadge(booking.status).bg }}>
                         {booking.status}
                       </span>
                     </td>
-                    <td className="py-4 px-4 text-right font-bold text-luxury-gold">
+                    <td className="py-4 px-4 text-right font-bold" style={{ color: '#0d47a1' }}>
                       Rs {parseFloat(booking.total_amount || 0).toFixed(2)}
                     </td>
                   </tr>
@@ -1233,32 +1337,52 @@ function MiniTable({ title, rows, onOpen }) {
     URL.revokeObjectURL(url);
   };
   return (
-    <div className="card">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-semibold text-white dark:text-slate-100">{title}</h3>
+    <div className="bg-white rounded-xl p-5 shadow-lg">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-bold" style={{ color: '#1a237e' }}>{title}</h3>
         <div className="flex gap-2">
-          <button className="btn-secondary" onClick={exportCsv}>Export</button>
-          <button className="btn-secondary" onClick={onOpen}>View</button>
+          <button 
+            type="button"
+            className="px-4 py-2 rounded-xl text-sm font-bold transition-all hover:scale-105 text-white border-0" 
+            style={{
+              background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+              boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+            }}
+            onClick={exportCsv}
+          >
+            Export →
+          </button>
+          <button 
+            type="button"
+            className="px-4 py-2 rounded-xl text-sm font-bold transition-all hover:scale-105 text-white border-0" 
+            style={{
+              background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+              boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+            }}
+            onClick={onOpen}
+          >
+            View →
+          </button>
         </div>
       </div>
       {(!rows || rows.length === 0) ? (
-        <div className="text-sm text-slate-300 dark:text-slate-300">No records</div>
+        <div className="text-sm" style={{ color: '#6c757d' }}>No records</div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border dark:border-slate-700">
-                <th className="text-left py-2 px-2 text-slate-300 dark:text-slate-200">Guest</th>
-                <th className="text-left py-2 px-2 text-slate-300 dark:text-slate-200">Room</th>
-                <th className="text-left py-2 px-2 text-slate-300 dark:text-slate-200">Branch</th>
+              <tr style={{ borderBottom: '2px solid #e0e0e0' }}>
+                <th className="text-left py-2 px-2 font-bold" style={{ color: '#1a237e' }}>Guest</th>
+                <th className="text-left py-2 px-2 font-bold" style={{ color: '#1a237e' }}>Room</th>
+                <th className="text-left py-2 px-2 font-bold" style={{ color: '#1a237e' }}>Branch</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.booking_id} className="border-b border-border dark:border-slate-700">
-                  <td className="py-2 px-2 text-white dark:text-slate-100">{r.guest_name || 'N/A'}</td>
-                  <td className="py-2 px-2 text-white dark:text-slate-100">{r.room_number || 'N/A'}</td>
-                  <td className="py-2 px-2 text-white dark:text-slate-100">{r.branch_name || 'N/A'}</td>
+                <tr key={r.booking_id} style={{ borderBottom: '1px solid #f5f5f5' }}>
+                  <td className="py-2 px-2 font-medium" style={{ color: '#212529' }}>{r.guest_name || 'N/A'}</td>
+                  <td className="py-2 px-2" style={{ color: '#495057' }}>{r.room_number || 'N/A'}</td>
+                  <td className="py-2 px-2" style={{ color: '#6c757d' }}>{r.branch_name || 'N/A'}</td>
                 </tr>
               ))}
             </tbody>
@@ -1311,20 +1435,20 @@ function QuickQuoteModal({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-lg w-full border border-slate-700/50" onClick={(e)=>e.stopPropagation()} style={{minWidth: '600px'}}>
-        <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/60 backdrop-blur-lg sticky top-0 z-10 flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-white">Quick Rate Quote</h2>
+    <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4" style={{ backgroundColor: 'rgba(26, 35, 126, 0.5)' }} onClick={onClose}>
+      <div className="rounded-2xl shadow-2xl max-w-lg w-full" onClick={(e)=>e.stopPropagation()} style={{ minWidth: '600px', background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)', border: '2px solid rgba(26, 35, 126, 0.2)' }}>
+        <div className="px-6 py-5 sticky top-0 z-10 flex items-center justify-between rounded-t-2xl" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
+          <h2 className="text-2xl font-bold text-white">Quick Rate Quote</h2>
           <button 
             onClick={onClose} 
-            className="text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg p-2 transition-all duration-200"
+            className="text-white rounded-lg p-2 transition-all duration-200 text-3xl font-bold hover:bg-white/20"
           >
             ×
           </button>
         </div>
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Room Type</label>
+            <label className="block text-sm font-bold mb-2" style={{ color: '#1a237e' }}>Room Type</label>
             <SearchableDropdown
               value={form.room_type_id}
               onChange={(selectedId) => setForm((prev) => ({ ...prev, room_type_id: selectedId }))}
@@ -1334,8 +1458,8 @@ function QuickQuoteModal({ onClose }) {
               className="w-full"
               renderOption={(option) => (
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-white">{option.name}</span>
-                  <span className="text-xs text-slate-400">{option.formattedRate}</span>
+                  <span className="font-medium" style={{ color: '#212529' }}>{option.name}</span>
+                  <span className="text-xs" style={{ color: '#6c757d' }}>{option.formattedRate}</span>
                 </div>
               )}
               renderSelected={(option) =>
@@ -1345,16 +1469,16 @@ function QuickQuoteModal({ onClose }) {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Check In</label>
-              <input type="date" className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400" value={form.check_in} onChange={(e)=>setForm({...form, check_in:e.target.value})} />
+              <label className="block text-sm font-bold mb-2" style={{ color: '#1a237e' }}>Check In</label>
+              <input type="date" className="w-full px-4 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2" style={{ borderColor: '#90caf9', backgroundColor: '#ffffff', color: '#212529' }} value={form.check_in} onChange={(e)=>setForm({...form, check_in:e.target.value})} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Check Out</label>
-              <input type="date" className="input-field bg-slate-800/50 border-2 border-slate-600 text-white placeholder-slate-400" value={form.check_out} onChange={(e)=>setForm({...form, check_out:e.target.value})} />
+              <label className="block text-sm font-bold mb-2" style={{ color: '#1a237e' }}>Check Out</label>
+              <input type="date" className="w-full px-4 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2" style={{ borderColor: '#90caf9', backgroundColor: '#ffffff', color: '#212529' }} value={form.check_out} onChange={(e)=>setForm({...form, check_out:e.target.value})} />
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <button className="btn-primary flex-1" onClick={getQuote} disabled={loading || !form.room_type_id || !form.check_in || !form.check_out}>
+            <button className="flex-1 px-6 py-3 rounded-lg font-bold text-white transition-all hover:shadow-lg disabled:opacity-50" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }} onClick={getQuote} disabled={loading || !form.room_type_id || !form.check_in || !form.check_out}>
               {loading ? (
                 <div className="flex items-center justify-center">
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
@@ -1365,57 +1489,57 @@ function QuickQuoteModal({ onClose }) {
               )}
             </button>
             {quote && (
-              <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-lg px-4 py-2">
-                <div className="text-sm font-semibold text-white">
+              <div className="rounded-lg px-4 py-2 shadow-md" style={{ background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)', border: '2px solid #90caf9' }}>
+                <div className="text-sm font-bold" style={{ color: '#0d47a1' }}>
                   {quote.nights} night{quote.nights>1?'s':''} · Total Rs {parseFloat(quote.total).toFixed(2)}
                 </div>
-                <div className="text-xs text-blue-300">
+                <div className="text-xs" style={{ color: '#1976d2' }}>
                   Avg Rs {parseFloat(quote.total / quote.nights).toFixed(2)} per night
                 </div>
               </div>
             )}
           </div>
           {quote?.nightly?.length ? (
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-600/30 rounded-xl p-4 backdrop-blur-sm">
+            <div className="rounded-xl p-4 shadow-lg" style={{ backgroundColor: '#ffffff', border: '2px solid #e3f2fd' }}>
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                <div className="text-sm font-semibold text-white">Nightly Breakdown</div>
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#0d6efd' }}></div>
+                <div className="text-sm font-bold" style={{ color: '#1a237e' }}>Nightly Breakdown</div>
               </div>
               <div className="space-y-2">
                 {quote.nightly.map((n, index) => (
-                  <div key={n.date} className="flex items-center justify-between bg-slate-700/30 rounded-lg px-3 py-2 hover:bg-slate-700/50 transition-colors duration-200">
+                  <div key={n.date} className="flex items-center justify-between rounded-lg px-3 py-2 transition-all duration-200 hover:shadow-md" style={{ backgroundColor: '#f8f9fa' }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center">
-                        <span className="text-xs font-bold text-blue-300">{index + 1}</span>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: '#e3f2fd' }}>
+                        <span className="text-xs font-bold" style={{ color: '#0d47a1' }}>{index + 1}</span>
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-white">
+                        <div className="text-sm font-semibold" style={{ color: '#212529' }}>
                           {new Date(n.date).toLocaleDateString('en-US', { 
                             weekday: 'short', 
                             month: 'short', 
                             day: 'numeric' 
                           })}
                         </div>
-                        <div className="text-xs text-slate-400">
+                        <div className="text-xs" style={{ color: '#6c757d' }}>
                           {new Date(n.date).toLocaleDateString('en-US', { year: 'numeric' })}
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm font-bold text-white">Rs {parseFloat(n.rate).toFixed(2)}</div>
-                      <div className="text-xs text-slate-400">per night</div>
+                      <div className="text-sm font-bold" style={{ color: '#0d47a1' }}>Rs {parseFloat(n.rate).toFixed(2)}</div>
+                      <div className="text-xs" style={{ color: '#6c757d' }}>per night</div>
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="mt-3 pt-3 border-t border-slate-600/30">
+              <div className="mt-3 pt-3" style={{ borderTop: '2px solid #e0e0e0' }}>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-slate-300">Total Amount</span>
-                  <span className="text-lg font-bold text-luxury-gold">Rs {parseFloat(quote.total).toFixed(2)}</span>
+                  <span className="text-sm font-semibold" style={{ color: '#495057' }}>Total Amount</span>
+                  <span className="text-lg font-bold" style={{ color: '#0d47a1' }}>Rs {parseFloat(quote.total).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center mt-1">
-                  <span className="text-xs text-slate-400">Average per night</span>
-                  <span className="text-sm font-semibold text-blue-300">Rs {parseFloat(quote.total / quote.nights).toFixed(2)}</span>
+                  <span className="text-xs" style={{ color: '#6c757d' }}>Average per night</span>
+                  <span className="text-sm font-semibold" style={{ color: '#1976d2' }}>Rs {parseFloat(quote.total / quote.nights).toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -1431,79 +1555,130 @@ function QuickQuoteModal({ onClose }) {
 // Hero Stat Component (for glassmorphism hero card)
 function HeroStat({ label, value, icon: Icon }) {
   return (
-    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/20 transition-all duration-300">
+    <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 hover:bg-white/30 transition-all duration-300 border border-white/30">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-indigo-200 text-sm">{label}</span>
-        <Icon className="w-5 h-5 text-indigo-300" />
+        <span className="text-white text-sm font-semibold">{label}</span>
+        <Icon className="w-5 h-5 text-white" />
       </div>
-      <div className="text-2xl font-bold text-white">{value}</div>
+      <div className="text-3xl font-bold text-white" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>{value}</div>
     </div>
   );
 }
 
-// Quick Stat Component (for 6-card grid)
+// Quick Stat Component (for 6-card grid) - SkyNest Theme
 function QuickStat({ icon: Icon, label, value, color }) {
   const colorStyles = {
-    blue: 'bg-blue-800/30 dark:bg-blue-900/200/20 text-blue-600 dark:text-blue-400',
-    purple: 'bg-purple-800/30 dark:bg-purple-900/200/20 text-purple-600 dark:text-purple-400',
-    green: 'bg-green-800/30 dark:bg-green-900/200/20 text-green-600 dark:text-green-400',
-    orange: 'bg-orange-800/30 dark:bg-orange-900/200/20 text-orange-600 dark:text-orange-400',
-    indigo: 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400',
-    gold: 'bg-yellow-800/30 dark:bg-yellow-900/200/20 text-yellow-600 dark:text-yellow-400',
+    blue: { bg: 'linear-gradient(135deg, #cfe2ff 0%, #b6d4fe 100%)', icon: '#0d6efd', text: '#084298' },
+    purple: { bg: 'linear-gradient(135deg, #e0cffc 0%, #d4bbfc 100%)', icon: '#6f42c1', text: '#4a1d8f' },
+    green: { bg: 'linear-gradient(135deg, #d1e7dd 0%, #badbcc 100%)', icon: '#198754', text: '#0a5029' },
+    orange: { bg: 'linear-gradient(135deg, #ffe5d0 0%, #fed9bb 100%)', icon: '#fd7e14', text: '#8b4513' },
+    indigo: { bg: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)', icon: '#6366f1', text: '#4338ca' },
+    gold: { bg: 'linear-gradient(135deg, #fff3cd 0%, #ffecb5 100%)', icon: '#ffc107', text: '#8b6914' },
   };
 
+  const style = colorStyles[color] || colorStyles.blue;
+
   return (
-    <div className="card hover:shadow-lg transition-all">
+    <div className="rounded-xl p-4 shadow-md hover:shadow-xl transition-all duration-300" style={{
+      background: style.bg,
+    }}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs text-slate-300 dark:text-slate-300 mb-1">{label}</p>
-          <p className="text-2xl font-bold text-white dark:text-slate-100">{value}</p>
+          <p className="text-xs font-medium mb-1" style={{ color: style.text }}>{label}</p>
+          <p className="text-2xl font-bold" style={{ color: style.text }}>{value}</p>
         </div>
-        <div className={`p-3 rounded-full ${colorStyles[color] || colorStyles.blue}`}>
-          <Icon className="w-5 h-5" />
+        <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)' }}>
+          <Icon className="w-5 h-5" style={{ color: style.icon }} />
         </div>
       </div>
     </div>
   );
 }
 
-// Stat Card Component (for payment status)
+// Stat Card Component (for payment status) - SkyNest Theme
 function StatCard({ label, value, icon: Icon, color, subtitle }) {
   const colorStyles = {
-    green: { bg: 'bg-green-900/20 dark:bg-green-900/200/10', icon: 'bg-green-800/30 dark:bg-green-900/200/20', text: 'text-green-600 dark:text-green-400', value: 'text-green-900 dark:text-green-100' },
-    yellow: { bg: 'bg-yellow-900/20 dark:bg-yellow-900/200/10', icon: 'bg-yellow-800/30 dark:bg-yellow-900/200/20', text: 'text-yellow-600 dark:text-yellow-400', value: 'text-yellow-900 dark:text-yellow-100' },
-    red: { bg: 'bg-red-900/20 dark:bg-red-900/200/10', icon: 'bg-red-800/30 dark:bg-red-900/200/20', text: 'text-red-600 dark:text-red-400', value: 'text-red-900 dark:text-red-100' },
-    blue: { bg: 'bg-blue-900/20 dark:bg-blue-900/200/10', icon: 'bg-blue-800/30 dark:bg-blue-900/200/20', text: 'text-blue-600 dark:text-blue-400', value: 'text-blue-900 dark:text-blue-100' },
+    green: { bg: 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)', border: '#28a745', text: '#155724', value: '#0a3d1a', icon: '#28a745' },
+    yellow: { bg: 'linear-gradient(135deg, #fff3cd 0%, #ffecb5 100%)', border: '#ffc107', text: '#856404', value: '#664d03', icon: '#ffc107' },
+    red: { bg: 'linear-gradient(135deg, #f8d7da 0%, #f5c2c7 100%)', border: '#dc3545', text: '#842029', value: '#721c24', icon: '#dc3545' },
+    blue: { bg: 'linear-gradient(135deg, #cfe2ff 0%, #b6d4fe 100%)', border: '#0d6efd', text: '#084298', value: '#052c65', icon: '#0d6efd' },
   };
 
   const styles = colorStyles[color] || colorStyles.green;
 
   return (
-    <div className={`card ${styles.bg}`}>
+    <div className="rounded-xl p-6 shadow-lg transition-all duration-300 hover:shadow-2xl" style={{
+      background: styles.bg,
+      borderLeft: `4px solid ${styles.border}`,
+    }}>
       <div className="flex items-center justify-between">
         <div>
-          <p className={`text-sm font-medium ${styles.text} mb-1`}>{label}</p>
-          <p className={`text-2xl font-bold ${styles.value}`}>{value}</p>
-          {subtitle && <p className={`text-xs ${styles.text} mt-1`}>{subtitle}</p>}
+          <p className="text-sm font-semibold mb-1" style={{ color: styles.text }}>{label}</p>
+          <p className="text-3xl font-bold" style={{ color: styles.value }}>{value}</p>
+          {subtitle && <p className="text-xs mt-1" style={{ color: styles.text }}>{subtitle}</p>}
         </div>
-        <div className={`${styles.icon} p-3 rounded-full`}>
-          <Icon className={`w-6 h-6 ${styles.text}`} />
+        <div className="p-3 rounded-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)' }}>
+          <Icon className="w-7 h-7" style={{ color: styles.icon }} />
         </div>
       </div>
     </div>
   );
 }
 
-// Alert Item Component (for alerts panel)
+// Alert Item Component (for alerts panel) - SkyNest Theme
 function AlertItem({ icon: Icon, color, title, action, onClick }) {
   const colorStyles = {
-    blue: 'bg-blue-900/20 text-blue-300 border-blue-700',
-    purple: 'bg-purple-900/20 text-purple-300 border-purple-700',
-    red: 'bg-red-900/20 text-red-300 border-red-700',
-    orange: 'bg-orange-900/20 text-orange-300 border-orange-700',
-    green: 'bg-green-900/20 text-green-300 border-green-700',
-    yellow: 'bg-yellow-900/20 text-yellow-700 border-yellow-200',
+    blue: { 
+      bg: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)', 
+      text: '#0d47a1', 
+      border: '#90caf9', 
+      icon: '#1976d2',
+      buttonGradient: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+      buttonShadow: '0 4px 12px rgba(25, 118, 210, 0.3)'
+    },
+    purple: { 
+      bg: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)', 
+      text: '#6a1b9a', 
+      border: '#ce93d8', 
+      icon: '#8e24aa',
+      buttonGradient: 'linear-gradient(135deg, #8e24aa 0%, #7b1fa2 100%)',
+      buttonShadow: '0 4px 12px rgba(142, 36, 170, 0.3)'
+    },
+    red: { 
+      bg: 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)', 
+      text: '#c62828', 
+      border: '#ef9a9a', 
+      icon: '#e53935',
+      buttonGradient: 'linear-gradient(135deg, #e53935 0%, #d32f2f 100%)',
+      buttonShadow: '0 4px 12px rgba(229, 57, 53, 0.3)'
+    },
+    orange: { 
+      bg: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)', 
+      text: '#e65100', 
+      border: '#ffcc80', 
+      icon: '#fb8c00',
+      buttonGradient: 'linear-gradient(135deg, #fb8c00 0%, #f57c00 100%)',
+      buttonShadow: '0 4px 12px rgba(251, 140, 0, 0.3)'
+    },
+    green: { 
+      bg: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)', 
+      text: '#2e7d32', 
+      border: '#a5d6a7', 
+      icon: '#43a047',
+      buttonGradient: 'linear-gradient(135deg, #43a047 0%, #388e3c 100%)',
+      buttonShadow: '0 4px 12px rgba(67, 160, 71, 0.3)'
+    },
+    yellow: { 
+      bg: 'linear-gradient(135deg, #fffde7 0%, #fff9c4 100%)', 
+      text: '#f57f17', 
+      border: '#fff59d', 
+      icon: '#fbc02d',
+      buttonGradient: 'linear-gradient(135deg, #fbc02d 0%, #f9a825 100%)',
+      buttonShadow: '0 4px 12px rgba(251, 192, 45, 0.3)'
+    },
   };
+
+  const style = colorStyles[color] || colorStyles.blue;
 
   const handleClick = () => {
     console.log('Alert button clicked:', { title, action, onClick: !!onClick });
@@ -1515,15 +1690,28 @@ function AlertItem({ icon: Icon, color, title, action, onClick }) {
   };
 
   return (
-    <div className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-200 hover:scale-[1.02] ${colorStyles[color] || colorStyles.blue}`}>
-      <div className="flex items-center gap-2">
-        <Icon className="w-4 h-4" />
-        <span className="text-sm font-medium">{title}</span>
+    <div 
+      className="flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]" 
+      style={{
+        background: style.bg,
+        borderColor: style.border,
+      }}
+    >
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-lg bg-white/50">
+          <Icon className="w-5 h-5" style={{ color: style.icon }} />
+        </div>
+        <span className="text-sm font-bold" style={{ color: style.text }}>{title}</span>
       </div>
       {action && (
         <button 
+          type="button"
           onClick={handleClick}
-          className="text-xs font-medium hover:underline hover:text-white transition-colors duration-200 px-2 py-1 rounded hover:bg-white/10"
+          className="text-xs font-bold px-5 py-2.5 rounded-lg transition-all duration-300 text-white border-0 hover:scale-105"
+          style={{
+            background: style.buttonGradient,
+            boxShadow: style.buttonShadow,
+          }}
         >
           {action} →
         </button>

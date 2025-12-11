@@ -120,7 +120,7 @@ export const FinancialOverviewSection = ({ user, filterByBranch = false }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-12">
-        <div className="text-white">Loading financial data...</div>
+        <div style={{ color: '#1a237e' }} className="font-semibold">Loading financial data...</div>
       </div>
     );
   }
@@ -158,13 +158,13 @@ export const FinancialOverviewSection = ({ user, filterByBranch = false }) => {
 
       {/* Revenue by Branch (for Accountants) */}
       {financialData.revenueByBranch.length > 0 && (
-        <div className="bg-slate-800/60 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50">
-          <h3 className="text-xl font-bold text-white mb-4">Revenue by Branch</h3>
+        <div className="bg-white rounded-2xl shadow-lg p-6" style={{ border: '2px solid #e0e0e0' }}>
+          <h3 className="text-xl font-bold mb-4" style={{ color: '#1a237e' }}>Revenue by Branch</h3>
           <div className="space-y-3">
             {financialData.revenueByBranch.map((item, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-slate-900/40 rounded-lg border border-slate-700/50">
-                <span className="text-slate-300">{item.branch}</span>
-                <span className="text-white font-semibold">Rs {item.revenue.toFixed(2)}</span>
+              <div key={index} className="flex items-center justify-between p-3 rounded-lg border-2 transition-all hover:shadow-md" style={{ backgroundColor: '#f8f9fa', borderColor: '#dee2e6' }}>
+                <span className="font-semibold" style={{ color: '#495057' }}>{item.branch}</span>
+                <span className="font-bold" style={{ color: '#0d47a1' }}>Rs {item.revenue.toFixed(2)}</span>
               </div>
             ))}
           </div>
@@ -172,40 +172,40 @@ export const FinancialOverviewSection = ({ user, filterByBranch = false }) => {
       )}
 
       {/* Recent Payments */}
-      <div className="bg-slate-800/60 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-slate-700/50">
-        <h3 className="text-xl font-bold text-white mb-4">Recent Payments</h3>
+      <div className="bg-white rounded-2xl shadow-lg p-6" style={{ border: '2px solid #e0e0e0' }}>
+        <h3 className="text-xl font-bold mb-4" style={{ color: '#1a237e' }}>Recent Payments</h3>
         
         {financialData.recentPayments.length === 0 ? (
           <div className="text-center py-8">
-            <CreditCard className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-            <p className="text-slate-400">No payments recorded yet</p>
+            <CreditCard className="w-12 h-12 mx-auto mb-3" style={{ color: '#adb5bd' }} />
+            <p style={{ color: '#6c757d' }}>No payments recorded yet</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-700/50">
-                  <th className="text-left text-sm font-medium text-slate-400 pb-3">Payment ID</th>
-                  <th className="text-left text-sm font-medium text-slate-400 pb-3">Booking</th>
-                  <th className="text-left text-sm font-medium text-slate-400 pb-3">Date</th>
-                  <th className="text-left text-sm font-medium text-slate-400 pb-3">Method</th>
-                  <th className="text-right text-sm font-medium text-slate-400 pb-3">Amount</th>
+                <tr style={{ borderBottom: '2px solid #e0e0e0' }}>
+                  <th className="text-left text-sm font-bold pb-3" style={{ color: '#1a237e' }}>Payment ID</th>
+                  <th className="text-left text-sm font-bold pb-3" style={{ color: '#1a237e' }}>Booking</th>
+                  <th className="text-left text-sm font-bold pb-3" style={{ color: '#1a237e' }}>Date</th>
+                  <th className="text-left text-sm font-bold pb-3" style={{ color: '#1a237e' }}>Method</th>
+                  <th className="text-right text-sm font-bold pb-3" style={{ color: '#1a237e' }}>Amount</th>
                 </tr>
               </thead>
               <tbody>
                 {financialData.recentPayments.map((payment) => (
-                  <tr key={payment.payment_id} className="border-b border-slate-700/30">
-                    <td className="py-3 text-slate-300">#{payment.payment_id}</td>
-                    <td className="py-3 text-slate-300">Booking #{payment.booking_id}</td>
-                    <td className="py-3 text-slate-400 text-sm">
+                  <tr key={payment.payment_id} style={{ borderBottom: '1px solid #f5f5f5' }}>
+                    <td className="py-3 font-medium" style={{ color: '#495057' }}>#{payment.payment_id}</td>
+                    <td className="py-3 font-medium" style={{ color: '#495057' }}>Booking #{payment.booking_id}</td>
+                    <td className="py-3 text-sm" style={{ color: '#6c757d' }}>
                       {format(new Date(payment.payment_date), 'MMM dd, yyyy')}
                     </td>
                     <td className="py-3">
-                      <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-300 rounded-full border border-blue-500/30">
+                      <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ backgroundColor: '#e3f2fd', color: '#0d47a1', border: '1px solid #90caf9' }}>
                         {payment.payment_method}
                       </span>
                     </td>
-                    <td className="py-3 text-right text-green-400 font-semibold">
+                    <td className="py-3 text-right font-bold" style={{ color: '#198754' }}>
                       Rs {parseFloat(payment.amount || 0).toFixed(2)}
                     </td>
                   </tr>
@@ -220,31 +220,33 @@ export const FinancialOverviewSection = ({ user, filterByBranch = false }) => {
 };
 
 const FinancialStatCard = ({ icon: Icon, label, value, trend, color }) => {
-  const colorClasses = {
-    green: 'from-green-500/20 to-green-600/10 border-green-500/30 text-green-400',
-    blue: 'from-blue-500/20 to-blue-600/10 border-blue-500/30 text-blue-400',
-    orange: 'from-orange-500/20 to-orange-600/10 border-orange-500/30 text-orange-400',
-    purple: 'from-purple-500/20 to-purple-600/10 border-purple-500/30 text-purple-400',
+  const colorStyles = {
+    green: { bg: 'linear-gradient(135deg, #d1e7dd 0%, #badbcc 100%)', border: '#198754', icon: '#198754', text: '#0a5029' },
+    blue: { bg: 'linear-gradient(135deg, #cfe2ff 0%, #b6d4fe 100%)', border: '#0d6efd', icon: '#0d6efd', text: '#084298' },
+    orange: { bg: 'linear-gradient(135deg, #ffe5d0 0%, #fed9bb 100%)', border: '#fd7e14', icon: '#fd7e14', text: '#8b4513' },
+    purple: { bg: 'linear-gradient(135deg, #e0cffc 0%, #d4bbfc 100%)', border: '#6f42c1', icon: '#6f42c1', text: '#4a1d8f' },
   };
 
+  const style = colorStyles[color] || colorStyles.blue;
+
   return (
-    <div className={`bg-gradient-to-br ${colorClasses[color]} backdrop-blur-xl rounded-xl p-4 border`}>
+    <div className="rounded-xl p-4 border-2 shadow-md" style={{ background: style.bg, borderColor: style.border }}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
-          <Icon className="w-5 h-5" />
-          <span className="text-sm text-slate-300">{label}</span>
+          <Icon className="w-5 h-5" style={{ color: style.icon }} />
+          <span className="text-sm font-semibold" style={{ color: style.text }}>{label}</span>
         </div>
         {trend && (
           <div className="flex items-center gap-1">
             {trend === 'up' ? (
-              <TrendingUp className="w-4 h-4 text-green-400" />
+              <TrendingUp className="w-4 h-4" style={{ color: '#198754' }} />
             ) : (
-              <TrendingDown className="w-4 h-4 text-red-400" />
+              <TrendingDown className="w-4 h-4" style={{ color: '#dc3545' }} />
             )}
           </div>
         )}
       </div>
-      <div className="text-2xl font-bold text-white">{value}</div>
+      <div className="text-2xl font-bold" style={{ color: style.text }}>{value}</div>
     </div>
   );
 };

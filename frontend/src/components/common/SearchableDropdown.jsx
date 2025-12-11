@@ -172,23 +172,27 @@ const SearchableDropdown = ({
         {...props}
       >
         <div className="flex items-center justify-between">
-          <span className={`block truncate ${!value ? 'text-slate-400' : ''}`}>
+          <span className="block truncate" style={{ color: value ? '#1a237e' : '#6c757d' }}>
             {value ? getDisplayValue(selectedOption) : placeholder}
           </span>
           <div className="flex items-center">
             {value && clearable && !disabled && (
               <div
-                className="mr-1 text-slate-400 hover:text-white cursor-pointer transition-colors duration-150"
+                className="mr-1 cursor-pointer transition-colors duration-150"
+                style={{ color: '#6c757d' }}
                 onClick={(e) => {
                   e.stopPropagation();
                   onChange('');
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#1a237e'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#6c757d'}
               >
                 <X className="w-4 h-4" />
               </div>
             )}
             <ChevronDown 
-              className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+              className="w-4 h-4 transition-transform duration-200"
+              style={{ color: '#6c757d' }}
             />
           </div>
         </div>
@@ -197,21 +201,41 @@ const SearchableDropdown = ({
       {/* Dropdown menu */}
       {isOpen && (
         <div
-          className={`absolute mt-2 w-full overflow-hidden rounded-xl border-2 border-slate-600 bg-slate-800 shadow-2xl backdrop-blur-xl ${dropdownClassName}`}
-          style={{ zIndex: 'var(--z-dropdown)' }}
+          className={`absolute mt-2 w-full overflow-hidden rounded-xl shadow-2xl ${dropdownClassName}`}
+          style={{ 
+            zIndex: 'var(--z-dropdown)',
+            border: '2px solid #dee2e6',
+            background: 'white',
+          }}
         >
           {!hideSearch && (
-            <div className="p-3 border-b border-slate-600">
+            <div className="p-3" style={{ borderBottom: '2px solid #e9ecef' }}>
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Search 
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" 
+                  style={{ color: '#6c757d' }}
+                />
                 <input
                   ref={searchInputRef}
                   type="text"
-                  className={`w-full rounded-lg border-2 border-slate-600 bg-slate-700/50 pl-9 pr-3 py-2 text-sm text-white placeholder-slate-400 outline-none transition-all duration-150 focus:border-blue-500 focus:bg-slate-700 focus-visible:ring-2 focus-visible:ring-blue-500/50 ${inputClassName}`}
+                  className={`w-full rounded-lg border-2 pl-9 pr-3 py-2 text-sm outline-none transition-all duration-150 ${inputClassName}`}
+                  style={{
+                    borderColor: '#dee2e6',
+                    background: '#f8f9fa',
+                    color: '#495057',
+                  }}
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={handleKeyDown}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#1a237e';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#dee2e6';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
             </div>
@@ -220,32 +244,70 @@ const SearchableDropdown = ({
           {/* Options list */}
           <div className="max-h-56 overflow-y-auto">
             {loading ? (
-              <div className="px-3 py-2 text-sm text-slate-300 text-center">
+              <div className="px-3 py-2 text-sm text-center" style={{ color: '#6c757d' }}>
                 {loadingMessage}
               </div>
             ) : filteredOptions.length === 0 ? (
-              <div className="px-3 py-2 text-sm text-slate-300 text-center">
+              <div className="px-3 py-2 text-sm text-center" style={{ color: '#6c757d' }}>
                 {emptyMessage}
               </div>
             ) : (
-              filteredOptions.map((option, index) => (
-                <button
-                  key={option[valueKey]}
-                  type="button"
-                  className={`
-                    w-full px-4 py-3 text-left text-sm font-medium transition-all duration-150
-                    ${highlightedIndex === index ? 'bg-blue-600/20 text-white' : ''}
-                    ${option[valueKey] === value ? 'bg-blue-600/30 text-white font-bold border-l-4 border-blue-500' : 'text-slate-100 hover:text-white'}
-                    hover:bg-blue-600/20 hover:border-l-4 hover:border-blue-500/50 focus-visible:outline-none focus-visible:bg-blue-600/20
-                    border-l-4 border-transparent
-                    ${optionClassName}
-                  `}
-                  onClick={() => handleSelect(option)}
-                  onMouseEnter={() => setHighlightedIndex(index)}
-                >
-                  {getOptionDisplay(option)}
-                </button>
-              ))
+              filteredOptions.map((option, index) => {
+                const isSelected = option[valueKey] === value;
+                const isHighlighted = highlightedIndex === index;
+                
+                return (
+                  <button
+                    key={option[valueKey]}
+                    type="button"
+                    className={`w-full px-4 py-3 text-left text-sm font-medium transition-all duration-150 border-l-4 focus-visible:outline-none ${optionClassName}`}
+                    style={{
+                      background: isSelected 
+                        ? 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)'
+                        : isHighlighted
+                          ? '#f8f9fa'
+                          : 'white',
+                      color: isSelected ? '#ffffff' : isHighlighted ? '#1a237e' : '#495057',
+                      fontWeight: isSelected ? 'bold' : 'medium',
+                      borderLeftColor: isSelected ? '#ffffff' : 'transparent',
+                    }}
+                    ref={(el) => {
+                      if (el) {
+                        // Set initial styles - these will be overridden by hover events
+                        if (isSelected) {
+                          el.style.background = 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)';
+                          el.style.color = '#ffffff';
+                          el.style.fontWeight = 'bold';
+                          el.style.borderLeftColor = '#ffffff';
+                        } else {
+                          el.style.background = 'white';
+                          el.style.color = '#495057';
+                          el.style.fontWeight = 'medium';
+                          el.style.borderLeftColor = 'transparent';
+                        }
+                      }
+                    }}
+                    onClick={() => handleSelect(option)}
+                    onMouseEnter={(e) => {
+                      setHighlightedIndex(index);
+                      if (!isSelected) {
+                        e.currentTarget.style.setProperty('background', '#f8f9fa', 'important');
+                        e.currentTarget.style.setProperty('border-left-color', '#dee2e6', 'important');
+                        e.currentTarget.style.setProperty('color', '#1a237e', 'important');
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.setProperty('background', 'white', 'important');
+                        e.currentTarget.style.setProperty('border-left-color', 'transparent', 'important');
+                        e.currentTarget.style.setProperty('color', '#495057', 'important');
+                      }
+                    }}
+                  >
+                    {getOptionDisplay(option)}
+                  </button>
+                );
+              })
             )}
           </div>
         </div>

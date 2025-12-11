@@ -402,6 +402,10 @@ router.get('/pre-bookings/:id', requireAuth, requireStaff, prebookingController.
 router.put('/pre-bookings/:id', requireAuth, requireRole('Admin', 'Receptionist', 'Manager'), prebookingController.updatePreBooking);
 router.delete('/pre-bookings/:id', requireAuth, requireRole('Admin', 'Receptionist', 'Manager'), prebookingController.deletePreBooking);
 router.post('/pre-bookings/:id/convert', requireAuth, requireRole('Admin', 'Receptionist', 'Manager'), prebookingController.convertPreBookingToBooking);
+// Cron-friendly endpoint to allocate reservations for pending pre-bookings
+router.post('/pre-bookings/allocate-pending', requireAuth, requireRole('Admin', 'Manager'), prebookingController.allocatePendingReservations);
+// Reconcile: release extra reserved rooms to match required totals
+router.post('/pre-bookings/reconcile-reservations', requireAuth, requireRole('Admin', 'Manager'), prebookingController.reconcileReservations);
 
 // ============================================================================
 // GUEST ROUTES

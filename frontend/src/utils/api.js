@@ -419,6 +419,18 @@ class ApiService {
     });
   }
 
+  async allocatePendingPreBookings() {
+    return this.request('/api/pre-bookings/allocate-pending', {
+      method: 'POST',
+    });
+  }
+
+  async reconcileReservedRooms() {
+    return this.request('/api/pre-bookings/reconcile-reservations', {
+      method: 'POST',
+    });
+  }
+
   // Customers
   async getCustomers(params = {}) {
     const query = new URLSearchParams(params).toString();

@@ -95,100 +95,132 @@ const LoginPage = ({ onLogin }) => {
         }
       `}</style>
       
-      <div className="min-h-screen relative overflow-hidden">
-        {/* Enhanced Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900"></div>
+      <div className="min-h-screen relative overflow-hidden" style={{ background: '#F8FAFC' }}>
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0" style={{ 
+          background: 'linear-gradient(135deg, rgba(26, 35, 126, 0.03) 0%, rgba(13, 71, 161, 0.05) 100%)' 
+        }}></div>
+        
+        {/* Pattern Overlay */}
         <div 
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-[0.015]"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231a237e' fill-opacity='1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
           }}
         ></div>
         
         {/* Floating Elements */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-48 h-48 bg-purple-500/10 rounded-full blur-xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl animate-pulse delay-500"></div>
+        <div className="absolute top-20 left-10 w-32 h-32 rounded-full blur-3xl animate-pulse" style={{ background: 'rgba(26, 35, 126, 0.08)' }}></div>
+        <div className="absolute bottom-20 right-10 w-48 h-48 rounded-full blur-3xl animate-pulse delay-1000" style={{ background: 'rgba(13, 71, 161, 0.08)' }}></div>
+        <div className="absolute top-1/2 left-1/4 w-24 h-24 rounded-full blur-3xl animate-pulse delay-500" style={{ background: 'rgba(26, 35, 126, 0.06)' }}></div>
 
         <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
           <div className="max-w-md w-full" style={{minWidth: '420px'}}>
             {/* Enhanced Logo & Header */}
             <div className="text-center mb-10">
               <div className="relative inline-block">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl blur-lg opacity-75 animate-pulse-glow"></div>
-                <div className="relative inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl mb-6 shadow-2xl">
+                <div className="absolute inset-0 rounded-3xl blur-lg opacity-50" style={{ background: 'rgba(26, 35, 126, 0.1)' }}></div>
+                <div className="relative inline-flex items-center justify-center w-24 h-24 rounded-3xl mb-6 shadow-xl" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
                   <Hotel className="w-14 h-14 text-white drop-shadow-lg" />
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
                     <Sparkles className="w-4 h-4 text-yellow-800" />
                   </div>
                 </div>
               </div>
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent mb-3 drop-shadow-lg">
-                SkyNest Hotel
+              <h1 className="text-5xl font-bold mb-3" style={{ color: '#1a237e' }}>
+                SkyNest Hotels
               </h1>
-              <p className="text-xl text-blue-200 font-medium tracking-wide">Luxury Management System</p>
-              <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-4 rounded-full"></div>
+              <p className="text-xl font-medium tracking-wide" style={{ color: '#495057' }}>Luxury Hospitality Management</p>
+              <div className="w-24 h-1 mx-auto mt-4 rounded-full" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}></div>
             </div>
 
             {/* Enhanced Login Form */}
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-xl"></div>
-              <div className="relative bg-slate-800/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/10 p-8">
+              <div className="absolute inset-0 rounded-3xl blur-2xl opacity-20" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}></div>
+              <div className="relative rounded-3xl p-8" style={{ 
+                background: 'white',
+                boxShadow: '0 20px 60px rgba(26, 35, 126, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08)',
+                border: '1px solid rgba(226, 232, 240, 0.8)'
+              }}>
                 <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
-                  <p className="text-slate-300">Sign in to your account</p>
+                  <h2 className="text-3xl font-bold mb-2" style={{ color: '#1a237e' }}>Welcome Back</h2>
+                  <p style={{ color: '#495057' }}>Sign in to your account</p>
                 </div>
                 
                 {error && (
-                  <div className="bg-red-900/30 border border-red-500/50 text-red-200 px-6 py-4 rounded-xl mb-6 flex items-center backdrop-blur-sm">
-                    <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0" />
+                  <div className="px-4 py-3 rounded-xl mb-6 flex items-center" style={{ 
+                    background: '#fee2e2', 
+                    border: '2px solid #ef4444', 
+                    color: '#991b1b' 
+                  }}>
+                    <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0" style={{ color: '#dc2626' }} />
                     <span className="font-medium">{error}</span>
                   </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-slate-200">Username</label>
+                    <label className="block text-sm font-semibold" style={{ color: '#495057' }}>Username</label>
                     <div className="relative">
                       <input
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        onFocus={() => setFocusedField('username')}
-                        onBlur={() => setFocusedField(null)}
-                        className={`w-full px-4 py-4 bg-slate-700/50 backdrop-blur-sm border-2 rounded-xl text-white placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/30 ${
-                          focusedField === 'username' 
-                            ? 'border-blue-500 bg-slate-700/70' 
-                            : 'border-slate-600/50 hover:border-slate-500/70'
-                        }`}
+                        onFocus={(e) => {
+                          setFocusedField('username');
+                          e.target.style.borderColor = '#1a237e';
+                          e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)';
+                        }}
+                        onBlur={(e) => {
+                          setFocusedField(null);
+                          e.target.style.borderColor = '#dee2e6';
+                          e.target.style.boxShadow = 'none';
+                        }}
+                        className="w-full px-4 py-4 border-2 rounded-xl transition-all duration-300 focus:outline-none"
+                        style={{
+                          background: 'white',
+                          borderColor: '#dee2e6',
+                          color: '#495057',
+                        }}
                         placeholder="Enter your username"
                         required
                       />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 transition-opacity duration-300 pointer-events-none shimmer"></div>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-slate-200">Password</label>
+                    <label className="block text-sm font-semibold" style={{ color: '#495057' }}>Password</label>
                     <div className="relative">
                       <input
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        onFocus={() => setFocusedField('password')}
-                        onBlur={() => setFocusedField(null)}
-                        className={`w-full px-4 py-4 pr-12 bg-slate-700/50 backdrop-blur-sm border-2 rounded-xl text-white placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/30 ${
-                          focusedField === 'password' 
-                            ? 'border-blue-500 bg-slate-700/70' 
-                            : 'border-slate-600/50 hover:border-slate-500/70'
-                        }`}
+                        onFocus={(e) => {
+                          setFocusedField('password');
+                          e.target.style.borderColor = '#1a237e';
+                          e.target.style.boxShadow = '0 0 0 3px rgba(26, 35, 126, 0.1)';
+                        }}
+                        onBlur={(e) => {
+                          setFocusedField(null);
+                          e.target.style.borderColor = '#dee2e6';
+                          e.target.style.boxShadow = 'none';
+                        }}
+                        className="w-full px-4 py-4 pr-12 border-2 rounded-xl transition-all duration-300 focus:outline-none"
+                        style={{
+                          background: 'white',
+                          borderColor: '#dee2e6',
+                          color: '#495057',
+                        }}
                         placeholder="Enter your password"
                         required
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white transition-colors duration-200"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors duration-200"
+                        style={{ color: '#6c757d' }}
+                        onMouseEnter={(e) => e.target.style.color = '#1a237e'}
+                        onMouseLeave={(e) => e.target.style.color = '#6c757d'}
                       >
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
@@ -198,7 +230,21 @@ const LoginPage = ({ onLogin }) => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/25"
+                    className="dropdown-option-button w-full py-4 text-white font-bold rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02]"
+                    style={{
+                      background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
+                      boxShadow: '0 4px 12px rgba(26, 35, 126, 0.3)',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!loading) {
+                        e.target.style.boxShadow = '0 6px 20px rgba(26, 35, 126, 0.4)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!loading) {
+                        e.target.style.boxShadow = '0 4px 12px rgba(26, 35, 126, 0.3)';
+                      }
+                    }}
                   >
                     {loading ? (
                       <div className="flex items-center justify-center">
@@ -212,8 +258,8 @@ const LoginPage = ({ onLogin }) => {
                 </form>
 
                 {/* Enhanced Demo Credentials */}
-                <div className="mt-6 pt-4 border-t border-slate-700/50">
-                  <p className="text-xs font-semibold text-slate-200 mb-3 text-center">Demo Accounts</p>
+                <div className="mt-6 pt-4" style={{ borderTop: '1px solid #dee2e6' }}>
+                  <p className="text-xs font-semibold mb-3 text-center" style={{ color: '#495057' }}>Demo Accounts</p>
                   <div className="grid grid-cols-2 gap-2">
                     {demoUsers.map((user) => {
                       const IconComponent = user.icon;
@@ -224,18 +270,29 @@ const LoginPage = ({ onLogin }) => {
                             setUsername(user.username);
                             setPassword(user.password);
                           }}
-                          className={`group relative overflow-hidden bg-gradient-to-r ${user.color} p-2 rounded-lg text-left transition-all duration-300 transform hover:scale-[1.02] hover:shadow-md`}
+                          className="dropdown-option-button group relative overflow-hidden p-2 rounded-lg text-left transition-all duration-300 transform hover:scale-[1.02]"
+                          style={{
+                            background: '#f8f9fa',
+                            border: '1px solid #dee2e6',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.setProperty('background', 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)', 'important');
+                            e.currentTarget.style.borderColor = '#1a237e';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = '#f8f9fa';
+                            e.currentTarget.style.borderColor = '#dee2e6';
+                          }}
                         >
                           <div className="flex items-center space-x-2">
-                            <div className="w-6 h-6 bg-white/20 rounded-md flex items-center justify-center">
+                            <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)' }}>
                               <IconComponent className="w-3 h-3 text-white" />
                             </div>
                             <div>
-                              <div className="text-xs font-semibold text-white">{user.role}</div>
-                              <div className="text-xs text-white/80">{user.username}</div>
+                              <div className="text-xs font-semibold" style={{ color: '#1a237e' }}>{user.role}</div>
+                              <div className="text-xs" style={{ color: '#6c757d' }}>{user.username}</div>
                             </div>
                           </div>
-                          <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </button>
                       );
                     })}
@@ -243,22 +300,23 @@ const LoginPage = ({ onLogin }) => {
                 </div>
 
                 {/* Enhanced Register Link */}
-                <div className="mt-6 text-center">
-                  <p className="text-sm text-slate-300">
+                <div className="mt-6 text-center px-4">
+                  <p className="text-sm" style={{ color: '#495057' }}>
                     Don't have an account?{' '}
-                    <button
+                    <span
                       onClick={() => setShowRegister(true)}
-                      className="text-blue-400 hover:text-blue-300 font-semibold transition-colors duration-200 hover:underline"
+                      className="font-semibold transition-colors duration-200 hover:underline cursor-pointer"
+                      style={{ color: '#1a237e' }}
                     >
                       Create Account
-                    </button>
+                    </span>
                   </p>
                 </div>
               </div>
             </div>
 
-            <p className="text-center text-slate-400 text-sm mt-8">
-              © 2025 SkyNest Hotel. All rights reserved.
+            <p className="text-center text-sm mt-8" style={{ color: '#6c757d' }}>
+              © 2025 SkyNest Hotels. All rights reserved.
             </p>
           </div>
         </div>
