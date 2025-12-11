@@ -10,7 +10,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart
 } from 'recharts';
 import api from '../../utils/api';
-import { InteractiveDataTable, AdvancedFiltersPanel } from '../common';
+import { InteractiveDataTable, AdvancedFiltersPanel, LuxuryPageHeader } from '../common';
 import { exportToExcel, exportReportToPDF } from '../../utils/exportUtils';
 
 const COLORS = ['#D4AF37', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
@@ -615,34 +615,27 @@ export const ReportsPageEnhanced = () => {
   };
 
   return (
-    <div className="min-h-screen p-6" style={{ backgroundColor: '#f8f9fa' }}>
+    <div style={{ backgroundColor: '#f8f9fa', minHeight: '100vh', padding: '1.5rem' }}>
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Hero Header with Gradient */}
-        <div className="bg-gradient-to-r from-luxury-navy to-indigo-900 rounded-2xl shadow-2xl p-8 text-white relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0" style={{
-              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
-              backgroundSize: '20px 20px'
-            }}></div>
-          </div>
-          <div className="relative z-10 flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <FileText className="w-10 h-10" />
-                <h1 className="text-4xl font-bold">Reports & Analytics</h1>
-              </div>
-              <p className="text-indigo-200 text-lg">
-                Comprehensive business intelligence with interactive visualizations
-              </p>
-            </div>
+        {/* Hero Header - same as Dashboard */}
+        <LuxuryPageHeader
+          title="Reports & Analytics"
+          description="Comprehensive business intelligence with interactive visualizations"
+          icon={FileText}
+          stats={[
+            { label: 'Reports', value: '4', trend: 'Available' },
+            { label: 'Arrivals', value: Array.isArray(arrivals) ? arrivals.length : 0 },
+            { label: 'In-House', value: Array.isArray(inHouse) ? inHouse.length : 0 }
+          ]}
+          actions={
             <button
               onClick={() => activeReport && loadReport(activeReport)}
-              className="bg-white/20 backdrop-blur-sm p-4 rounded-xl hover:bg-white/30 transition-all group"
+              className="bg-white/20 backdrop-blur-sm p-3 rounded-xl hover:bg-white/30 transition-all"
             >
-              <RefreshCw className="w-8 h-8 group-hover:rotate-180 transition-transform duration-500" />
+              <RefreshCw className="w-6 h-6" />
             </button>
-          </div>
-        </div>
+          }
+        />
 
         {/* Today's Operations - Premium Cards */}
         <div>
