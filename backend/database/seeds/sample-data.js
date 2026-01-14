@@ -3,27 +3,35 @@ require("dotenv").config({ quiet: true });
 const { sequelize } = require("../../src/models");
 
 async function ensureOneRow(sqlCheck, sqlInsert, replacements = {}) {
-  // Always check first
-  const [rows] = await sequelize.query(sqlCheck, { replacements });
-  if (rows.length) return rows[0];
-
-  // Try to insert, catch any errors
   try {
-    const [inserted] = await sequelize.query(sqlInsert, { replacements });
-    if (inserted && inserted.length > 0) return inserted[0];
-  } catch (err) {
-    // If it's a duplicate key error, just query again to get existing row
-    if (err.name === 'SequelizeUniqueConstraintError' || err.original?.code === '23505') {
-      const [rows2] = await sequelize.query(sqlCheck, { replacements });
-      if (rows2.length) return rows2[0];
+    // Always check first
+    const [rows] = await sequelize.query(sqlCheck, { replacements });
+    if (rows.length) return rows[0];
+
+    // Try to insert, catch any errors
+    try {
+      const [inserted] = await sequelize.query(sqlInsert, { replacements });
+      if (inserted && inserted.length > 0) return inserted[0];
+    } catch (err) {
+      // If it's a duplicate key error, just query again to get existing row
+      if (err.name === 'SequelizeUniqueConstraintError' || err.original?.code === '23505') {
+        const [rows2] = await sequelize.query(sqlCheck, { replacements });
+        if (rows2.length) return rows2[0];
+      }
+      // For any other error, throw it
+      throw err;
     }
-    // For any other error, throw it
+
+    // Final fallback: query one more time
+    const [rows3] = await sequelize.query(sqlCheck, { replacements });
+    return rows3[0];
+  } catch (err) {
+    console.error(`ensureOneRow failed: ${err.message}`);
+    console.error(`SQL Check: ${sqlCheck}`);
+    console.error(`SQL Insert: ${sqlInsert}`);
+    console.error(`Replacements:`, replacements);
     throw err;
   }
-
-  // Final fallback: query one more time
-  const [rows3] = await sequelize.query(sqlCheck, { replacements });
-  return rows3[0];
 }
 
 async function seedSampleData() {
@@ -84,10 +92,16 @@ async function seedSampleData() {
 
   const guest = await ensureOneRow(
     `SELECT guest_id FROM guest WHERE email = :email LIMIT 1`,
-    `INSERT INTO guest (full_name, email, phone)
-     VALUES (:name, :email, :phone)
+    `INSERT INTO guest (full_name, email, phone, id_proof_type, id_proof_number)
+     VALUES (:name, :email, :phone, :id_type, :id_number)
      RETURNING guest_id`,
-    { name: "Test Guest", email: "guest@test.local", phone: "0710000000" }
+    { 
+      name: "Test Guest", 
+      email: "guest@test.local", 
+      phone: "0710000000",
+      id_type: "NIC",
+      id_number: "999999999V"
+    }
   );
   console.log(`Guest ready: ${guest.guest_id}`);
 
