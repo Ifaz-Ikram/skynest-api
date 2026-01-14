@@ -40,9 +40,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: ${PGDATABASE:-skynest}
-      POSTGRES_USER: ${PGUSER:-postgres}
-      POSTGRES_PASSWORD: ${PGPASSWORD:-postgres}
+      POSTGRES_DB: skynest
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 200320701070
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
